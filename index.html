@@ -1,0 +1,2639 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MyLife Dashboard</title>
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="MyLife">
+<meta name="theme-color" content="#08080f">
+<link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%2308080f'/%3E%3Ctext y='.9em' font-size='80' x='10'%3E💪%3C/text%3E%3C/svg%3E">
+<link rel="manifest" href="data:application/json,%7B%22name%22%3A%22MyLife+Dashboard%22%2C%22short_name%22%3A%22MyLife%22%2C%22start_url%22%3A%22.%22%2C%22display%22%3A%22standalone%22%2C%22background_color%22%3A%22%2308080f%22%2C%22theme_color%22%3A%22%2308080f%22%2C%22icons%22%3A%5B%7B%22src%22%3A%22data%3Aimage%2Fsvg%2Bxml%2C%253Csvg%2520xmlns%3D'http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg'%2520viewBox%3D'0%25200%2520100%2520100'%253E%253Crect%2520width%3D'100'%2520height%3D'100'%2520rx%3D'22'%2520fill%3D'%252308080f'%2F%253E%253Ctext%2520y%3D'.9em'%2520font-size%3D'80'%2520x%3D'10'%253E%25F0%259F%2592%25AA%253C%2Ftext%253E%253C%2Fsvg%253E%22%2C%22sizes%22%3A%22192x192%22%2C%22type%22%3A%22image%2Fsvg%2Bxml%22%7D%5D%7D">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#08080f;--card:#111118;--card2:#1a1a26;--border:#222235;
+  --green:#22c55e;--green2:#16a34a;--blue:#3b82f6;--purple:#8b5cf6;
+  --amber:#f59e0b;--red:#ef4444;--teal:#14b8a6;--pink:#ec4899;
+  --text:#e2e8f0;--muted:#64748b;--muted2:#94a3b8;
+}
+body{background:var(--bg);color:var(--text);font-family:'Segoe UI',system-ui,sans-serif;min-height:100vh}
+main{padding:18px;max-width:1300px;margin:0 auto}
+.page{display:none}.page.on{display:block}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px}
+.g4{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+.g12{display:grid;grid-template-columns:1fr 340px;gap:16px}
+@media(max-width:860px){.g2,.g3,.g4,.g12{grid-template-columns:1fr}}
+.card{background:var(--card);border:1px solid var(--border);border-radius:14px;overflow:hidden}
+.ch{padding:13px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.ct{font-size:.83rem;font-weight:700}
+.cb{padding:16px}
+.stat{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:14px;position:relative;overflow:hidden}
+.stat::after{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--ac,var(--green))}
+.sl{font-size:.68rem;color:var(--muted);text-transform:uppercase;letter-spacing:.8px;margin-bottom:5px}
+.sv{font-size:1.7rem;font-weight:800;color:var(--ac,var(--green));line-height:1}
+.ss{font-size:.72rem;color:var(--muted);margin-top:3px}
+.fg{display:flex;flex-direction:column;gap:5px;margin-bottom:10px}
+.fg label{font-size:.68rem;color:var(--muted);text-transform:uppercase;letter-spacing:.4px}
+input,select,textarea{background:var(--card2);border:1px solid var(--border);color:var(--text);padding:8px 11px;border-radius:8px;font-size:.85rem;outline:none;width:100%;transition:border-color .2s}
+input:focus,select:focus,textarea:focus{border-color:var(--green)}
+select option{background:var(--card2)}
+textarea{resize:vertical;min-height:60px}
+.r2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.r3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
+.btn{padding:9px 16px;border-radius:8px;font-weight:700;font-size:.82rem;cursor:pointer;border:none;transition:all .2s;display:inline-flex;align-items:center;gap:5px}
+.bg{background:var(--green);color:#000}.bg:hover{background:var(--green2)}
+.bgh{background:var(--card2);color:var(--text);border:1px solid var(--border)}.bgh:hover{border-color:var(--muted)}
+.brd{background:rgba(239,68,68,.12);color:var(--red);border:1px solid rgba(239,68,68,.25)}.brd:hover{background:rgba(239,68,68,.22)}
+.bbl{background:rgba(59,130,246,.12);color:var(--blue);border:1px solid rgba(59,130,246,.25)}
+.bfu{width:100%;justify-content:center;margin-top:6px}
+.badge{padding:3px 9px;border-radius:20px;font-size:.7rem;font-weight:700}
+.pw{height:5px;background:var(--card2);border-radius:3px;overflow:hidden;margin:5px 0}
+.pf{height:100%;border-radius:3px;transition:width .5s}
+.li{padding:11px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px;transition:background .15s}
+.li:last-child{border-bottom:none}.li:hover{background:var(--card2)}
+.emp{text-align:center;padding:32px 16px;color:var(--muted);font-size:.83rem}
+.emp-i{font-size:2rem;margin-bottom:6px}
+.sh{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.st{font-size:1rem;font-weight:700}
+#toast{position:fixed;bottom:18px;right:18px;background:var(--green);color:#000;padding:9px 16px;border-radius:8px;font-weight:700;font-size:.82rem;z-index:999;transform:translateY(60px);opacity:0;transition:all .3s;pointer-events:none}
+#toast.on{transform:translateY(0);opacity:1}
+.mbg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.8);z-index:300;align-items:center;justify-content:center;padding:16px}
+.mbg.on{display:flex}
+.modal{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:22px;width:480px;max-width:100%;max-height:90vh;overflow-y:auto}
+.mt{font-size:.98rem;font-weight:700;margin-bottom:16px;color:var(--green)}
+.mf{display:flex;gap:8px;margin-top:10px}
+.bars{display:flex;align-items:flex-end;gap:5px;height:130px;padding-bottom:22px;position:relative}
+.bw{flex:1;display:flex;flex-direction:column;align-items:center;height:100%;justify-content:flex-end;position:relative}
+.bar{width:100%;border-radius:4px 4px 0 0;min-height:2px;cursor:pointer;position:relative}
+.bar:hover::after{content:attr(title);position:absolute;top:-26px;left:50%;transform:translateX(-50%);background:var(--card2);border:1px solid var(--border);padding:2px 7px;border-radius:4px;font-size:.68rem;white-space:nowrap;z-index:10}
+.bl{font-size:.58rem;color:var(--muted);position:absolute;bottom:-18px;text-align:center;width:100%}
+/* ROUTINE */
+.exercise-card{background:var(--card2);border:1px solid var(--border);border-radius:10px;padding:12px;margin-bottom:8px}
+.exercise-card .ex-name{font-weight:700;font-size:.9rem;margin-bottom:4px}
+.set-row{display:grid;grid-template-columns:auto 1fr 1fr 1fr auto;gap:6px;align-items:center;padding:4px 0;font-size:.8rem}
+.set-num{width:24px;height:24px;border-radius:50%;background:var(--border);display:flex;align-items:center;justify-content:center;font-size:.7rem;color:var(--muted2)}
+.set-done .set-num{background:var(--green);color:#000}
+/* TIMER */
+.timer-display{font-size:3.5rem;font-weight:800;text-align:center;color:var(--green);font-variant-numeric:tabular-nums;letter-spacing:-2px}
+.timer-label{text-align:center;font-size:.8rem;color:var(--muted);margin-bottom:8px}
+/* PHOTO */
+.photo-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:8px}
+.photo-thumb{aspect-ratio:3/4;border-radius:8px;overflow:hidden;position:relative;border:1px solid var(--border)}
+.photo-thumb img{width:100%;height:100%;object-fit:cover}
+.photo-date{position:absolute;bottom:0;left:0;right:0;background:rgba(0,0,0,.6);font-size:.62rem;padding:3px 5px;color:var(--muted2)}
+/* FOOD SEARCH */
+.food-result{padding:9px 12px;border-bottom:1px solid var(--border);cursor:pointer;transition:background .15s}
+.food-result:hover{background:var(--card2)}
+.food-result:last-child{border-bottom:none}
+/* AI */
+.ai-bubble{background:var(--card2);border:1px solid var(--border);border-radius:10px;padding:12px;margin-bottom:8px;font-size:.83rem}
+.ai-bubble.user{border-color:var(--green);background:rgba(34,197,94,.08)}
+/* ROUTINE ACTIVE */
+#active-workout{display:none;position:fixed;inset:0;background:var(--bg);z-index:400;overflow-y:auto;padding:20px}
+.aw-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px}
+.aw-progress{height:4px;background:var(--card2);border-radius:2px;margin-bottom:20px}
+.aw-fill{height:100%;background:var(--green);border-radius:2px;transition:width .4s}
+.set-btn{width:44px;height:44px;border-radius:50%;border:2px solid var(--border);background:none;color:var(--muted2);font-size:1rem;cursor:pointer;transition:all .2s;display:flex;align-items:center;justify-content:center}
+.set-btn.done{background:var(--green);border-color:var(--green);color:#000}
+.rest-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.92);z-index:500;flex-direction:column;align-items:center;justify-content:center;gap:16px}
+.rest-overlay.on{display:flex}
+/* ── Top bar ── */
+.topbar{background:var(--card);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 16px;gap:12px;position:sticky;top:0;z-index:300;height:52px}
+.hamburger{background:none;border:none;cursor:pointer;display:flex;flex-direction:column;gap:5px;padding:6px;border-radius:8px}
+.hamburger span{display:block;width:22px;height:2px;background:var(--text);border-radius:2px;transition:all .3s}
+.hamburger.open span:nth-child(1){transform:translateY(7px) rotate(45deg)}
+.hamburger.open span:nth-child(2){opacity:0}
+.hamburger.open span:nth-child(3){transform:translateY(-7px) rotate(-45deg)}
+.topbar-brand{font-size:1rem;font-weight:800;color:var(--green);flex:1}
+.topbar-right{display:flex;align-items:center;gap:8px;margin-left:auto}
+/* ── Sidebar ── */
+.sidebar-overlay{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:400;opacity:0;pointer-events:none;transition:opacity .25s}
+.sidebar-overlay.on{opacity:1;pointer-events:all}
+.sidebar{position:fixed;top:0;left:0;bottom:0;width:260px;background:var(--card);z-index:500;transform:translateX(-100%);transition:transform .28s cubic-bezier(.4,0,.2,1);overflow-y:auto;display:flex;flex-direction:column}
+.sidebar.on{transform:translateX(0)}
+.sidebar-head{padding:20px 16px 12px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px}
+.sidebar-brand{font-size:1.1rem;font-weight:800;color:var(--green)}
+.sidebar-user{padding:12px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px}
+.sidebar-avatar{width:36px;height:36px;border-radius:50%;object-fit:cover;border:2px solid var(--green)}
+.sidebar-username{font-size:.82rem;font-weight:600;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.sidebar-nav{display:flex;flex-direction:column;padding:8px 0;flex:1}
+.snb{display:flex;align-items:center;gap:10px;padding:11px 20px;font-size:.88rem;font-weight:600;color:var(--muted2);background:none;border:none;cursor:pointer;text-align:left;transition:all .15s;border-left:3px solid transparent}
+.snb:hover{background:var(--card2);color:var(--text)}
+.snb.on{color:var(--green);background:rgba(34,197,94,.07);border-left-color:var(--green)}
+.snb-icon{font-size:1.1rem;width:24px;text-align:center;flex-shrink:0}
+.sidebar-section{padding:8px 20px 4px;font-size:.65rem;color:var(--muted);text-transform:uppercase;letter-spacing:.8px;font-weight:700;margin-top:4px}
+.sidebar-footer{padding:12px 16px;border-top:1px solid var(--border)}
+/* ── Sync ── */
+.sync-dot{width:7px;height:7px;border-radius:50%;background:var(--muted);flex-shrink:0;transition:background .3s}
+.sync-dot.ok{background:var(--green)}.sync-dot.syncing{background:var(--amber);animation:pulse 1s infinite}
+.sync-dot.err{background:var(--red)}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+.user-avatar{width:28px;height:28px;border-radius:50%;object-fit:cover;border:2px solid var(--green)}
+.login-btn{padding:5px 12px;border-radius:8px;font-size:.78rem;font-weight:700;cursor:pointer;border:1px solid var(--green);background:rgba(34,197,94,.1);color:var(--green)}
+.login-btn:hover{background:rgba(34,197,94,.2)}
+</style>
+</head>
+<body>
+
+<!-- TOP BAR -->
+<div class="topbar">
+  <button class="hamburger" id="hamburger" onclick="toggleSidebar()">
+    <span></span><span></span><span></span>
+  </button>
+  <div class="topbar-brand">⚡ MyLife</div>
+  <div class="topbar-right">
+    <div class="sync-dot" id="sync-dot"></div>
+    <span id="sync-label" style="font-size:.7rem;color:var(--muted)">ออฟไลน์</span>
+    <img id="user-avatar" class="user-avatar" style="display:none" onclick="toggleSidebar()">
+    <button class="login-btn" id="auth-btn" onclick="handleAuth()">เข้าสู่ระบบ</button>
+  </div>
+</div>
+
+<!-- SIDEBAR OVERLAY -->
+<div class="sidebar-overlay" id="sidebar-overlay" onclick="closeSidebar()"></div>
+
+<!-- SIDEBAR -->
+<div class="sidebar" id="sidebar">
+  <div class="sidebar-head">
+    <div class="sidebar-brand">⚡ MyLife Dashboard</div>
+  </div>
+  <div class="sidebar-user" id="sidebar-user" style="display:none">
+    <img class="sidebar-avatar" id="sidebar-avatar">
+    <div style="flex:1;min-width:0">
+      <div class="sidebar-username" id="sidebar-username"></div>
+      <div style="font-size:.7rem;color:var(--muted)">Sync แล้ว ✓</div>
+    </div>
+    <button onclick="handleAuth()" style="background:none;border:none;color:var(--muted);cursor:pointer;font-size:.75rem">ออก</button>
+  </div>
+
+  <div class="sidebar-nav">
+    <button class="snb on" onclick="nav('dash')"><span class="snb-icon">🏠</span>Overview</button>
+
+    <div class="sidebar-section">Training</div>
+    <button class="snb" onclick="nav('routine')"><span class="snb-icon">📋</span>Routine</button>
+    <button class="snb" onclick="nav('workout')"><span class="snb-icon">🏋️</span>Workout Log</button>
+    <button class="snb" onclick="nav('pr')"><span class="snb-icon">🏆</span>Personal Records</button>
+
+    <div class="sidebar-section">Health & Body</div>
+    <button class="snb" onclick="nav('sleep')"><span class="snb-icon">😴</span>Sleep</button>
+    <button class="snb" onclick="nav('health')"><span class="snb-icon">📊</span>Health Metrics</button>
+    <button class="snb" onclick="nav('photo')"><span class="snb-icon">📸</span>Progress Photos</button>
+    <button class="snb" onclick="nav('water')"><span class="snb-icon">💧</span>Water</button>
+
+    <div class="sidebar-section">Nutrition</div>
+    <button class="snb" onclick="nav('nutrition')"><span class="snb-icon">🥗</span>Nutrition</button>
+    <button class="snb" onclick="nav('meals')"><span class="snb-icon">📅</span>Meal Planner</button>
+
+    <div class="sidebar-section">Lifestyle</div>
+    <button class="snb" onclick="nav('goals')"><span class="snb-icon">🎯</span>Goals</button>
+    <button class="snb" onclick="nav('todo')"><span class="snb-icon">✅</span>Todo & Habits</button>
+    <button class="snb" onclick="nav('journal')"><span class="snb-icon">📝</span>Journal</button>
+    <button class="snb" onclick="nav('remind')"><span class="snb-icon">🔔</span>Reminders</button>
+
+    <div class="sidebar-section">Settings</div>
+    <button class="snb" onclick="nav('sync')"><span class="snb-icon">☁️</span>Sync & Backup</button>
+  </div>
+
+  <div class="sidebar-footer" id="sidebar-login-footer">
+    <button class="login-btn" style="width:100%;justify-content:center" onclick="handleAuth()" id="sidebar-auth-btn">🔑 เข้าสู่ระบบด้วย Google</button>
+    <div style="font-size:.68rem;color:var(--muted);text-align:center;margin-top:6px">เพื่อ sync ข้อมูลทุกเครื่อง</div>
+  </div>
+</div>
+
+<main>
+
+<!-- ═══ DASHBOARD ═══ -->
+<div id="page-dash" class="page on">
+  <div class="sh" style="margin-bottom:18px">
+    <div><div class="st" id="dg">สวัสดี 👋</div><div style="font-size:.75rem;color:var(--muted);margin-top:2px" id="dd"></div></div>
+    <div style="text-align:right"><div style="font-size:.65rem;color:var(--muted)">Streak</div><div style="font-size:1.3rem;font-weight:800;color:var(--amber)" id="dstr">0🔥</div></div>
+  </div>
+  <div class="g4" style="margin-bottom:16px">
+    <div class="stat" style="--ac:var(--green)"><div class="sl">Volume วันนี้</div><div class="sv" id="d-vol">0</div><div class="ss">kg</div></div>
+    <div class="stat" style="--ac:var(--amber)"><div class="sl">Calories</div><div class="sv" id="d-cal">0</div><div class="ss">/ <span id="d-calg">2000</span> kcal</div></div>
+    <div class="stat" style="--ac:var(--purple)"><div class="sl">Sleep</div><div class="sv" id="d-sl">—</div><div class="ss">ชม. คืนล่าสุด</div></div>
+    <div class="stat" style="--ac:var(--blue)"><div class="sl">Todo</div><div class="sv" id="d-td">0/0</div><div class="ss">วันนี้</div></div>
+  </div>
+  <div class="g2">
+    <div class="card"><div class="ch"><span class="ct">Volume 7 วัน</span></div><div class="cb"><div class="bars" id="d-chart"></div></div></div>
+    <div class="card"><div class="ch"><span class="ct">Quick Actions</span></div><div class="cb" style="display:flex;flex-direction:column;gap:7px">
+      <button class="btn bg bfu" onclick="goto('routine')">📋 Start Routine Workout</button>
+      <button class="btn bgh bfu" onclick="goto('nutrition');setTimeout(openFoodModal,100)">🍽️ Log Food (AI)</button>
+      <button class="btn bgh bfu" onclick="goto('photo');setTimeout(()=>document.getElementById('photo-upload').click(),100)">📸 Add Progress Photo</button>
+      <button class="btn bgh bfu" onclick="goto('goals')">🎯 Goals</button>
+    </div></div>
+  </div>
+  <div class="card" style="margin-top:16px"><div class="ch"><span class="ct">Goals Progress</span><button class="btn bgh" style="padding:3px 9px;font-size:.72rem" onclick="goto('goals')">ดูทั้งหมด →</button></div><div id="d-goals"></div></div>
+  <div class="card" style="margin-top:14px"><div class="ch"><span class="ct">Activity Calendar (14 วัน)</span></div><div class="cb" style="display:flex;gap:5px;flex-wrap:wrap" id="d-cal-dots"></div></div>
+</div>
+
+<!-- ═══ ROUTINE ═══ -->
+<div id="page-routine" class="page">
+  <div class="sh"><div class="st">📋 Workout Routines</div><button class="btn bg" onclick="openRoutineModal()">+ สร้าง Routine</button></div>
+  <div class="g2" id="routine-list"></div>
+</div>
+
+<!-- ═══ WORKOUT LOG ═══ -->
+<div id="page-workout" class="page">
+  <div class="sh"><div class="st">🏋️ Workout Log</div></div>
+  <div class="g12">
+    <div style="display:flex;flex-direction:column;gap:14px">
+      <div class="card"><div class="ch"><span class="ct">Volume 7 วัน</span></div><div class="cb"><div class="bars" id="w-chart"></div></div></div>
+      <div class="card"><div class="ch"><span class="ct">ประวัติ</span><span style="font-size:.72rem;color:var(--muted)" id="w-cnt"></span></div><div id="w-list"></div></div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:14px">
+      <div class="card"><div class="ch"><span class="ct">บันทึกด่วน</span></div><div class="cb">
+        <form onsubmit="addWkt(event)">
+          <div class="fg"><label>ท่า</label><select id="qEx" onchange="chkCustEx()">
+            <option value="">— เลือก —</option>
+            <optgroup label="Chest"><option>Bench Press</option><option>Incline Press</option><option>Chest Fly</option><option>Push Up</option></optgroup>
+            <optgroup label="Back"><option>Lat Pulldown</option><option>Bent-over Row</option><option>Deadlift</option><option>Pull Up</option><option>Cable Row</option></optgroup>
+            <optgroup label="Legs"><option>Squat</option><option>Leg Press</option><option>Romanian Deadlift</option><option>Leg Curl</option><option>Calf Raise</option></optgroup>
+            <optgroup label="Shoulders"><option>Overhead Press</option><option>Lateral Raise</option><option>Face Pull</option></optgroup>
+            <optgroup label="Arms"><option>Bicep Curl</option><option>Hammer Curl</option><option>Tricep Pushdown</option><option>Skull Crusher</option></optgroup>
+            <option value="__c">✏️ ใส่เอง</option>
+          </select></div>
+          <div class="fg" id="custExW" style="display:none"><label>ชื่อท่า</label><input id="qExC" placeholder="ชื่อท่า..."></div>
+          <div class="r3">
+            <div class="fg"><label>Sets</label><input type="number" id="qS" value="3" min="1" max="20"></div>
+            <div class="fg"><label>Reps</label><input type="number" id="qR" value="10" min="1" max="100"></div>
+            <div class="fg"><label>kg</label><input type="number" id="qK" value="20" min="0" step=".5"></div>
+          </div>
+          <div class="fg"><label>หมายเหตุ</label><input id="qN" placeholder="optional..."></div>
+          <button type="submit" class="btn bg bfu">บันทึก</button>
+        </form>
+      </div></div>
+      <div class="card"><div class="ch"><span class="ct">Muscle Groups (7 วัน)</span></div><div class="cb" id="w-muscles"></div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ SLEEP ═══ -->
+<div id="page-sleep" class="page">
+  <div class="sh"><div class="st">😴 Sleep Tracker</div></div>
+  <div class="g12">
+    <div style="display:flex;flex-direction:column;gap:14px">
+      <div class="card"><div class="ch"><span class="ct">ชั่วโมงนอน 14 คืน</span></div><div class="cb"><div class="bars" id="sl-chart"></div></div></div>
+      <div class="g3">
+        <div class="stat" style="--ac:var(--purple)"><div class="sl">เฉลี่ย</div><div class="sv" id="sl-avg">—</div><div class="ss">ชม./คืน</div></div>
+        <div class="stat" style="--ac:var(--blue)"><div class="sl">คืนล่าสุด</div><div class="sv" id="sl-last">—</div><div class="ss">ชั่วโมง</div></div>
+        <div class="stat" style="--ac:var(--green)"><div class="sl">คุณภาพ</div><div class="sv" id="sl-qual">—</div><div class="ss">/ 5</div></div>
+      </div>
+      <div class="card"><div class="ch"><span class="ct">ประวัติ</span></div><div id="sl-list"></div></div>
+    </div>
+    <div>
+      <div class="card"><div class="ch"><span class="ct">บันทึกการนอน</span></div><div class="cb">
+        <form onsubmit="addSleep(event)">
+          <div class="fg"><label>วันที่</label><input type="date" id="s-date"></div>
+          <div class="r2">
+            <div class="fg"><label>เข้านอน</label><input type="time" id="s-bed" value="23:00"></div>
+            <div class="fg"><label>ตื่นนอน</label><input type="time" id="s-wake" value="07:00"></div>
+          </div>
+          <div class="fg"><label>คุณภาพ (1-5 ⭐)</label>
+            <div style="display:flex;gap:6px" id="sqstars">
+              <span class="star on" onclick="setSQ(1)" style="font-size:1.4rem;cursor:pointer;color:var(--amber)">★</span>
+              <span class="star on" onclick="setSQ(2)" style="font-size:1.4rem;cursor:pointer;color:var(--amber)">★</span>
+              <span class="star on" onclick="setSQ(3)" style="font-size:1.4rem;cursor:pointer;color:var(--amber)">★</span>
+              <span class="star" onclick="setSQ(4)" style="font-size:1.4rem;cursor:pointer;color:var(--border)">★</span>
+              <span class="star" onclick="setSQ(5)" style="font-size:1.4rem;cursor:pointer;color:var(--border)">★</span>
+            </div>
+          </div>
+          <!-- SLEEP STAGES -->
+          <div style="border:1px solid var(--border);border-radius:10px;padding:12px;margin-bottom:8px">
+            <div style="font-size:.72rem;font-weight:700;color:var(--purple);text-transform:uppercase;letter-spacing:.6px;margin-bottom:8px">Sleep Stages (นาที — ดูจาก iPhone Health)</div>
+            <div class="r2" style="gap:6px;margin-bottom:6px">
+              <div class="fg"><label style="color:#94a3b8">😴 Awake (นาที)</label><input type="number" id="s-awake" placeholder="0" min="0" max="120" oninput="updateStagesPct()"></div>
+              <div class="fg"><label style="color:#818cf8">💜 REM (นาที)</label><input type="number" id="s-rem" placeholder="0" min="0" max="200" oninput="updateStagesPct()"></div>
+            </div>
+            <div class="r2" style="gap:6px;margin-bottom:8px">
+              <div class="fg"><label style="color:#38bdf8">🔵 Core (นาที)</label><input type="number" id="s-core" placeholder="0" min="0" max="400" oninput="updateStagesPct()"></div>
+              <div class="fg"><label style="color:#34d399">🟢 Deep (นาที)</label><input type="number" id="s-deep" placeholder="0" min="0" max="200" oninput="updateStagesPct()"></div>
+            </div>
+            <div id="stages-preview" style="display:none">
+              <div id="stages-bar" style="height:14px;border-radius:99px;overflow:hidden;display:flex;margin-bottom:5px"></div>
+              <div id="stages-legend" style="display:flex;flex-wrap:wrap;gap:8px;font-size:.68rem"></div>
+            </div>
+          </div>
+          <!-- HEART RATE & RESPIRATORY -->
+          <div style="border:1px solid var(--border);border-radius:10px;padding:12px;margin-bottom:8px">
+            <div style="font-size:.72rem;font-weight:700;color:var(--red);text-transform:uppercase;letter-spacing:.6px;margin-bottom:8px">Vitals ขณะนอน</div>
+            <div class="r2" style="gap:6px;margin-bottom:6px">
+              <div class="fg"><label>❤️ HR ต่ำสุด (BPM)</label><input type="number" id="s-hr-low" placeholder="55" min="30" max="120"></div>
+              <div class="fg"><label>❤️ HR สูงสุด (BPM)</label><input type="number" id="s-hr-high" placeholder="78" min="30" max="180"></div>
+            </div>
+            <div class="r2" style="gap:6px">
+              <div class="fg"><label>🫁 Resp. ต่ำสุด (br/min)</label><input type="number" id="s-resp-low" placeholder="14.5" min="8" max="30" step="0.1"></div>
+              <div class="fg"><label>🫁 Resp. สูงสุด (br/min)</label><input type="number" id="s-resp-high" placeholder="22" min="8" max="30" step="0.1"></div>
+            </div>
+          </div>
+          <div class="fg"><label>หมายเหตุ</label><input id="s-note" placeholder="รู้สึกอย่างไร..."></div>
+          <button type="submit" class="btn bg bfu">บันทึก</button>
+        </form>
+      </div></div>
+      <div class="card" style="margin-top:12px"><div class="ch"><span class="ct">💡 Tips</span></div><div class="cb" style="display:flex;flex-direction:column;gap:6px;font-size:.78rem;color:var(--muted2)">
+        <div>🌙 เข้านอนตรงเวลาทุกวัน</div><div>📵 วางโทรศัพท์ก่อนนอน 30 นาที</div>
+        <div>🌡️ อุณหภูมิ 18-22°C ช่วยนอนหลับดี</div><div>☕ หลีกเลี่ยงคาเฟอีนหลัง 14:00</div>
+        <div>🎯 เป้าหมาย 7-9 ชม./คืน</div>
+      </div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ NUTRITION ═══ -->
+<div id="page-nutrition" class="page">
+  <div class="sh"><div class="st">🥗 Nutrition & Calories</div></div>
+  <div class="g4" style="margin-bottom:16px">
+    <div class="stat" style="--ac:var(--amber)"><div class="sl">Calories วันนี้</div><div class="sv" id="n-cal">0</div><div class="ss">/ <span id="n-goal">2000</span> kcal</div></div>
+    <div class="stat" style="--ac:var(--blue)"><div class="sl">Protein</div><div class="sv" id="n-pro">0</div><div class="ss">g วันนี้</div></div>
+    <div class="stat" style="--ac:var(--green)"><div class="sl">Carbs</div><div class="sv" id="n-carb">0</div><div class="ss">g วันนี้</div></div>
+    <div class="stat" style="--ac:var(--red)"><div class="sl">Fat</div><div class="sv" id="n-fat">0</div><div class="ss">g วันนี้</div></div>
+  </div>
+  <div class="g12">
+    <div style="display:flex;flex-direction:column;gap:14px">
+      <div class="g2">
+        <div class="card"><div class="ch"><span class="ct">Calories วันนี้</span></div><div class="cb" style="display:flex;flex-direction:column;align-items:center;gap:10px">
+          <div id="calRing" style="width:130px;height:130px;border-radius:50%;background:conic-gradient(var(--green) 0%,var(--card2) 0%);display:flex;align-items:center;justify-content:center">
+            <div style="width:90px;height:90px;border-radius:50%;background:var(--card);display:flex;flex-direction:column;align-items:center;justify-content:center">
+              <div style="font-size:1.4rem;font-weight:800;color:var(--green)" id="crNum">0</div>
+              <div style="font-size:.6rem;color:var(--muted)">kcal</div>
+            </div>
+          </div>
+          <div style="font-size:.75rem;color:var(--muted)">เป้า <span id="crGoal" style="color:var(--text);font-weight:700">2000</span> kcal</div>
+        </div></div>
+        <div class="card"><div class="ch"><span class="ct">Macros</span></div><div class="cb" style="display:flex;flex-direction:column;gap:12px">
+          <div><div style="display:flex;justify-content:space-between;font-size:.75rem;margin-bottom:3px"><span style="color:var(--blue)">Protein</span><span id="np2">0/150g</span></div><div class="pw"><div class="pf" style="background:var(--blue)" id="pb-p"></div></div></div>
+          <div><div style="display:flex;justify-content:space-between;font-size:.75rem;margin-bottom:3px"><span style="color:var(--green)">Carbs</span><span id="nc2">0/250g</span></div><div class="pw"><div class="pf" style="background:var(--green)" id="pb-c"></div></div></div>
+          <div><div style="display:flex;justify-content:space-between;font-size:.75rem;margin-bottom:3px"><span style="color:var(--red)">Fat</span><span id="nf2">0/65g</span></div><div class="pw"><div class="pf" style="background:var(--red)" id="pb-f"></div></div></div>
+          <div><div style="display:flex;justify-content:space-between;font-size:.75rem;margin-bottom:3px"><span style="color:var(--amber)">เหลือ</span><span id="n-rem">2000 kcal</span></div><div class="pw"><div class="pf" style="background:var(--amber)" id="pb-cal"></div></div></div>
+        </div></div>
+      </div>
+      <div class="card"><div class="ch"><span class="ct">บันทึกอาหารวันนี้</span><button class="btn bg" style="padding:5px 10px;font-size:.75rem" onclick="openFoodModal()">+ เพิ่ม</button></div><div id="n-list"></div></div>
+      <div class="card"><div class="ch"><span class="ct">Calories 7 วัน</span></div><div class="cb"><div class="bars" id="n-chart"></div></div></div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:14px">
+      <!-- AI FOOD -->
+      <div class="card"><div class="ch"><span class="ct">🤖 AI คำนวณ Calories</span><div style="display:flex;gap:6px"><button class="btn bgh" style="padding:3px 9px;font-size:.72rem" onclick="switchAIMode('text')" id="ai-mode-text">✏️ ข้อความ</button><button class="btn bg" style="padding:3px 9px;font-size:.72rem" onclick="switchAIMode('photo')" id="ai-mode-photo">📷 ถ่ายรูป</button></div></div><div class="cb">
+        <!-- TEXT MODE -->
+        <div id="ai-text-mode">
+          <div style="font-size:.75rem;color:var(--muted);margin-bottom:8px">พิมพ์ชื่ออาหารและปริมาณ เช่น "อกไก่ 150g" หรือ "ข้าวผัด 1 จาน"</div>
+          <div id="ai-chat" style="max-height:200px;overflow-y:auto;margin-bottom:8px"></div>
+          <div style="display:flex;gap:6px">
+            <input id="ai-input" placeholder="เช่น อกไก่ 150g..." onkeydown="if(event.key==='Enter')askAI()">
+            <button class="btn bg" onclick="askAI()" id="ai-btn">คำนวณ</button>
+          </div>
+        </div>
+        <!-- PHOTO MODE -->
+        <div id="ai-photo-mode" style="display:none">
+          <div style="font-size:.75rem;color:var(--muted);margin-bottom:10px">📸 ถ่ายรูปอาหารแล้วให้ AI วิเคราะห์ calories</div>
+          <div style="display:flex;flex-direction:column;gap:8px;align-items:center">
+            <label style="width:100%;cursor:pointer">
+              <div id="photo-drop" style="border:2px dashed var(--border);border-radius:12px;padding:20px;text-align:center;transition:border-color .2s;cursor:pointer" ondragover="event.preventDefault();this.style.borderColor='var(--green)'" ondragleave="this.style.borderColor='var(--border)'" ondrop="handlePhotoDrop(event)">
+                <div style="font-size:2.5rem;margin-bottom:6px">📷</div>
+                <div style="font-weight:700;font-size:.85rem">คลิกเพื่อเลือกรูป / ลากวาง</div>
+                <div style="font-size:.72rem;color:var(--muted);margin-top:4px">รองรับ JPG, PNG — แนะนำถ่ายจากด้านบน มีช้อนหรือมือเป็น reference</div>
+              </div>
+              <input type="file" id="food-photo-input" accept="image/*" capture="environment" style="display:none" onchange="handleFoodPhoto(this)">
+            </label>
+            <img id="food-photo-preview" style="display:none;max-width:100%;max-height:220px;border-radius:10px;border:2px solid var(--border);object-fit:cover">
+            <div id="photo-ai-result" style="width:100%"></div>
+            <div style="display:flex;gap:8px;width:100%">
+              <button class="btn bg" style="flex:1;display:none" onclick="analyzePhoto()" id="analyze-btn">🤖 วิเคราะห์ด้วย AI</button>
+              <button class="btn bgh" onclick="clearFoodPhoto()" id="clear-photo-btn" style="display:none">🗑️ ล้าง</button>
+            </div>
+          </div>
+        </div>
+        <div style="margin-top:12px;border:1px solid var(--green);border-radius:10px;padding:12px;background:rgba(34,197,94,.04)">
+          <div class="fg"><label>🟦 Gemini API Key <span style="color:var(--green);font-weight:700">(ฟรี)</span> — aistudio.google.com</label>
+            <input id="gemini-key" type="password" placeholder="AIza..." oninput="saveGeminiKey()">
+          </div>
+          <div style="font-size:.68rem;color:var(--green);margin-top:4px">✅ ฟรี 1,500 ครั้ง/วัน · ไม่ต้องใส่บัตรเครดิต · key เก็บใน browser เท่านั้น</div>
+        </div>
+      </div></div>
+      <!-- FOOD SEARCH -->
+      <div class="card"><div class="ch"><span class="ct">🔍 ค้นหา / สแกน Barcode</span><button class="btn bg" style="padding:4px 10px;font-size:.75rem" onclick="openBarcodeScanner()">📷 สแกน</button></div><div class="cb">
+        <div style="display:flex;gap:6px;margin-bottom:8px">
+          <input id="fs-input" placeholder="ค้นชื่ออาหาร หรือพิมพ์ barcode number..." onkeydown="if(event.key==='Enter')searchFoodOrBarcode()">
+          <button class="btn bbl" onclick="searchFoodOrBarcode()">ค้นหา</button>
+        </div>
+        <div id="fs-results"></div>
+      </div></div>
+
+      <!-- BARCODE SCANNER OVERLAY -->
+      <div id="barcode-overlay" style="display:none;position:fixed;inset:0;background:#000;z-index:1000;flex-direction:column">
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:16px;background:rgba(0,0,0,.7)">
+          <div style="color:#fff;font-weight:700;font-size:1rem">📷 สแกน Barcode</div>
+          <button onclick="closeBarcodeScanner()" style="background:rgba(255,255,255,.15);border:none;color:#fff;padding:8px 14px;border-radius:8px;font-size:.85rem;cursor:pointer">✕ ปิด</button>
+        </div>
+        <div style="flex:1;position:relative;display:flex;align-items:center;justify-content:center">
+          <div id="barcode-reader" style="width:100%;max-width:500px"></div>
+          <!-- viewfinder overlay -->
+          <div style="position:absolute;pointer-events:none;border:2px solid var(--green);width:260px;height:120px;border-radius:8px;box-shadow:0 0 0 9999px rgba(0,0,0,.5)"></div>
+        </div>
+        <div style="padding:16px;text-align:center">
+          <div id="barcode-status" style="color:#94a3b8;font-size:.85rem;margin-bottom:10px">จ่อกล้องไปที่ barcode บนฉลากสินค้า</div>
+          <div style="display:flex;gap:8px;justify-content:center">
+            <input id="barcode-manual" placeholder="หรือพิมพ์ barcode number..." style="width:220px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);color:#fff;padding:8px 12px;border-radius:8px;font-size:.85rem" onkeydown="if(event.key==='Enter')lookupManualBarcode()">
+            <button onclick="lookupManualBarcode()" style="background:var(--green);border:none;color:#000;padding:8px 14px;border-radius:8px;font-weight:700;cursor:pointer">ค้นหา</button>
+          </div>
+        </div>
+      </div>
+      <!-- TDEE -->
+      <div class="card"><div class="ch"><span class="ct">🔢 TDEE Calculator</span></div><div class="cb">
+        <div class="r2">
+          <div class="fg"><label>เพศ</label><select id="t-sex"><option value="m">ชาย</option><option value="f">หญิง</option></select></div>
+          <div class="fg"><label>อายุ</label><input type="number" id="t-age" value="25" min="10" max="80"></div>
+        </div>
+        <div class="r2">
+          <div class="fg"><label>ส่วนสูง (cm)</label><input type="number" id="t-h" value="175"></div>
+          <div class="fg"><label>น้ำหนัก (kg)</label><input type="number" id="t-w" value="70"></div>
+        </div>
+        <div class="fg"><label>Activity Level</label><select id="t-act">
+          <option value="1.2">นั่งทำงาน</option><option value="1.375">เบา 1-3วัน/สัปดาห์</option>
+          <option value="1.55" selected>ปานกลาง 3-5วัน</option><option value="1.725">หนัก 6-7วัน</option><option value="1.9">หนักมาก</option>
+        </select></div>
+        <div class="fg"><label>เป้าหมาย</label><select id="t-goal">
+          <option value="-500">ลดน้ำหนัก (-500 kcal)</option><option value="0" selected>รักษาน้ำหนัก</option>
+          <option value="300">เพิ่มกล้าม (+300)</option><option value="500">Bulk (+500)</option>
+        </select></div>
+        <button class="btn bg bfu" onclick="calcTDEE()">คำนวณ</button>
+        <div id="tdee-res" style="display:none;margin-top:10px;background:var(--card2);border-radius:8px;padding:12px">
+          <div style="font-size:.68rem;color:var(--muted);text-transform:uppercase;letter-spacing:.5px">Calorie เป้าหมาย</div>
+          <div style="font-size:1.8rem;font-weight:800;color:var(--amber)" id="tdee-num">0</div>
+          <div style="font-size:.73rem;color:var(--muted);margin-top:3px" id="tdee-mac"></div>
+          <button class="btn bgh bfu" style="margin-top:8px" onclick="applyTDEE()">ตั้งเป็นเป้าของฉัน</button>
+        </div>
+      </div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ HEALTH ═══ -->
+<div id="page-health" class="page">
+  <div class="sh"><div class="st">📊 Health Metrics</div></div>
+  <div class="g12">
+    <div style="display:flex;flex-direction:column;gap:14px">
+      <div class="g2">
+        <div class="card"><div class="ch"><span class="ct">น้ำหนัก (kg)</span></div><div class="cb"><div class="bars" id="h-wt-chart"></div></div></div>
+        <div class="card"><div class="ch"><span class="ct">BMI</span></div><div class="cb" id="h-bmi"></div></div>
+      </div>
+      <div class="card"><div class="ch"><span class="ct">ประวัติ</span></div>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr auto;gap:6px;padding:10px 16px;font-size:.68rem;color:var(--muted);text-transform:uppercase">
+          <div>วันที่</div><div>น้ำหนัก</div><div>Body Fat</div><div></div>
+        </div>
+        <div id="h-list"></div>
+      </div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:14px">
+      <div class="card"><div class="ch"><span class="ct">บันทึก Metric</span></div><div class="cb">
+        <form onsubmit="addMetric(event)">
+          <div class="fg"><label>วันที่</label><input type="date" id="h-date"></div>
+          <div class="r2"><div class="fg"><label>น้ำหนัก (kg)</label><input type="number" id="h-wt" step=".1" placeholder="70.5"></div>
+          <div class="fg"><label>Body Fat (%)</label><input type="number" id="h-bf" step=".1" placeholder="15"></div></div>
+          <div class="r2"><div class="fg"><label>Waist (cm)</label><input type="number" id="h-wa" step=".5" placeholder="80"></div>
+          <div class="fg"><label>Arm (cm)</label><input type="number" id="h-arm" step=".5" placeholder="35"></div></div>
+          <div class="r2"><div class="fg"><label>Heart Rate</label><input type="number" id="h-hr" placeholder="60"></div>
+          <div class="fg"><label>Blood Pressure</label><input id="h-bp" placeholder="120/80"></div></div>
+          <button type="submit" class="btn bg bfu">บันทึก</button>
+        </form>
+      </div></div>
+      <div class="card"><div class="ch"><span class="ct">BMI Reference</span></div><div class="cb" style="display:flex;flex-direction:column;gap:5px;font-size:.78rem">
+        <div style="display:flex;justify-content:space-between"><span style="color:var(--blue)">ต่ำกว่าปกติ</span><span>< 18.5</span></div>
+        <div style="display:flex;justify-content:space-between"><span style="color:var(--green)">ปกติ</span><span>18.5–24.9</span></div>
+        <div style="display:flex;justify-content:space-between"><span style="color:var(--amber)">น้ำหนักเกิน</span><span>25–29.9</span></div>
+        <div style="display:flex;justify-content:space-between"><span style="color:var(--red)">อ้วน</span><span>≥ 30</span></div>
+      </div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ PHOTO PROGRESS ═══ -->
+<div id="page-photo" class="page">
+  <div class="sh"><div class="st">📸 Progress Photos</div>
+    <label class="btn bg" style="cursor:pointer">+ เพิ่มรูป<input type="file" id="photo-upload" accept="image/*" multiple style="display:none" onchange="addPhotos(this)"></label>
+  </div>
+  <div class="card" style="margin-bottom:14px"><div class="ch"><span class="ct">เปรียบเทียบ Before / After</span></div><div class="cb">
+    <div class="r2">
+      <div><div style="font-size:.72rem;color:var(--muted);margin-bottom:6px">Before</div><select id="cmp-a" style="margin-bottom:6px"></select><div id="cmp-img-a" style="height:200px;background:var(--card2);border-radius:8px;overflow:hidden;display:flex;align-items:center;justify-content:center;color:var(--muted)">เลือกรูป</div></div>
+      <div><div style="font-size:.72rem;color:var(--muted);margin-bottom:6px">After</div><select id="cmp-b" style="margin-bottom:6px"></select><div id="cmp-img-b" style="height:200px;background:var(--card2);border-radius:8px;overflow:hidden;display:flex;align-items:center;justify-content:center;color:var(--muted)">เลือกรูป</div></div>
+    </div>
+    <button class="btn bgh bfu" onclick="comparePhotos()">เปรียบเทียบ</button>
+  </div></div>
+  <div class="card"><div class="ch"><span class="ct">ทุกรูป (เรียงตามวันที่)</span><span style="font-size:.72rem;color:var(--muted)" id="photo-count"></span></div>
+    <div class="cb"><div class="photo-grid" id="photo-grid"></div></div>
+  </div>
+</div>
+
+<!-- ═══ GOALS ═══ -->
+<div id="page-goals" class="page">
+  <div class="sh"><div class="st">🎯 Goals</div><button class="btn bg" onclick="openGoalModal()">+ เพิ่ม Goal</button></div>
+  <div class="g2" style="margin-bottom:14px">
+    <div class="stat" style="--ac:var(--green)"><div class="sl">Active</div><div class="sv" id="g-act">0</div></div>
+    <div class="stat" style="--ac:var(--amber)"><div class="sl">Completed</div><div class="sv" id="g-done">0</div></div>
+  </div>
+  <div style="display:flex;flex-direction:column;gap:12px">
+    <div class="card"><div class="ch"><span class="ct">💪 Fitness</span></div><div id="g-fit"></div></div>
+    <div class="card"><div class="ch"><span class="ct">🧠 Personal</span></div><div id="g-per"></div></div>
+    <div class="card"><div class="ch"><span class="ct">💰 Other</span></div><div id="g-oth"></div></div>
+  </div>
+</div>
+
+<!-- ═══ TODO ═══ -->
+<div id="page-todo" class="page">
+  <div class="sh"><div class="st">✅ Todo & Habits</div></div>
+  <div class="g4" style="margin-bottom:16px">
+    <div class="stat" style="--ac:var(--green)"><div class="sl">วันนี้</div><div class="sv" id="t-tot">0</div></div>
+    <div class="stat" style="--ac:var(--blue)"><div class="sl">สำเร็จ</div><div class="sv" id="t-dn">0</div></div>
+    <div class="stat" style="--ac:var(--amber)"><div class="sl">เหลือ</div><div class="sv" id="t-rem">0</div></div>
+    <div class="stat" style="--ac:var(--purple)"><div class="sl">%</div><div class="sv" id="t-pct">0%</div></div>
+  </div>
+  <div class="g12">
+    <div style="display:flex;flex-direction:column;gap:14px">
+      <div class="card"><div class="ch"><span class="ct">เพิ่ม Task</span></div><div class="cb">
+        <form onsubmit="addTodo(event)" style="display:flex;gap:6px">
+          <input id="ti" placeholder="Task ใหม่..." style="flex:1">
+          <select id="tp" style="width:110px"><option value="high">🔴 High</option><option value="med" selected>🟡 Med</option><option value="low">🟢 Low</option></select>
+          <button type="submit" class="btn bg">เพิ่ม</button>
+        </form>
+      </div></div>
+      <div class="card"><div class="ch"><span class="ct">Tasks</span><button class="btn brd" style="padding:3px 8px;font-size:.72rem" onclick="clearDone()">ลบ Done</button></div><div id="todo-list"></div></div>
+    </div>
+    <div>
+      <div class="card"><div class="ch"><span class="ct">🔁 Daily Habits</span><button class="btn bgh" style="padding:3px 8px;font-size:.72rem" onclick="openHabitModal()">+ เพิ่ม</button></div><div id="habit-list"></div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ WATER ═══ -->
+<div id="page-water" class="page">
+  <div class="sh"><div class="st">💧 Water Tracker</div></div>
+  <div class="g4" style="margin-bottom:16px">
+    <div class="stat" style="--ac:var(--blue)"><div class="sl">วันนี้</div><div class="sv" id="w-ml">0</div><div class="ss">ml</div></div>
+    <div class="stat" style="--ac:var(--teal)"><div class="sl">เป้าหมาย</div><div class="sv" id="w-goal-disp">2000</div><div class="ss">ml</div></div>
+    <div class="stat" style="--ac:var(--green)"><div class="sl">%</div><div class="sv" id="w-pct">0%</div></div>
+    <div class="stat" style="--ac:var(--purple)"><div class="sl">แก้ว</div><div class="sv" id="w-cups">0</div><div class="ss">แก้ว (250ml)</div></div>
+  </div>
+  <div class="g2">
+    <div style="display:flex;flex-direction:column;gap:14px">
+      <!-- water bottle visual -->
+      <div class="card"><div class="ch"><span class="ct">ความคืบหน้าวันนี้</span></div><div class="cb" style="display:flex;flex-direction:column;align-items:center;gap:12px">
+        <div style="width:80px;height:160px;border:3px solid var(--blue);border-radius:8px 8px 16px 16px;position:relative;overflow:hidden;background:var(--card2)">
+          <div id="w-bottle-fill" style="position:absolute;bottom:0;left:0;right:0;background:rgba(59,130,246,.35);transition:height .5s;height:0%"></div>
+          <div id="w-bottle-pct" style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:.9rem;color:var(--blue)">0%</div>
+        </div>
+        <div style="font-size:.8rem;color:var(--muted)"><span id="w-ml2" style="color:var(--blue);font-weight:700">0</span> / <span id="w-goal2">2000</span> ml</div>
+      </div></div>
+      <div class="card"><div class="ch"><span class="ct">เพิ่มน้ำ</span></div><div class="cb">
+        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:10px">
+          <button class="btn bbl" onclick="addWater(100)" style="flex-direction:column;padding:10px 4px;font-size:.75rem"><span style="font-size:1rem">💧</span>100ml</button>
+          <button class="btn bbl" onclick="addWater(150)" style="flex-direction:column;padding:10px 4px;font-size:.75rem"><span style="font-size:1rem">💧</span>150ml</button>
+          <button class="btn bbl" onclick="addWater(250)" style="flex-direction:column;padding:10px 4px;font-size:.75rem"><span style="font-size:1rem">🥤</span>250ml</button>
+          <button class="btn bbl" onclick="addWater(500)" style="flex-direction:column;padding:10px 4px;font-size:.75rem"><span style="font-size:1rem">🍶</span>500ml</button>
+        </div>
+        <div style="display:flex;gap:6px">
+          <input type="number" id="w-custom" placeholder="ปริมาณ (ml)..." min="1" max="2000">
+          <button class="btn bg" onclick="addWater(+document.getElementById('w-custom').value||0)">เพิ่ม</button>
+        </div>
+        <div class="fg" style="margin-top:10px"><label>เป้าหมายต่อวัน (ml)</label>
+          <div style="display:flex;gap:6px"><input type="number" id="w-goal-input" value="2000" min="500" max="5000"><button class="btn bgh" onclick="setWaterGoal()">ตั้ง</button></div>
+        </div>
+      </div></div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:14px">
+      <div class="card"><div class="ch"><span class="ct">Water 7 วัน</span></div><div class="cb"><div class="bars" id="wt-chart"></div></div></div>
+      <div class="card"><div class="ch"><span class="ct">บันทึกวันนี้</span><button class="btn brd" style="padding:3px 8px;font-size:.72rem" onclick="clearWaterToday()">รีเซ็ต</button></div><div id="w-log"></div></div>
+      <div class="card"><div class="ch"><span class="ct">💡 เคล็ดลับ</span></div><div class="cb" style="display:flex;flex-direction:column;gap:6px;font-size:.78rem;color:var(--muted2)">
+        <div>🌅 ตื่นนอนดื่มน้ำ 500ml ทันที</div>
+        <div>🏋️ ออกกำลังกาย 1 ชม. = น้ำเพิ่ม 500-750ml</div>
+        <div>☀️ อากาศร้อน เพิ่มน้ำ 20%</div>
+        <div>🎯 เป้าหมายทั่วไป: น้ำหนัก × 30-35 ml</div>
+      </div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ JOURNAL ═══ -->
+<div id="page-journal" class="page">
+  <div class="sh"><div class="st">📝 Daily Journal</div></div>
+  <div class="g12">
+    <div style="display:flex;flex-direction:column;gap:14px">
+      <div class="g3">
+        <div class="stat" style="--ac:var(--green)"><div class="sl">Mood เฉลี่ย</div><div class="sv" id="j-mood-avg">—</div><div class="ss">/5</div></div>
+        <div class="stat" style="--ac:var(--blue)"><div class="sl">Energy เฉลี่ย</div><div class="sv" id="j-energy-avg">—</div><div class="ss">/5</div></div>
+        <div class="stat" style="--ac:var(--purple)"><div class="sl">บันทึกทั้งหมด</div><div class="sv" id="j-count">0</div><div class="ss">วัน</div></div>
+      </div>
+      <div class="card"><div class="ch"><span class="ct">Mood 14 วัน</span></div><div class="cb"><div class="bars" id="j-chart"></div></div></div>
+      <div class="card"><div class="ch"><span class="ct">ประวัติ Journal</span></div><div id="j-list"></div></div>
+    </div>
+    <div>
+      <div class="card"><div class="ch"><span class="ct">บันทึกวันนี้</span></div><div class="cb">
+        <form onsubmit="saveJournal(event)">
+          <div class="fg"><label>Mood วันนี้ 😊</label>
+            <div style="display:flex;gap:8px" id="mood-btns">
+              <button type="button" onclick="setMood(1)" style="flex:1;padding:8px;border-radius:8px;border:2px solid var(--border);background:var(--card2);font-size:1.1rem;cursor:pointer" id="mb1">😞</button>
+              <button type="button" onclick="setMood(2)" style="flex:1;padding:8px;border-radius:8px;border:2px solid var(--border);background:var(--card2);font-size:1.1rem;cursor:pointer" id="mb2">😐</button>
+              <button type="button" onclick="setMood(3)" style="flex:1;padding:8px;border-radius:8px;border:2px solid var(--border);background:var(--card2);font-size:1.1rem;cursor:pointer" id="mb3">🙂</button>
+              <button type="button" onclick="setMood(4)" style="flex:1;padding:8px;border-radius:8px;border:2px solid var(--border);background:var(--card2);font-size:1.1rem;cursor:pointer" id="mb4">😄</button>
+              <button type="button" onclick="setMood(5)" style="flex:1;padding:8px;border-radius:8px;border:2px solid var(--border);background:var(--card2);font-size:1.1rem;cursor:pointer" id="mb5">🤩</button>
+            </div>
+          </div>
+          <div class="fg"><label>Energy Level ⚡</label>
+            <input type="range" id="j-energy" min="1" max="5" value="3" style="background:none;border:none;padding:4px 0" oninput="document.getElementById('j-ev').textContent=this.value">
+            <div style="display:flex;justify-content:space-between;font-size:.72rem;color:var(--muted)"><span>ล้า</span><span id="j-ev" style="color:var(--amber);font-weight:700">3</span><span>พลัง</span></div>
+          </div>
+          <div class="fg"><label>Stress Level 😤</label>
+            <input type="range" id="j-stress" min="1" max="5" value="2" style="background:none;border:none;padding:4px 0" oninput="document.getElementById('j-sv').textContent=this.value">
+            <div style="display:flex;justify-content:space-between;font-size:.72rem;color:var(--muted)"><span>ผ่อนคลาย</span><span id="j-sv" style="color:var(--red);font-weight:700">2</span><span>เครียดมาก</span></div>
+          </div>
+          <div class="fg"><label>บันทึกประจำวัน</label><textarea id="j-note" placeholder="วันนี้เป็นอย่างไรบ้าง? สิ่งที่ทำดี? สิ่งที่ต้องปรับปรุง?"></textarea></div>
+          <div class="fg"><label>Wins วันนี้ 🏆</label><input id="j-win" placeholder="สิ่งที่ดีที่สุดวันนี้..."></div>
+          <button type="submit" class="btn bg bfu">บันทึก Journal</button>
+        </form>
+      </div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ PERSONAL RECORDS ═══ -->
+<div id="page-pr" class="page">
+  <div class="sh"><div class="st">🏆 Personal Records</div><button class="btn bgh" onclick="renderPRs()">🔄 รีเฟรช</button></div>
+  <div style="font-size:.8rem;color:var(--muted);margin-bottom:14px">คำนวณจากประวัติ workout ทั้งหมดโดยอัตโนมัติ</div>
+  <div class="g2">
+    <div class="card"><div class="ch"><span class="ct">💪 Strength PRs (Max Weight)</span></div><div id="pr-strength"></div></div>
+    <div class="card"><div class="ch"><span class="ct">📦 Volume PRs (Max Single Session)</span></div><div id="pr-volume"></div></div>
+  </div>
+  <div class="card" style="margin-top:14px"><div class="ch"><span class="ct">📈 Progress Tracker — เลือกท่า</span></div><div class="cb">
+    <div style="display:flex;gap:8px;margin-bottom:12px">
+      <select id="pr-ex-select" style="flex:1" onchange="renderPRChart()">
+        <option value="">— เลือกท่าออกกำลังกาย —</option>
+      </select>
+    </div>
+    <div class="bars" id="pr-chart" style="height:150px"></div>
+  </div></div>
+
+  <!-- Weekly Summary -->
+  <div class="card" style="margin-top:14px"><div class="ch"><span class="ct">📊 Weekly Summary</span></div><div class="cb">
+    <div class="g4" style="margin-bottom:12px">
+      <div class="stat" style="--ac:var(--green)"><div class="sl">Volume สัปดาห์นี้</div><div class="sv" id="ws-vol">0</div><div class="ss">kg</div></div>
+      <div class="stat" style="--ac:var(--amber)"><div class="sl">Calories เฉลี่ย</div><div class="sv" id="ws-cal">0</div><div class="ss">kcal/วัน</div></div>
+      <div class="stat" style="--ac:var(--blue)"><div class="sl">Protein เฉลี่ย</div><div class="sv" id="ws-pro">0</div><div class="ss">g/วัน</div></div>
+      <div class="stat" style="--ac:var(--purple)"><div class="sl">นอนเฉลี่ย</div><div class="sv" id="ws-sl">—</div><div class="ss">ชม./คืน</div></div>
+    </div>
+    <button class="btn bgh" onclick="exportCSV()" style="margin-top:4px">📤 Export ข้อมูลทั้งหมด (CSV)</button>
+  </div></div>
+</div>
+
+</main>
+
+<!-- ACTIVE WORKOUT OVERLAY -->
+<div id="active-workout">
+  <div class="aw-head">
+    <div><div style="font-size:.75rem;color:var(--muted)" id="aw-rname"></div><div style="font-size:1.2rem;font-weight:700" id="aw-etitle"></div></div>
+    <div style="display:flex;gap:8px;align-items:center">
+      <div style="text-align:center"><div style="font-size:.65rem;color:var(--muted)">เวลา</div><div style="font-size:1.1rem;font-weight:700;color:var(--green)" id="aw-timer">00:00</div></div>
+      <button class="btn brd" onclick="finishWorkout()">จบ Workout</button>
+    </div>
+  </div>
+  <div class="aw-progress"><div class="aw-fill" id="aw-prog"></div></div>
+  <div id="aw-content"></div>
+</div>
+
+<!-- REST TIMER OVERLAY -->
+<div class="rest-overlay" id="rest-overlay">
+  <div style="font-size:.85rem;color:var(--muted)">Rest Time</div>
+  <div class="timer-display" id="rest-timer">60</div>
+  <div style="font-size:.8rem;color:var(--muted)">วินาที</div>
+  <button class="btn bgh" onclick="skipRest()">ข้าม →</button>
+</div>
+
+<!-- ═══ SYNC ═══ -->
+<div id="page-sync" class="page">
+  <div class="sh"><div class="st">☁️ Sync & Backup</div></div>
+  <div class="g2">
+    <div style="display:flex;flex-direction:column;gap:14px">
+
+      <!-- INSTALL PWA -->
+      <div class="card" style="border-color:var(--green)"><div class="ch" style="background:rgba(34,197,94,.05)"><span class="ct">📱 ติดตั้งเป็น App บนมือถือ</span></div><div class="cb">
+        <div style="display:flex;flex-direction:column;gap:10px;font-size:.82rem">
+          <div style="background:var(--card2);border-radius:10px;padding:12px">
+            <div style="font-weight:700;color:var(--green);margin-bottom:6px">iPhone / iPad (Safari)</div>
+            <div style="display:flex;flex-direction:column;gap:4px;color:var(--muted2)">
+              <div>1. เปิด link ใน <strong style="color:var(--text)">Safari</strong> (ไม่ใช่ Chrome)</div>
+              <div>2. กดปุ่ม <strong style="color:var(--text)">Share</strong> (กล่องมีลูกศรขึ้น) ด้านล่าง</div>
+              <div>3. เลือก <strong style="color:var(--text)">"Add to Home Screen"</strong></div>
+              <div>4. กด <strong style="color:var(--text)">Add</strong> — แอปจะอยู่บน Home Screen</div>
+            </div>
+          </div>
+          <div style="background:var(--card2);border-radius:10px;padding:12px">
+            <div style="font-weight:700;color:var(--blue);margin-bottom:6px">Android (Chrome)</div>
+            <div style="display:flex;flex-direction:column;gap:4px;color:var(--muted2)">
+              <div>1. เปิด link ใน <strong style="color:var(--text)">Chrome</strong></div>
+              <div>2. กด <strong style="color:var(--text)">⋮</strong> มุมขวาบน</div>
+              <div>3. เลือก <strong style="color:var(--text)">"Add to Home Screen"</strong></div>
+            </div>
+          </div>
+          <div id="pwa-install-btn-wrap">
+            <button class="btn bg bfu" id="pwa-install-btn" style="display:none" onclick="installPWA()">⬇️ ติดตั้งแอปเดี๋ยวนี้</button>
+          </div>
+        </div>
+      </div></div>
+
+      <!-- GITHUB PAGES GUIDE -->
+      <div class="card"><div class="ch"><span class="ct">🌐 Upload สู่ GitHub Pages (เข้าได้จากทุกที่)</span></div><div class="cb">
+        <div style="font-size:.8rem;display:flex;flex-direction:column;gap:8px;color:var(--muted2)">
+          <div>1. สมัคร <strong style="color:var(--text)">github.com</strong> (ฟรี)</div>
+          <div>2. กด <strong style="color:var(--text)">New Repository</strong> → ตั้งชื่อ เช่น <code style="background:var(--card2);padding:2px 5px;border-radius:4px">mylife-dashboard</code></div>
+          <div>3. Upload ไฟล์ <code style="background:var(--card2);padding:2px 5px;border-radius:4px">index.html</code></div>
+          <div>4. ไปที่ <strong style="color:var(--text)">Settings → Pages → Deploy from main branch</strong></div>
+          <div>5. ได้ link: <code style="background:var(--card2);padding:2px 5px;border-radius:4px">yourname.github.io/mylife-dashboard</code></div>
+          <div style="color:var(--green);font-weight:600">✅ เปิดได้ทุก browser ทุกเครื่อง ฟรีตลอด</div>
+        </div>
+      </div></div>
+
+    </div>
+    <div style="display:flex;flex-direction:column;gap:14px">
+
+      <!-- EXPORT -->
+      <div class="card" style="border-color:var(--blue)"><div class="ch" style="background:rgba(59,130,246,.05)"><span class="ct">📤 Export ข้อมูล</span></div><div class="cb">
+        <div style="font-size:.8rem;color:var(--muted2);margin-bottom:12px">บันทึกข้อมูลทั้งหมดเป็นไฟล์ เพื่อย้ายไปมือถือหรือ backup</div>
+        <div style="display:flex;flex-direction:column;gap:8px">
+          <button class="btn bg bfu" onclick="exportJSON()">📦 Export JSON (นำเข้าได้ 100%)</button>
+          <button class="btn bgh bfu" onclick="exportCSV()">📊 Export CSV (เปิดใน Excel)</button>
+        </div>
+        <div id="export-info" style="margin-top:10px;font-size:.75rem;color:var(--muted);text-align:center"></div>
+      </div></div>
+
+      <!-- IMPORT -->
+      <div class="card" style="border-color:var(--amber)"><div class="ch" style="background:rgba(245,158,11,.05)"><span class="ct">📥 Import ข้อมูล</span></div><div class="cb">
+        <div style="font-size:.8rem;color:var(--muted2);margin-bottom:10px">นำไฟล์ JSON ที่ Export ไว้กลับเข้ามา — ใช้ย้ายข้อมูลระหว่าง computer ↔ มือถือ</div>
+        <label style="cursor:pointer;display:block">
+          <div style="border:2px dashed var(--amber);border-radius:10px;padding:16px;text-align:center;font-size:.85rem" id="import-drop" ondragover="event.preventDefault();this.style.borderColor='var(--green)'" ondragleave="this.style.borderColor='var(--amber)'" ondrop="handleImportDrop(event)">
+            <div style="font-size:1.8rem;margin-bottom:4px">📂</div>
+            คลิกเพื่อเลือกไฟล์ JSON<br>
+            <span style="font-size:.72rem;color:var(--muted)">หรือลากวางไฟล์ที่นี่</span>
+          </div>
+          <input type="file" accept=".json" style="display:none" onchange="importJSON(this)">
+        </label>
+        <div id="import-status" style="margin-top:8px;font-size:.8rem;text-align:center"></div>
+        <div style="background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.2);border-radius:8px;padding:8px;margin-top:10px;font-size:.72rem;color:var(--red)">
+          ⚠️ Import จะ <strong>แทนที่ข้อมูลเดิมทั้งหมด</strong> — Export backup ก่อนเสมอ
+        </div>
+      </div></div>
+
+      <!-- DATA SUMMARY -->
+      <div class="card"><div class="ch"><span class="ct">📊 ข้อมูลที่บันทึกไว้</span><button class="btn bgh" style="padding:3px 8px;font-size:.72rem" onclick="renderSyncInfo()">🔄</button></div><div id="sync-info" class="cb"></div></div>
+
+    </div>
+  </div>
+</div>
+
+<!-- ═══ MEAL PLANNER ═══ -->
+<div id="page-meals" class="page">
+  <div class="sh"><div class="st">📅 Meal Planner</div><button class="btn bg" onclick="openPresetModal()">+ My Meal</button></div>
+  <div class="g12">
+    <div>
+      <div class="card" style="margin-bottom:14px"><div class="ch"><span class="ct">แผนมื้ออาหาร 7 วัน</span></div><div id="mp-week"></div></div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:14px">
+      <div class="card"><div class="ch"><span class="ct">⭐ My Meals (Presets)</span></div><div id="preset-list"><div class="emp">ยังไม่มี preset<br><span style="font-size:.75rem">กด "+ My Meal" เพื่อบันทึกมื้อที่กินบ่อย</span></div></div></div>
+      <div class="card"><div class="ch"><span class="ct">⚖️ Calorie Balance วันนี้</span></div><div class="cb">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+          <div style="text-align:center"><div style="font-size:.7rem;color:var(--muted)">กินแล้ว</div><div style="font-size:1.4rem;font-weight:800;color:var(--blue)" id="cb-in">0</div></div>
+          <div style="font-size:1.8rem">→</div>
+          <div style="text-align:center"><div style="font-size:.7rem;color:var(--muted)">เผาผลาญ (TDEE)</div><div style="font-size:1.4rem;font-weight:800;color:var(--amber)" id="cb-tdee">—</div></div>
+          <div style="font-size:1.8rem">=</div>
+          <div style="text-align:center"><div style="font-size:.7rem;color:var(--muted)">Balance</div><div style="font-size:1.4rem;font-weight:800" id="cb-bal">—</div></div>
+        </div>
+        <div class="pw" style="margin-bottom:6px"><div class="pf" id="cb-bar" style="width:0%;background:var(--green)"></div></div>
+        <div id="cb-label" style="font-size:.75rem;color:var(--muted);text-align:center">ตั้งค่า TDEE ใน Nutrition ก่อนนะครับ</div>
+      </div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ REMINDERS ═══ -->
+<div id="page-remind" class="page">
+  <div class="sh"><div class="st">🔔 Reminders</div></div>
+  <div class="g2">
+    <div style="display:flex;flex-direction:column;gap:14px">
+      <div class="card"><div class="ch"><span class="ct">💧 เตือนดื่มน้ำ</span><div id="wr-status" style="font-size:.72rem;color:var(--muted)">ปิดอยู่</div></div><div class="cb">
+        <div class="fg"><label>ดื่มน้ำทุกกี่นาที</label><input type="number" id="wr-interval" value="120" min="30" max="480" placeholder="120"></div>
+        <div class="fg"><label>เวลาเริ่ม</label><input type="time" id="wr-start" value="07:00"></div>
+        <div class="fg"><label>เวลาสิ้นสุด</label><input type="time" id="wr-end" value="22:00"></div>
+        <div style="display:flex;gap:8px;margin-top:4px">
+          <button class="btn bg" style="flex:1" onclick="startWaterReminder()">🔔 เปิดการแจ้งเตือน</button>
+          <button class="btn brd" onclick="stopWaterReminder()">ปิด</button>
+        </div>
+      </div></div>
+      <div class="card"><div class="ch"><span class="ct">🍽️ เตือน Log อาหาร</span></div><div class="cb">
+        <div class="fg"><label>มื้อเช้า</label><input type="time" id="mr-b" value="08:00"></div>
+        <div class="fg"><label>มื้อกลางวัน</label><input type="time" id="mr-l" value="12:00"></div>
+        <div class="fg"><label>มื้อเย็น</label><input type="time" id="mr-d" value="18:00"></div>
+        <button class="btn bg bfu" onclick="setMealReminders()">🔔 ตั้งเตือนมื้ออาหาร</button>
+      </div></div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:14px">
+      <div class="card"><div class="ch"><span class="ct">📋 Reminders ที่ตั้งไว้</span><button class="btn brd" style="padding:3px 8px;font-size:.72rem" onclick="clearAllReminders()">ลบทั้งหมด</button></div><div id="remind-list"></div></div>
+      <div class="card"><div class="ch"><span class="ct">💡 วิธีใช้งาน</span></div><div class="cb" style="font-size:.78rem;color:var(--muted2);display:flex;flex-direction:column;gap:6px">
+        <div>🔔 ต้องกด <strong style="color:var(--text)">"อนุญาต"</strong> notification เมื่อ browser ถาม</div>
+        <div>📲 Notifications จะแสดงแม้เปลี่ยน tab</div>
+        <div>⚠️ ต้องเปิดหน้าต่าง browser ทิ้งไว้</div>
+        <div>🔕 กด "ปิด" หรือรีเฟรชหน้าเพื่อหยุด</div>
+      </div></div>
+    </div>
+  </div>
+</div>
+
+<!-- PRESET MODAL -->
+<div class="mbg" id="presetModal">
+  <div class="modal">
+    <div class="mt">⭐ บันทึก My Meal</div>
+    <div class="fg"><label>ชื่อมื้อ</label><input id="pm-name" placeholder="เช่น มื้อเช้าปกติ, โปรตีน shake..."></div>
+    <div id="pm-items" style="display:flex;flex-direction:column;gap:8px;margin-bottom:10px"></div>
+    <button class="btn bgh bfu" onclick="addPresetItem()">+ เพิ่มรายการอาหาร</button>
+    <div style="display:flex;gap:8px;margin-top:12px">
+      <button class="btn bg" style="flex:1" onclick="savePreset()">บันทึก My Meal</button>
+      <button class="btn bgh" onclick="closeModal('presetModal')">ยกเลิก</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODALS -->
+<!-- ROUTINE MODAL -->
+<div class="mbg" id="routineModal">
+  <div class="modal" style="width:600px">
+    <div class="mt">📋 สร้าง Routine</div>
+    <div class="fg"><label>ชื่อ Routine</label><input id="rm-name" placeholder="เช่น Push Day, Leg Day..."></div>
+    <div class="fg"><label>วันที่ทำ</label>
+      <div style="display:flex;gap:6px;flex-wrap:wrap" id="rm-days">
+        <label style="display:flex;align-items:center;gap:4px;font-size:.8rem;text-transform:none;color:var(--text)" onclick="event.stopPropagation()"><input type="checkbox" value="จ"> จันทร์</label>
+        <label style="display:flex;align-items:center;gap:4px;font-size:.8rem;text-transform:none;color:var(--text)" onclick="event.stopPropagation()"><input type="checkbox" value="อ"> อังคาร</label>
+        <label style="display:flex;align-items:center;gap:4px;font-size:.8rem;text-transform:none;color:var(--text)" onclick="event.stopPropagation()"><input type="checkbox" value="พ"> พุธ</label>
+        <label style="display:flex;align-items:center;gap:4px;font-size:.8rem;text-transform:none;color:var(--text)" onclick="event.stopPropagation()"><input type="checkbox" value="พฤ"> พฤหัส</label>
+        <label style="display:flex;align-items:center;gap:4px;font-size:.8rem;text-transform:none;color:var(--text)" onclick="event.stopPropagation()"><input type="checkbox" value="ศ"> ศุกร์</label>
+        <label style="display:flex;align-items:center;gap:4px;font-size:.8rem;text-transform:none;color:var(--text)" onclick="event.stopPropagation()"><input type="checkbox" value="ส"> เสาร์</label>
+        <label style="display:flex;align-items:center;gap:4px;font-size:.8rem;text-transform:none;color:var(--text)" onclick="event.stopPropagation()"><input type="checkbox" value="อา"> อาทิตย์</label>
+      </div>
+    </div>
+    <div style="font-size:.75rem;color:var(--muted);margin-bottom:8px;margin-top:4px">ท่าออกกำลังกาย</div>
+    <div id="rm-exercises"></div>
+    <button class="btn bgh bfu" style="margin-bottom:10px" onclick="addExToRoutine()">+ เพิ่มท่า</button>
+    <div class="mf"><button class="btn bgh" style="flex:1" onclick="closeModal('routineModal')">ยกเลิก</button><button class="btn bg" style="flex:2" onclick="saveRoutine()">บันทึก Routine</button></div>
+  </div>
+</div>
+
+<!-- FOOD MODAL -->
+<div class="mbg" id="foodModal">
+  <div class="modal">
+    <div class="mt">🍽️ บันทึกอาหาร</div>
+    <div class="fg"><label>ชื่ออาหาร</label><input id="fm-name" placeholder="เช่น อกไก่, ข้าวผัด..."></div>
+    <div class="fg"><label>มื้อ</label><select id="fm-meal"><option value="เช้า">🌅 เช้า</option><option value="กลางวัน" selected>☀️ กลางวัน</option><option value="เย็น">🌆 เย็น</option><option value="ของว่าง">🍿 ของว่าง</option></select></div>
+    <div class="r2"><div class="fg"><label>Calories (kcal)</label><input type="number" id="fm-cal" min="0"></div><div class="fg"><label>Protein (g)</label><input type="number" id="fm-pro" min="0" step=".1"></div></div>
+    <div class="r2"><div class="fg"><label>Carbs (g)</label><input type="number" id="fm-carb" min="0" step=".1"></div><div class="fg"><label>Fat (g)</label><input type="number" id="fm-fat" min="0" step=".1"></div></div>
+    <div class="mf"><button class="btn bgh" style="flex:1" onclick="closeModal('foodModal')">ยกเลิก</button><button class="btn bg" style="flex:2" onclick="saveFood()">บันทึก</button></div>
+  </div>
+</div>
+
+<!-- GOAL MODAL -->
+<div class="mbg" id="goalModal">
+  <div class="modal">
+    <div class="mt">🎯 เพิ่ม Goal</div>
+    <div class="fg"><label>ชื่อ</label><input id="gm-name" placeholder="เช่น Squat 100kg..."></div>
+    <div class="fg"><label>หมวด</label><select id="gm-cat"><option value="fit">💪 Fitness</option><option value="per">🧠 Personal</option><option value="oth">💰 Other</option></select></div>
+    <div class="fg"><label>รายละเอียด</label><textarea id="gm-desc" placeholder="แผน, ขั้นตอน..."></textarea></div>
+    <div class="r3"><div class="fg"><label>ปัจจุบัน</label><input type="number" id="gm-cur" value="0"></div><div class="fg"><label>เป้าหมาย</label><input type="number" id="gm-tgt" value="100"></div><div class="fg"><label>หน่วย</label><input id="gm-unit" placeholder="kg, km..."></div></div>
+    <div class="fg"><label>Deadline</label><input type="date" id="gm-dl"></div>
+    <div class="mf"><button class="btn bgh" style="flex:1" onclick="closeModal('goalModal')">ยกเลิก</button><button class="btn bg" style="flex:2" onclick="saveGoal()">บันทึก</button></div>
+  </div>
+</div>
+
+<!-- HABIT MODAL -->
+<div class="mbg" id="habitModal">
+  <div class="modal">
+    <div class="mt">🔁 เพิ่ม Habit</div>
+    <div class="fg"><label>ชื่อ</label><input id="hm-name" placeholder="เช่น ออกกำลังกาย, อ่านหนังสือ..."></div>
+    <div class="fg"><label>Icon Emoji</label><input id="hm-icon" placeholder="💪" maxlength="2"></div>
+    <div class="mf"><button class="btn bgh" style="flex:1" onclick="closeModal('habitModal')">ยกเลิก</button><button class="btn bg" style="flex:2" onclick="saveHabit()">บันทึก</button></div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+// ══════════ XSS ESCAPE ══════════
+const esc=s=>(s==null?'':String(s)).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+
+// ══════════ DATA ══════════
+const DB={
+  get:(k,d=[])=>JSON.parse(localStorage.getItem(k)||JSON.stringify(d)),
+  set:(k,v)=>{
+    try{
+      localStorage.setItem(k,JSON.stringify(v));
+    }catch(e){
+      if(e.name==='QuotaExceededError'||e.code===22||e.code===1014){
+        toast('⚠️ พื้นที่เก็บข้อมูลเต็ม! ลบรูปเก่าบาง Progress Photos เพื่อเพิ่มพื้นที่');
+        console.warn('localStorage quota exceeded for key:',k);
+        return;
+      }
+      throw e;
+    }
+    // debounced Firebase sync — fires 2s after last write
+    clearTimeout(DB._st);
+    DB._st=setTimeout(()=>{if(typeof pushToFirestore==='function'&&typeof fbUser!=='undefined'&&fbUser)pushToFirestore();},2000);
+  }
+};
+let workouts=DB.get('ml_wkt');
+let sleeps=DB.get('ml_sl');
+let foods=DB.get('ml_fd');
+let metrics=DB.get('ml_mt');
+let goals=DB.get('ml_gl');
+let todos=DB.get('ml_td');
+let habits=DB.get('ml_hb',[{id:'h1',name:'ออกกำลังกาย',icon:'💪'},{id:'h2',name:'อ่านหนังสือ',icon:'📚'},{id:'h3',name:'ดื่มน้ำ 2L',icon:'💧'}]);
+let habitLog=DB.get('ml_hlg',{});
+let routines=DB.get('ml_rt',[
+  {id:'r1',name:'Push Day 💪',days:['จ','พ','ส'],exercises:[
+    {name:'Bench Press',sets:4,reps:8,kg:60,rest:90},
+    {name:'Incline Press',sets:3,reps:10,kg:50,rest:75},
+    {name:'Overhead Press',sets:3,reps:10,kg:40,rest:75},
+    {name:'Lateral Raise',sets:3,reps:15,kg:12,rest:60},
+    {name:'Tricep Pushdown',sets:3,reps:12,kg:25,rest:60}
+  ]},
+  {id:'r2',name:'Pull Day 🦾',days:['อ','พฤ'],exercises:[
+    {name:'Pull Up',sets:4,reps:8,kg:0,rest:90},
+    {name:'Bent-over Row',sets:4,reps:8,kg:70,rest:90},
+    {name:'Lat Pulldown',sets:3,reps:12,kg:60,rest:75},
+    {name:'Cable Row',sets:3,reps:12,kg:55,rest:75},
+    {name:'Bicep Curl',sets:3,reps:12,kg:16,rest:60}
+  ]},
+  {id:'r3',name:'Leg Day 🦵',days:['ศ'],exercises:[
+    {name:'Squat',sets:4,reps:8,kg:80,rest:120},
+    {name:'Romanian Deadlift',sets:3,reps:10,kg:70,rest:90},
+    {name:'Leg Press',sets:3,reps:12,kg:120,rest:90},
+    {name:'Leg Curl',sets:3,reps:12,kg:40,rest:60},
+    {name:'Calf Raise',sets:4,reps:15,kg:60,rest:45}
+  ]}
+]);
+let photos=DB.get('ml_ph',[]);
+let nutriGoal=DB.get('ml_ng',{cal:2000,pro:150,carb:250,fat:65});
+let sleepQ=3;
+let _tdee=0;
+let _tdeeVals={pro:150,carb:250,fat:65};
+
+// Active workout state
+let aw={active:false,routine:null,startTime:0,timerInt:null,restInt:null,setsDone:{}};
+
+const today=()=>new Date().toISOString().split('T')[0];
+const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,6);
+const fmt=d=>{const dt=new Date(d+'T00:00:00');return dt.toLocaleDateString('th-TH',{weekday:'short',month:'short',day:'numeric'});};
+const clamp=(v,min,max)=>Math.min(max,Math.max(min,v));
+const toast=m=>{const t=document.getElementById('toast');t.textContent=m;t.classList.add('on');setTimeout(()=>t.classList.remove('on'),2500);};
+const save=()=>{
+  DB.set('ml_wkt',workouts);DB.set('ml_sl',sleeps);DB.set('ml_fd',foods);
+  DB.set('ml_mt',metrics);DB.set('ml_gl',goals);DB.set('ml_td',todos);
+  DB.set('ml_hb',habits);DB.set('ml_hlg',habitLog);DB.set('ml_rt',routines);
+  DB.set('ml_ph',photos);DB.set('ml_ng',nutriGoal);
+};
+
+const MUSCLE={'Bench Press':'Chest','Incline Press':'Chest','Chest Fly':'Chest','Push Up':'Chest','Lat Pulldown':'Back','Bent-over Row':'Back','Deadlift':'Back','Pull Up':'Back','Cable Row':'Back','Squat':'Legs','Leg Press':'Legs','Romanian Deadlift':'Legs','Leg Curl':'Legs','Calf Raise':'Legs','Overhead Press':'Shoulders','Lateral Raise':'Shoulders','Face Pull':'Shoulders','Bicep Curl':'Arms','Hammer Curl':'Arms','Tricep Pushdown':'Arms','Skull Crusher':'Arms'};
+
+// ══════════ SIDEBAR NAV ══════════
+function toggleSidebar(){
+  const sb=document.getElementById('sidebar');
+  const ov=document.getElementById('sidebar-overlay');
+  const hb=document.getElementById('hamburger');
+  const open=sb.classList.toggle('on');
+  ov.classList.toggle('on',open);
+  hb.classList.toggle('open',open);
+}
+function closeSidebar(){
+  document.getElementById('sidebar').classList.remove('on');
+  document.getElementById('sidebar-overlay').classList.remove('on');
+  document.getElementById('hamburger').classList.remove('open');
+}
+function nav(id){goto(id);closeSidebar();}
+
+let _activePage='dash';
+function goto(id){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('on'));
+  document.querySelectorAll('.snb').forEach(b=>b.classList.remove('on'));
+  document.getElementById('page-'+id).classList.add('on');
+  document.querySelectorAll('.snb').forEach(b=>{if(b.getAttribute('onclick')?.includes("'"+id+"'"))b.classList.add('on');});
+  _activePage=id;
+  renderPage(id);
+}
+
+// ══════════ RENDER ══════════
+const PAGE_RENDER={
+  dash:()=>{renderDash();},
+  routines:()=>{renderRoutines();},
+  workout:()=>{renderWorkout();},
+  sleep:()=>{renderSleep();},
+  nutrition:()=>{renderNutrition();renderMeals();},
+  health:()=>{renderHealth();},
+  photos:()=>{renderPhotos();},
+  goals:()=>{renderGoals();},
+  todo:()=>{renderTodo();},
+  water:()=>{renderWater();},
+  journal:()=>{renderJournal();},
+  prs:()=>{renderPRs();},
+  sync:()=>{renderSyncInfo();renderReminders();},
+};
+function renderPage(id){const fn=PAGE_RENDER[id];if(fn)fn();}
+function renderAll(){
+  renderDash();renderRoutines();renderWorkout();renderSleep();
+  renderNutrition();renderHealth();renderPhotos();renderGoals();renderTodo();
+  renderWater();renderJournal();renderPRs();renderMeals();renderReminders();renderSyncInfo();
+}
+
+// ══════════ DASHBOARD ══════════
+function renderDash(){
+  const h=new Date().getHours();
+  document.getElementById('dg').textContent=h<12?'อรุณสวัสดิ์ ☀️':h<17?'สวัสดีตอนบ่าย 🌤️':'สวัสดีตอนเย็น 🌙';
+  document.getElementById('dd').textContent=new Date().toLocaleDateString('th-TH',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
+  const tod=today();
+  const todW=workouts.filter(w=>w.date===tod);
+  const vol=todW.reduce((s,w)=>s+w.weight*w.sets*w.reps,0);
+  document.getElementById('d-vol').textContent=vol.toLocaleString();
+  const todF=foods.filter(f=>f.date===tod);
+  document.getElementById('d-cal').textContent=todF.reduce((s,f)=>s+f.cal,0);
+  document.getElementById('d-calg').textContent=nutriGoal.cal;
+  const ls=[...sleeps].sort((a,b)=>b.date.localeCompare(a.date))[0];
+  document.getElementById('d-sl').textContent=ls?ls.hours.toFixed(1):'—';
+  const todT=todos.filter(t=>t.date===tod);
+  document.getElementById('d-td').textContent=todT.filter(t=>t.done).length+'/'+todT.length;
+
+  // streak
+  const act=new Set([...workouts,...sleeps,...foods].map(x=>x.date));
+  let streak=0;let cur=new Date(tod);
+  for(let i=0;i<365;i++){const ds=cur.toISOString().split('T')[0];if(act.has(ds)){streak++;cur.setDate(cur.getDate()-1);}else break;}
+  document.getElementById('dstr').textContent=streak+'🔥';
+
+  renderBarChart('d-chart',7,d=>workouts.filter(w=>w.date===d).reduce((s,w)=>s+w.weight*w.sets*w.reps,0),'var(--green)','kg');
+
+  // goals
+  const dg=document.getElementById('d-goals');
+  const ag=goals.filter(g=>!g.done).slice(0,4);
+  if(!ag.length){dg.innerHTML='<div class="emp">ยังไม่มี goals</div>';return;}
+  dg.innerHTML=ag.map(g=>{const p=Math.min(100,Math.round(g.cur/g.target*100));return`<div style="padding:12px 16px;border-bottom:1px solid var(--border)"><div style="display:flex;justify-content:space-between;font-size:.85rem;margin-bottom:4px"><span style="font-weight:700">${esc(g.name)}</span><span style="color:var(--muted)">${g.cur}/${g.target} ${esc(g.unit||'')}</span></div><div class="pw"><div class="pf" style="width:${p}%;background:var(--green)"></div></div></div>`;}).join('');
+
+  // dots
+  const dd=document.getElementById('d-cal-dots');
+  const dn=['อา','จ','อ','พ','พฤ','ศ','ส'];
+  let dh='';
+  for(let i=13;i>=0;i--){const d=new Date();d.setDate(d.getDate()-i);const ds=d.toISOString().split('T')[0];const on=act.has(ds);
+    dh+=`<div style="width:42px;height:42px;border-radius:8px;background:${on?'rgba(34,197,94,.15)':'var(--card2)'};border:1px solid ${on?'var(--green)':'var(--border)'};display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:.58rem;color:${on?'var(--green)':'var(--muted)'}"><div>${dn[d.getDay()]}</div><div>${d.getDate()}</div>${on?'<div>✓</div>':''}</div>`;}
+  dd.innerHTML=dh;
+}
+
+// ══════════ ROUTINES ══════════
+let rmExercises=[];
+
+function openRoutineModal(){
+  rmExercises=[];
+  document.getElementById('rm-name').value='';
+  document.querySelectorAll('#rm-days input[type=checkbox]').forEach(c=>c.checked=false);
+  renderRmExercises();
+  document.getElementById('routineModal').classList.add('on');
+}
+
+function addExToRoutine(){
+  rmExercises.push({name:'Bench Press',sets:3,reps:10,kg:20,rest:60});
+  renderRmExercises();
+}
+
+function renderRmExercises(){
+  const el=document.getElementById('rm-exercises');
+  if(!rmExercises.length){el.innerHTML='<div class="emp" style="padding:14px">กด "+ เพิ่มท่า" เพื่อเพิ่มท่าออกกำลังกาย</div>';return;}
+  el.innerHTML=rmExercises.map((ex,i)=>`
+    <div class="exercise-card">
+      <div style="display:flex;align-items:center;gap:6px;margin-bottom:6px">
+        <select onchange="rmExercises[${i}].name=this.value" style="flex:1;padding:6px 8px;font-size:.8rem">
+          ${['Bench Press','Incline Press','Chest Fly','Push Up','Lat Pulldown','Bent-over Row','Deadlift','Pull Up','Cable Row','Squat','Leg Press','Romanian Deadlift','Leg Curl','Calf Raise','Overhead Press','Lateral Raise','Face Pull','Bicep Curl','Hammer Curl','Tricep Pushdown','Skull Crusher']
+          .map(n=>`<option ${n===ex.name?'selected':''}>${n}</option>`).join('')}
+        </select>
+        <button class="btn brd" style="padding:4px 8px;font-size:.75rem" onclick="rmExercises.splice(${i},1);renderRmExercises()">✕</button>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:6px;font-size:.78rem">
+        <div><div style="color:var(--muted);font-size:.65rem;margin-bottom:2px">Sets</div><input type="number" value="${ex.sets}" min="1" max="10" style="padding:5px 6px" onchange="rmExercises[${i}].sets=+this.value"></div>
+        <div><div style="color:var(--muted);font-size:.65rem;margin-bottom:2px">Reps</div><input type="number" value="${ex.reps}" min="1" max="50" style="padding:5px 6px" onchange="rmExercises[${i}].reps=+this.value"></div>
+        <div><div style="color:var(--muted);font-size:.65rem;margin-bottom:2px">kg</div><input type="number" value="${ex.kg}" min="0" step=".5" style="padding:5px 6px" onchange="rmExercises[${i}].kg=+this.value"></div>
+        <div><div style="color:var(--muted);font-size:.65rem;margin-bottom:2px">Rest (s)</div><input type="number" value="${ex.rest}" min="15" max="300" step="15" style="padding:5px 6px" onchange="rmExercises[${i}].rest=+this.value"></div>
+      </div>
+    </div>`).join('');
+}
+
+function saveRoutine(){
+  const name=document.getElementById('rm-name').value.trim();
+  if(!name) return toast('กรุณาใส่ชื่อ Routine');
+  if(!rmExercises.length) return toast('กรุณาเพิ่มท่าออกกำลังกายอย่างน้อย 1 ท่า');
+  const days=[...document.querySelectorAll('#rm-days input:checked')].map(c=>c.value);
+  routines.push({id:uid(),name,days,exercises:JSON.parse(JSON.stringify(rmExercises))});
+  save();renderRoutines();closeModal('routineModal');toast('บันทึก Routine แล้ว 📋');
+}
+
+function renderRoutines(){
+  const el=document.getElementById('routine-list');
+  if(!routines.length){el.innerHTML='<div class="emp" style="grid-column:span 2"><div class="emp-i">📋</div>ยังไม่มี Routine — กด "สร้าง Routine"</div>';return;}
+  const dn=['อา','จ','อ','พ','พฤ','ศ','ส'];
+  const todayDay=dn[new Date().getDay()];
+  el.innerHTML=routines.map(r=>{
+    const isToday=r.days.includes(todayDay);
+    const totalSets=r.exercises.reduce((s,e)=>s+e.sets,0);
+    const totalVol=r.exercises.reduce((s,e)=>s+e.sets*e.reps*e.kg,0);
+    return`<div class="card ${isToday?'':''}">
+      <div class="ch" style="${isToday?'border-bottom-color:var(--green)':''}">
+        <div><span class="ct">${esc(r.name)}</span>${isToday?'<span class="badge" style="background:rgba(34,197,94,.15);color:var(--green);margin-left:8px">วันนี้ 🔥</span>':''}</div>
+        <button class="btn brd" style="padding:3px 8px;font-size:.72rem" onclick="delRoutine('${r.id}')">✕</button>
+      </div>
+      <div class="cb">
+        <div style="display:flex;gap:10px;margin-bottom:10px;font-size:.78rem;color:var(--muted)">
+          <span>📅 ${esc(r.days.join(', ')||'ไม่ระบุ')}</span>
+          <span>• ${r.exercises.length} ท่า</span>
+          <span>• ${totalSets} sets</span>
+          <span>• ${totalVol.toLocaleString()} kg vol</span>
+        </div>
+        ${r.exercises.map(e=>`<div style="display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid var(--border);font-size:.8rem"><span>${esc(e.name)}</span><span style="color:var(--muted)">${e.sets}×${e.reps} @ ${e.kg}kg</span></div>`).join('')}
+        <button class="btn bg bfu" style="margin-top:10px" onclick="startRoutine('${r.id}')">▶ Start Workout</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function delRoutine(id){routines=routines.filter(r=>r.id!==id);save();renderRoutines();}
+
+// ══════════ ACTIVE WORKOUT ══════════
+function startRoutine(id){
+  const r=routines.find(x=>x.id===id);if(!r)return;
+  aw={active:true,routine:r,startTime:Date.now(),timerInt:null,restInt:null,setsDone:{}};
+  r.exercises.forEach((e,ei)=>{for(let s=0;s<e.sets;s++) aw.setsDone[ei+'_'+s]=false;});
+  document.getElementById('active-workout').style.display='block';
+  document.getElementById('aw-rname').textContent=r.name;
+  renderActiveWorkout();
+  aw.timerInt=setInterval(()=>{
+    const e=Math.floor((Date.now()-aw.startTime)/1000);
+    const m=String(Math.floor(e/60)).padStart(2,'0');
+    const s=String(e%60).padStart(2,'0');
+    document.getElementById('aw-timer').textContent=m+':'+s;
+  },1000);
+}
+
+function renderActiveWorkout(){
+  const r=aw.routine;
+  const totalSets=r.exercises.reduce((s,e)=>s+e.sets,0);
+  const doneSets=Object.values(aw.setsDone).filter(Boolean).length;
+  document.getElementById('aw-prog').style.width=(doneSets/totalSets*100)+'%';
+  document.getElementById('aw-etitle').textContent=`${doneSets}/${totalSets} sets สำเร็จ`;
+
+  document.getElementById('aw-content').innerHTML=r.exercises.map((ex,ei)=>`
+    <div class="exercise-card" style="margin-bottom:12px">
+      <div class="ex-name">${esc(ex.name)} <span style="font-weight:400;color:var(--muted);font-size:.78rem">@ ${ex.kg}kg</span></div>
+      <div style="display:flex;gap:6px;margin-top:6px;flex-wrap:wrap">
+        ${Array.from({length:ex.sets},(_,si)=>{
+          const done=aw.setsDone[ei+'_'+si];
+          return`<button class="set-btn ${done?'done':''}" onclick="toggleSet(${ei},${si},${ex.rest})" title="Set ${si+1}: ${ex.reps} reps">
+            ${done?'✓':(si+1)}
+          </button>`;
+        }).join('')}
+      </div>
+      <div style="font-size:.72rem;color:var(--muted);margin-top:4px">${ex.reps} reps • Rest ${ex.rest}s</div>
+    </div>`).join('');
+}
+
+function toggleSet(ei,si,rest){
+  const key=ei+'_'+si;
+  aw.setsDone[key]=!aw.setsDone[key];
+  if(aw.setsDone[key]) startRest(rest);
+  renderActiveWorkout();
+}
+
+function startRest(secs){
+  const overlay=document.getElementById('rest-overlay');
+  overlay.classList.add('on');
+  let t=secs;
+  document.getElementById('rest-timer').textContent=t;
+  if(aw.restInt) clearInterval(aw.restInt);
+  aw.restInt=setInterval(()=>{
+    t--;document.getElementById('rest-timer').textContent=t;
+    if(t<=0){clearInterval(aw.restInt);overlay.classList.remove('on');toast('Rest จบแล้ว! ทำ set ต่อไป 💪');}
+  },1000);
+}
+
+function skipRest(){
+  if(aw.restInt) clearInterval(aw.restInt);
+  document.getElementById('rest-overlay').classList.remove('on');
+}
+
+function finishWorkout(){
+  if(!aw.active)return;
+  clearInterval(aw.timerInt);clearInterval(aw.restInt);
+  document.getElementById('rest-overlay').classList.remove('on');
+  const r=aw.routine;
+  const elapsed=Math.floor((Date.now()-aw.startTime)/1000);
+  // log all exercises
+  r.exercises.forEach(ex=>{
+    workouts.push({id:uid(),date:today(),exercise:ex.name,sets:ex.sets,reps:ex.reps,weight:ex.kg,note:'Routine: '+r.name});
+  });
+  save();
+  document.getElementById('active-workout').style.display='none';
+  aw.active=false;
+  const mins=Math.floor(elapsed/60);
+  toast(`Workout เสร็จ! ${mins} นาที 🎉`);
+  renderAll();
+}
+
+// ══════════ WORKOUT LOG ══════════
+function chkCustEx(){document.getElementById('custExW').style.display=document.getElementById('qEx').value==='__c'?'block':'none';}
+
+function addWkt(e){
+  e.preventDefault();
+  let ex=document.getElementById('qEx').value;
+  if(ex==='__c') ex=document.getElementById('qExC').value.trim();
+  if(!ex) return toast('กรุณาเลือกท่า');
+  workouts.push({id:uid(),date:today(),exercise:ex,sets:+document.getElementById('qS').value||1,reps:+document.getElementById('qR').value||1,weight:+document.getElementById('qK').value||0,note:document.getElementById('qN').value.trim()});
+  save();renderWorkout();renderDash();toast('บันทึกแล้ว 💪');
+  document.getElementById('qN').value='';
+}
+
+function renderWorkout(){
+  renderBarChart('w-chart',7,d=>workouts.filter(w=>w.date===d).reduce((s,w)=>s+w.weight*w.sets*w.reps,0),'var(--green)','kg');
+  const sorted=[...workouts].sort((a,b)=>b.date.localeCompare(a.date)||b.id.localeCompare(a.id));
+  document.getElementById('w-cnt').textContent=sorted.length+' entries';
+  const wl=document.getElementById('w-list');
+  if(!sorted.length){wl.innerHTML='<div class="emp"><div class="emp-i">🏋️</div>ยังไม่มีข้อมูล</div>';return;}
+  wl.innerHTML=sorted.slice(0,40).map(w=>`<div class="li">
+    <div style="flex:1"><div style="font-weight:700;font-size:.87rem">${esc(w.exercise)}</div><div style="font-size:.72rem;color:var(--muted)">${fmt(w.date)}${w.note?' · '+esc(w.note):''}</div></div>
+    <span class="badge" style="background:rgba(34,197,94,.12);color:var(--green)">${w.sets}×${w.reps}</span>
+    <span class="badge" style="background:rgba(139,92,246,.12);color:var(--purple)">${w.weight}kg</span>
+    <span style="font-size:.72rem;color:var(--muted)">${(w.weight*w.sets*w.reps).toLocaleString()}kg</span>
+    <button class="btn brd" style="padding:3px 7px;font-size:.72rem" onclick="delWkt('${w.id}')">✕</button>
+  </div>`).join('');
+
+  const wk=new Date();wk.setDate(wk.getDate()-6);const wks=wk.toISOString().split('T')[0];
+  const mg={};workouts.filter(w=>w.date>=wks).forEach(w=>{const g=MUSCLE[w.exercise]||'Other';mg[g]=(mg[g]||0)+w.weight*w.sets*w.reps;});
+  const mx=Math.max(...Object.values(mg),1);
+  const mc={Chest:'#ef4444',Back:'#38bdf8',Legs:'#a78bfa',Shoulders:'#fbbf24',Arms:'#22c55e',Other:'#64748b'};
+  const wm=document.getElementById('w-muscles');
+  if(!Object.keys(mg).length){wm.innerHTML='<div class="emp">บันทึก workout เพื่อดู muscle groups</div>';return;}
+  wm.innerHTML='<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">'+Object.entries(mg).sort((a,b)=>b[1]-a[1]).map(([n,v])=>`
+    <div><div style="display:flex;justify-content:space-between;font-size:.75rem;margin-bottom:3px"><span>${n}</span><span style="color:${mc[n]||'var(--green)'}">${v.toLocaleString()}kg</span></div>
+    <div class="pw"><div class="pf" style="width:${(v/mx*100).toFixed(1)}%;background:${mc[n]||'var(--green)'}"></div></div></div>`
+  ).join('')+'</div>';
+}
+function delWkt(id){workouts=workouts.filter(w=>w.id!==id);save();renderWorkout();renderDash();}
+
+// ══════════ SLEEP ══════════
+function setSQ(v){sleepQ=v;document.querySelectorAll('#sqstars .star').forEach(s=>{s.style.color=+s.getAttribute('onclick').match(/\d+/)[0]<=v?'var(--amber)':'var(--border)';});}
+
+function addSleep(e){
+  e.preventDefault();
+  const date=document.getElementById('s-date').value||today();
+  const bed=document.getElementById('s-bed').value;
+  const wake=document.getElementById('s-wake').value;
+  if(!bed||!wake) return toast('กรุณาใส่เวลา');
+  const [bh,bm]=bed.split(':').map(Number);const [wh,wm]=wake.split(':').map(Number);
+  let mins=(wh*60+wm)-(bh*60+bm);if(mins<0)mins+=1440;
+  const stAwake=+document.getElementById('s-awake').value||0;
+  const stRem=+document.getElementById('s-rem').value||0;
+  const stCore=+document.getElementById('s-core').value||0;
+  const stDeep=+document.getElementById('s-deep').value||0;
+  const hrLow=+document.getElementById('s-hr-low').value||null;
+  const hrHigh=+document.getElementById('s-hr-high').value||null;
+  const respLow=+document.getElementById('s-resp-low').value||null;
+  const respHigh=+document.getElementById('s-resp-high').value||null;
+  sleeps.push({id:uid(),date,bed,wake,hours:+(mins/60).toFixed(2),quality:sleepQ,note:document.getElementById('s-note').value.trim(),
+    stages:{awake:stAwake,rem:stRem,core:stCore,deep:stDeep},
+    vitals:{hrLow,hrHigh,respLow,respHigh}});
+  save();renderSleep();renderDash();toast('บันทึกการนอนแล้ว 😴');
+  ['s-note','s-awake','s-rem','s-core','s-deep','s-hr-low','s-hr-high','s-resp-low','s-resp-high'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+  document.getElementById('stages-preview').style.display='none';
+}
+
+function renderSleep(){
+  const sorted=[...sleeps].sort((a,b)=>b.date.localeCompare(a.date));
+  const avg=sorted.length?sorted.reduce((s,x)=>s+x.hours,0)/sorted.length:0;
+  document.getElementById('sl-avg').textContent=avg?avg.toFixed(1):'—';
+  document.getElementById('sl-last').textContent=sorted[0]?sorted[0].hours.toFixed(1):'—';
+  document.getElementById('sl-qual').textContent=sorted.length?(sorted.reduce((s,x)=>s+x.quality,0)/sorted.length).toFixed(1):'—';
+  renderBarChart('sl-chart',14,d=>{const s=sleeps.find(x=>x.date===d);return s?s.hours:0;},'var(--purple)','ชม.');
+  const sl=document.getElementById('sl-list');
+  if(!sorted.length){sl.innerHTML='<div class="emp"><div class="emp-i">😴</div>ยังไม่มีข้อมูล</div>';return;}
+  sl.innerHTML=sorted.slice(0,20).map(s=>{
+    const sc=calcSleepScore(s);
+    const st=s.stages||{};
+    const totalStMin=(st.awake||0)+(st.rem||0)+(st.core||0)+(st.deep||0);
+    const hasSt=totalStMin>0;
+    const pct=v=>totalStMin?Math.round(v/totalStMin*100):0;
+    const stBar=hasSt?`<div style="height:8px;border-radius:99px;overflow:hidden;display:flex;margin:5px 0">
+      <div style="width:${pct(st.awake||0)}%;background:#94a3b8" title="Awake ${pct(st.awake||0)}%"></div>
+      <div style="width:${pct(st.rem||0)}%;background:#818cf8" title="REM ${pct(st.rem||0)}%"></div>
+      <div style="width:${pct(st.core||0)}%;background:#38bdf8" title="Core ${pct(st.core||0)}%"></div>
+      <div style="width:${pct(st.deep||0)}%;background:#34d399" title="Deep ${pct(st.deep||0)}%"></div>
+    </div>
+    <div style="display:flex;gap:8px;font-size:.65rem;color:var(--muted)">
+      <span><span style="color:#94a3b8">■</span> Awake ${pct(st.awake||0)}% (${st.awake||0}m)</span>
+      <span><span style="color:#818cf8">■</span> REM ${pct(st.rem||0)}% (${st.rem||0}m)</span>
+      <span><span style="color:#38bdf8">■</span> Core ${pct(st.core||0)}% (${st.core||0}m)</span>
+      <span><span style="color:#34d399">■</span> Deep ${pct(st.deep||0)}% (${st.deep||0}m)</span>
+    </div>`:'';
+    const vt=s.vitals||{};
+    const vtRow=(vt.hrLow||vt.hrHigh||vt.respLow||vt.respHigh)?`<div style="display:flex;gap:10px;font-size:.68rem;color:var(--muted);margin-top:4px">
+      ${vt.hrLow||vt.hrHigh?`<span>❤️ ${vt.hrLow||'?'}–${vt.hrHigh||'?'} BPM</span>`:''}
+      ${vt.respLow||vt.respHigh?`<span>🫁 ${vt.respLow||'?'}–${vt.respHigh||'?'} br/min</span>`:''}
+    </div>`:'';
+    return`<div style="padding:12px 16px;border-bottom:1px solid var(--border)">
+      <div class="li" style="padding:0;border:none;margin-bottom:${hasSt||vtRow?'6px':'0'}">
+        <div style="flex:1"><div style="font-weight:700;font-size:.87rem">${fmt(s.date)}</div><div style="font-size:.72rem;color:var(--muted)">${s.bed} → ${s.wake}${s.note?' · '+esc(s.note):''}</div></div>
+        <div style="text-align:center;margin-right:6px"><div style="font-size:1.1rem;font-weight:800;color:${sleepScoreColor(sc)}">${sc}</div><div style="font-size:.6rem;color:var(--muted)">score</div></div>
+        <span class="badge" style="background:rgba(139,92,246,.15);color:var(--purple)">${s.hours.toFixed(1)} ชม.</span>
+        <span style="color:var(--amber);margin-left:4px">${'★'.repeat(s.quality)}</span>
+        <button class="btn brd" style="padding:3px 7px;font-size:.72rem;margin-left:6px" onclick="delSleep('${s.id}')">✕</button>
+      </div>
+      ${stBar}${vtRow}
+    </div>`;
+  }).join('');
+}
+function delSleep(id){sleeps=sleeps.filter(s=>s.id!==id);save();renderSleep();}
+
+// ══════════ NUTRITION ══════════
+function openFoodModal(){
+  document.getElementById('fm-name').value='';
+  ['fm-cal','fm-pro','fm-carb','fm-fat'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('foodModal').classList.add('on');
+  setTimeout(()=>document.getElementById('fm-name').focus(),100);
+}
+
+function saveFood(){
+  const name=document.getElementById('fm-name').value.trim();
+  if(!name) return toast('กรุณาใส่ชื่ออาหาร');
+  foods.push({id:uid(),date:today(),name,meal:document.getElementById('fm-meal').value,
+    cal:+document.getElementById('fm-cal').value||0,pro:+document.getElementById('fm-pro').value||0,
+    carb:+document.getElementById('fm-carb').value||0,fat:+document.getElementById('fm-fat').value||0});
+  save();renderNutrition();renderDash();closeModal('foodModal');toast('บันทึกอาหารแล้ว 🥗');
+}
+
+function renderNutrition(){
+  const tod=today();const tf=foods.filter(f=>f.date===tod);
+  const cal=tf.reduce((s,f)=>s+f.cal,0);const pro=tf.reduce((s,f)=>s+f.pro,0);
+  const carb=tf.reduce((s,f)=>s+f.carb,0);const fat=tf.reduce((s,f)=>s+f.fat,0);
+  document.getElementById('n-cal').textContent=cal;document.getElementById('n-pro').textContent=Math.round(pro);
+  document.getElementById('n-carb').textContent=Math.round(carb);document.getElementById('n-fat').textContent=Math.round(fat);
+  document.getElementById('n-goal').textContent=nutriGoal.cal;
+  const pct=v=>Math.min(100,Math.round(v));
+  document.getElementById('np2').textContent=Math.round(pro)+'/'+nutriGoal.pro+'g';
+  document.getElementById('nc2').textContent=Math.round(carb)+'/'+nutriGoal.carb+'g';
+  document.getElementById('nf2').textContent=Math.round(fat)+'/'+nutriGoal.fat+'g';
+  document.getElementById('n-rem').textContent=Math.max(0,nutriGoal.cal-cal)+' kcal';
+  document.getElementById('pb-p').style.width=pct(pro/nutriGoal.pro*100)+'%';
+  document.getElementById('pb-c').style.width=pct(carb/nutriGoal.carb*100)+'%';
+  document.getElementById('pb-f').style.width=pct(fat/nutriGoal.fat*100)+'%';
+  document.getElementById('pb-cal').style.width=pct(cal/nutriGoal.cal*100)+'%';
+  const cp=Math.min(100,cal/nutriGoal.cal*100);
+  document.getElementById('calRing').style.background=`conic-gradient(var(--${cp>=100?'red':'green'}) ${cp}%,var(--card2) 0%)`;
+  document.getElementById('crNum').textContent=cal;document.getElementById('crGoal').textContent=nutriGoal.cal;
+
+  const nl=document.getElementById('n-list');
+  if(!tf.length){nl.innerHTML='<div class="emp"><div class="emp-i">🍽️</div>ยังไม่มีการบันทึกวันนี้<br><button class="btn bgh" style="margin-top:8px" onclick="openFoodModal()">+ เพิ่มอาหาร</button></div>';
+  }else{
+    const mo=['เช้า','กลางวัน','เย็น','ของว่าง'];
+    nl.innerHTML=[...tf].sort((a,b)=>mo.indexOf(a.meal)-mo.indexOf(b.meal)).map(f=>`
+      <div class="li"><div style="flex:1"><div style="font-weight:700;font-size:.87rem">${esc(f.name)}</div><div style="font-size:.72rem;color:var(--muted)">${esc(f.meal)}</div></div>
+      <span style="font-size:.8rem;color:var(--amber)">${f.cal} kcal</span>
+      <span style="font-size:.75rem;color:var(--blue);margin-left:6px">P:${Math.round(f.pro)}g</span>
+      <button class="btn brd" style="padding:3px 7px;font-size:.72rem;margin-left:6px" onclick="delFood('${f.id}')">✕</button></div>`).join('');
+  }
+  renderBarChart('n-chart',7,d=>foods.filter(f=>f.date===d).reduce((s,f)=>s+f.cal,0),'var(--amber)','kcal');
+  renderCalorieBalance();
+}
+function delFood(id){foods=foods.filter(f=>f.id!==id);save();renderNutrition();}
+
+// AI CALORIE
+function saveGeminiKey(){DB.set('ml_geminikey',document.getElementById('gemini-key').value);}
+function initAIProvider(){
+  const gk=DB.get('ml_geminikey','');
+  if(gk){const el=document.getElementById('gemini-key');if(el)el.value=gk;}
+}
+
+function getGeminiKey(){return document.getElementById('gemini-key')?.value.trim()||DB.get('ml_geminikey','');}
+function autoMeal(){const h=new Date().getHours();return h<10?'เช้า':h<14?'กลางวัน':h<19?'เย็น':'ของว่าง';}
+async function callGeminiText(prompt,key){
+  const r=await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${key}`,
+    {method:'POST',headers:{'Content-Type':'application/json'},
+     body:JSON.stringify({contents:[{parts:[{text:prompt}]}],generationConfig:{maxOutputTokens:300}})});
+  if(!r.ok){const e=await r.json();throw new Error(e.error?.message||r.statusText);}
+  const d=await r.json();return d.candidates?.[0]?.content?.parts?.[0]?.text||'';
+}
+
+async function askAI(){
+  const input=document.getElementById('ai-input').value.trim();if(!input)return;
+  const key=getGeminiKey();
+  if(!key)return toast('กรุณาใส่ Gemini API Key ก่อน (ฟรี ที่ aistudio.google.com)');
+  const chat=document.getElementById('ai-chat');
+  chat.innerHTML+=`<div class="ai-bubble user">🙋 ${esc(input)}</div>`;
+  document.getElementById('ai-btn').textContent='กำลังคำนวณ...';
+  document.getElementById('ai-btn').disabled=true;
+  document.getElementById('ai-input').value='';
+  try{
+    const text=await callGeminiText(`คำนวณ Calories และ Macronutrients ของ: "${input}"\nตอบเป็น JSON เท่านั้น:\n{"calories":0,"protein":0,"carbs":0,"fat":0,"note":"คำอธิบายสั้นๆ"}`,key);
+    const match=text.match(/\{[\s\S]*\}/);
+    if(match){
+      const j=JSON.parse(match[0]);
+      chat.innerHTML+=`<div class="ai-bubble">🤖 <strong>${esc(input)}</strong><br>🔥 ${j.calories} kcal | 🥩 P:${j.protein}g | 🍞 C:${j.carbs}g | 🧈 F:${j.fat}g<br><span style="color:var(--muted);font-size:.75rem">${esc(j.note||'')}</span><br><button class="btn bg" style="margin-top:6px;padding:5px 12px;font-size:.75rem" onclick="fillFoodFromAI('${encodeURIComponent(input)}',${j.calories},${j.protein},${j.carbs},${j.fat})">+ เพิ่มลง Food Log</button></div>`;
+    }else{chat.innerHTML+=`<div class="ai-bubble">🤖 ${esc(text)}</div>`;}
+  }catch(err){chat.innerHTML+=`<div class="ai-bubble" style="border-color:var(--red)">❌ ${esc(err.message)}</div>`;}
+  document.getElementById('ai-btn').textContent='คำนวณ';
+  document.getElementById('ai-btn').disabled=false;
+  chat.scrollTop=chat.scrollHeight;
+}
+
+// ══════════ AI PHOTO FOOD ANALYSIS ══════════
+function switchAIMode(mode){
+  document.getElementById('ai-text-mode').style.display=mode==='text'?'':'none';
+  document.getElementById('ai-photo-mode').style.display=mode==='photo'?'':'none';
+  document.getElementById('ai-mode-text').className=mode==='text'?'btn bg':'btn bgh';
+  document.getElementById('ai-mode-photo').className=mode==='photo'?'btn bg':'btn bgh';
+  document.getElementById('ai-mode-text').style.cssText='padding:3px 9px;font-size:.72rem';
+  document.getElementById('ai-mode-photo').style.cssText='padding:3px 9px;font-size:.72rem';
+}
+
+let currentFoodPhotoB64=null;
+
+function handlePhotoDrop(e){
+  e.preventDefault();
+  document.getElementById('photo-drop').style.borderColor='var(--border)';
+  const file=e.dataTransfer.files[0];
+  if(file&&file.type.startsWith('image/'))loadFoodPhoto(file);
+}
+
+function handleFoodPhoto(input){
+  const file=input.files[0];if(!file)return;
+  loadFoodPhoto(file);
+}
+
+function loadFoodPhoto(file){
+  // resize before encoding to keep API cost low
+  const reader=new FileReader();
+  reader.onload=ev=>{
+    const img=new Image();
+    img.onload=()=>{
+      const MAX=800;
+      const canvas=document.createElement('canvas');
+      let w=img.width,h=img.height;
+      if(w>MAX||h>MAX){if(w>h){h=Math.round(h*MAX/w);w=MAX;}else{w=Math.round(w*MAX/h);h=MAX;}}
+      canvas.width=w;canvas.height=h;
+      canvas.getContext('2d').drawImage(img,0,0,w,h);
+      const b64=canvas.toDataURL('image/jpeg',0.85).split(',')[1];
+      currentFoodPhotoB64=b64;
+      const prev=document.getElementById('food-photo-preview');
+      prev.src='data:image/jpeg;base64,'+b64;prev.style.display='block';
+      document.getElementById('analyze-btn').style.display='';
+      document.getElementById('clear-photo-btn').style.display='';
+      document.getElementById('photo-ai-result').innerHTML='<div style="font-size:.78rem;color:var(--muted);text-align:center;margin-top:6px">กด "วิเคราะห์ด้วย AI" เพื่อคำนวณ calories</div>';
+    };
+    img.src=ev.target.result;
+  };
+  reader.readAsDataURL(file);
+}
+
+function clearFoodPhoto(){
+  currentFoodPhotoB64=null;
+  document.getElementById('food-photo-preview').style.display='none';
+  document.getElementById('food-photo-input').value='';
+  document.getElementById('photo-ai-result').innerHTML='';
+  document.getElementById('analyze-btn').style.display='none';
+  document.getElementById('clear-photo-btn').style.display='none';
+}
+
+const AI_PROMPT=`วิเคราะห์อาหารในรูปนี้และประมาณค่าโภชนาการ ตอบเป็น JSON เท่านั้น ไม่มีข้อความอื่น:
+{"dish":"ชื่ออาหาร","items":[{"name":"ชื่อ","amount":"ปริมาณ","cal":0,"pro":0,"carb":0,"fat":0}],"total":{"cal":0,"pro":0,"carb":0,"fat":0},"confidence":"low|medium|high","tips":"คำแนะนำเพื่อความแม่นยำ"}
+ประมาณปริมาณจากขนาดภาพ ถ้าไม่แน่ใจให้ระบุ confidence=low`;
+
+async function callGeminiVision(b64,key){
+  const url=`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${key}`;
+  const resp=await fetch(url,{method:'POST',headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({contents:[{parts:[
+      {inline_data:{mime_type:'image/jpeg',data:b64}},
+      {text:AI_PROMPT}
+    ]}],generationConfig:{maxOutputTokens:600}})});
+  if(!resp.ok){const e=await resp.json();throw new Error(e.error?.message||resp.statusText);}
+  const data=await resp.json();
+  return data.candidates?.[0]?.content?.parts?.[0]?.text||'';
+}
+
+
+function renderPhotoResult(text,res){
+  const match=text.match(/\{[\s\S]*\}/);
+  if(!match)throw new Error('ไม่สามารถแปลผลลัพธ์ได้');
+  const j=JSON.parse(match[0]);
+  const confColor=j.confidence==='high'?'var(--green)':j.confidence==='medium'?'var(--amber)':'var(--red)';
+  const confLabel=j.confidence==='high'?'แม่นยำสูง ✅':j.confidence==='medium'?'แม่นยำปานกลาง ⚠️':'ประมาณการ ⚠️';
+  res.innerHTML=`
+    <div style="background:var(--card2);border:1px solid var(--border);border-radius:10px;padding:12px;margin-top:8px">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+        <div style="font-weight:700;font-size:.9rem">🍽️ ${esc(j.dish)}</div>
+        <span style="font-size:.7rem;color:${confColor};font-weight:700">${confLabel}</span>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:8px;text-align:center">
+        <div style="background:rgba(245,158,11,.1);border-radius:8px;padding:6px"><div style="font-size:1.1rem;font-weight:800;color:var(--amber)">${j.total.cal}</div><div style="font-size:.65rem;color:var(--muted)">kcal</div></div>
+        <div style="background:rgba(59,130,246,.1);border-radius:8px;padding:6px"><div style="font-size:1.1rem;font-weight:800;color:var(--blue)">${j.total.pro}g</div><div style="font-size:.65rem;color:var(--muted)">protein</div></div>
+        <div style="background:rgba(34,197,94,.1);border-radius:8px;padding:6px"><div style="font-size:1.1rem;font-weight:800;color:var(--green)">${j.total.carb}g</div><div style="font-size:.65rem;color:var(--muted)">carbs</div></div>
+        <div style="background:rgba(236,72,153,.1);border-radius:8px;padding:6px"><div style="font-size:1.1rem;font-weight:800;color:var(--pink)">${j.total.fat}g</div><div style="font-size:.65rem;color:var(--muted)">fat</div></div>
+      </div>
+      ${j.items?.length?`<div style="font-size:.72rem;color:var(--muted);margin-bottom:6px">${j.items.map(i=>`<div style="display:flex;justify-content:space-between;padding:2px 0;border-bottom:1px solid var(--border)"><span>${esc(i.name)} ${esc(i.amount)}</span><span style="color:var(--amber)">${i.cal} kcal</span></div>`).join('')}</div>`:''}
+      ${j.tips?`<div style="font-size:.72rem;color:var(--amber);margin-bottom:8px">💡 ${esc(j.tips)}</div>`:''}
+      <button class="btn bg bfu" onclick="logPhotoFood('${encodeURIComponent(j.dish)}',${j.total.cal},${j.total.pro},${j.total.carb},${j.total.fat})">+ เพิ่มลง Food Log</button>
+    </div>`;
+}
+
+async function analyzePhoto(){
+  if(!currentFoodPhotoB64)return toast('กรุณาเลือกรูปอาหารก่อน');
+  const key=getGeminiKey();
+  if(!key)return toast('กรุณาใส่ Gemini API Key ก่อน (ฟรี ที่ aistudio.google.com)');
+  const btn=document.getElementById('analyze-btn');
+  btn.textContent='⏳ กำลังวิเคราะห์...';btn.disabled=true;
+  const res=document.getElementById('photo-ai-result');
+  res.innerHTML=`<div style="font-size:.8rem;color:var(--muted);text-align:center;padding:12px">🤖 Gemini กำลังวิเคราะห์รูปอาหาร...</div>`;
+  try{
+    const text=await callGeminiVision(currentFoodPhotoB64,key);
+    renderPhotoResult(text,res);
+  }catch(err){
+    res.innerHTML=`<div style="color:var(--red);font-size:.8rem;padding:8px">❌ ${err.message}</div>`;
+  }
+  btn.textContent='🤖 วิเคราะห์ด้วย AI';btn.disabled=false;
+}
+
+function logPhotoFood(name,cal,pro,carb,fat){
+  foods.push({id:uid(),date:today(),name:decodeURIComponent(name),meal:autoMeal(),cal,pro,carb,fat});
+  save();renderNutrition();toast('เพิ่มลง Food Log แล้ว ✅');clearFoodPhoto();
+}
+
+function fillFoodFromAI(name,cal,pro,carb,fat){
+  foods.push({id:uid(),date:today(),name:decodeURIComponent(name),meal:autoMeal(),cal,pro,carb,fat});
+  save();renderNutrition();toast('เพิ่มลง Food Log แล้ว ✅');
+}
+
+// FOOD SEARCH
+async function searchFood(){
+  const q=document.getElementById('fs-input').value.trim();
+  if(!q)return;
+  const el=document.getElementById('fs-results');
+  el.innerHTML='<div style="padding:10px;color:var(--muted);font-size:.8rem">กำลังค้นหา...</div>';
+  try{
+    const res=await fetch(`https://world.openfoodfacts.org/cgi/search.pl?search_terms=${encodeURIComponent(q)}&search_simple=1&action=process&json=1&page_size=8`);
+    const data=await res.json();
+    if(!data.products?.length){el.innerHTML='<div class="emp">ไม่พบอาหาร</div>';return;}
+    el.innerHTML=data.products.slice(0,6).map(p=>{
+      const n=p.nutriments;
+      const cal=Math.round(n?.['energy-kcal_100g']||n?.['energy-kcal']||0);
+      const pro=Math.round((n?.proteins_100g||0)*10)/10;
+      const carb=Math.round((n?.carbohydrates_100g||0)*10)/10;
+      const fat=Math.round((n?.fat_100g||0)*10)/10;
+      const name=p.product_name||p.generic_name||'Unknown';
+      return`<div class="food-result" onclick="fillFoodSearch('${encodeURIComponent(name.slice(0,50))}',${cal},${pro},${carb},${fat})">
+        <div style="font-weight:600;font-size:.83rem">${esc(name.slice(0,50))}</div>
+        <div style="font-size:.72rem;color:var(--muted)">${cal} kcal | P:${pro}g C:${carb}g F:${fat}g (per 100g)</div>
+      </div>`;
+    }).join('');
+  }catch(e){el.innerHTML='<div class="emp">ค้นหาไม่สำเร็จ (ตรวจสอบ internet)</div>';}
+}
+
+function fillFoodSearch(name,cal,pro,carb,fat){
+  document.getElementById('fm-name').value=decodeURIComponent(name);
+  document.getElementById('fm-cal').value=cal;
+  document.getElementById('fm-pro').value=pro;
+  document.getElementById('fm-carb').value=carb;
+  document.getElementById('fm-fat').value=fat;
+  openFoodModal();
+}
+
+function calcTDEE(){
+  const sex=document.getElementById('t-sex').value,age=+document.getElementById('t-age').value;
+  const h=+document.getElementById('t-h').value,w=+document.getElementById('t-w').value;
+  const act=+document.getElementById('t-act').value,goal=+document.getElementById('t-goal').value;
+  const bmr=sex==='m'?10*w+6.25*h-5*age+5:10*w+6.25*h-5*age-161;
+  _tdee=Math.round(bmr*act+goal);
+  const pro=Math.round(w*2.2);const fat=Math.round(_tdee*0.25/9);const carb=Math.round((_tdee-pro*4-fat*9)/4);
+  _tdeeVals={pro,carb,fat};
+  document.getElementById('tdee-num').textContent=_tdee+' kcal';
+  document.getElementById('tdee-mac').textContent=`Protein: ${pro}g | Carbs: ${carb}g | Fat: ${fat}g`;
+  document.getElementById('tdee-res').style.display='block';
+}
+function applyTDEE(){if(!_tdee)return;nutriGoal={cal:_tdee,..._tdeeVals};DB.set('ml_tdee',_tdee);save();renderNutrition();toast('บันทึกเป้าหมายแล้ว ✅');}
+
+// ══════════ HEALTH ══════════
+function addMetric(e){
+  e.preventDefault();
+  const wt=+document.getElementById('h-wt').value||null;
+  const bf=+document.getElementById('h-bf').value||null;
+  if(!wt&&!bf)return toast('กรุณาใส่ข้อมูลอย่างน้อย 1 อย่าง');
+  metrics.push({id:uid(),date:document.getElementById('h-date').value||today(),wt,bf,wa:+document.getElementById('h-wa').value||null,arm:+document.getElementById('h-arm').value||null,hr:+document.getElementById('h-hr').value||null,bp:document.getElementById('h-bp').value.trim()||null});
+  save();renderHealth();toast('บันทึก metrics แล้ว 📊');
+}
+function renderHealth(){
+  renderBarChart('h-wt-chart',14,d=>{const m=[...metrics].filter(x=>x.date===d&&x.wt);return m.length?m[m.length-1].wt:0;},'var(--blue)','kg');
+  const sorted=[...metrics].sort((a,b)=>b.date.localeCompare(a.date));
+  const latest=sorted.find(m=>m.wt);
+  const bmiEl=document.getElementById('h-bmi');
+  if(latest?.wt){
+    const h=+document.getElementById('t-h')?.value||175;
+    const bmi=+(latest.wt/((h/100)**2)).toFixed(1);
+    const lbl=bmi<18.5?'ต่ำกว่าปกติ':bmi<25?'ปกติ':bmi<30?'น้ำหนักเกิน':'อ้วน';
+    const col=bmi<18.5?'var(--blue)':bmi<25?'var(--green)':bmi<30?'var(--amber)':'var(--red)';
+    bmiEl.innerHTML=`<div style="text-align:center;padding:8px 0"><div style="font-size:2.4rem;font-weight:800;color:${col}">${bmi}</div><div style="color:${col};font-size:.85rem">${lbl}</div>${latest.bf?`<div style="margin-top:8px;font-size:.8rem;color:var(--muted)">Body Fat: <strong style="color:var(--purple)">${latest.bf}%</strong></div>`:''}<div style="font-size:.8rem;color:var(--muted);margin-top:4px">${latest.wt} kg</div></div>`;
+  }else{bmiEl.innerHTML='<div class="emp">บันทึกน้ำหนักเพื่อดู BMI</div>';}
+  const hl=document.getElementById('h-list');
+  if(!sorted.length){hl.innerHTML='<div class="emp"><div class="emp-i">📊</div>ยังไม่มีข้อมูล</div>';return;}
+  hl.innerHTML=sorted.slice(0,20).map(m=>`<div style="display:grid;grid-template-columns:1fr 1fr 1fr auto;gap:6px;padding:9px 16px;border-bottom:1px solid var(--border);font-size:.82rem;align-items:center">
+    <div>${fmt(m.date)}</div><div style="color:var(--blue)">${m.wt?m.wt+' kg':'—'}</div><div style="color:var(--purple)">${m.bf?m.bf+'%':'—'}</div>
+    <button class="btn brd" style="padding:3px 7px;font-size:.72rem" onclick="delMetric('${m.id}')">✕</button>
+  </div>`).join('');
+}
+function delMetric(id){metrics=metrics.filter(m=>m.id!==id);save();renderHealth();}
+
+// ══════════ PHOTOS ══════════
+function addPhotos(input){
+  const files=[...input.files];
+  let done=0;
+  const total=files.length;
+  files.forEach(file=>{
+    const reader=new FileReader();
+    reader.onload=ev=>{
+      const img=new Image();
+      img.onload=()=>{
+        const MAX=1200;
+        const canvas=document.createElement('canvas');
+        let w=img.width,h=img.height;
+        if(w>MAX||h>MAX){if(w>h){h=Math.round(h*MAX/w);w=MAX;}else{w=Math.round(w*MAX/h);h=MAX;}}
+        canvas.width=w;canvas.height=h;
+        canvas.getContext('2d').drawImage(img,0,0,w,h);
+        const src=canvas.toDataURL('image/jpeg',0.82);
+        photos.push({id:uid(),date:today(),src,note:''});
+        done++;if(done===total){save();renderPhotos();toast(`เพิ่ม ${total} รูปแล้ว 📸`);}
+      };
+      img.src=ev.target.result;
+    };
+    reader.readAsDataURL(file);
+  });
+  input.value='';
+}
+
+function renderPhotos(){
+  const sorted=[...photos].sort((a,b)=>b.date.localeCompare(a.date));
+  document.getElementById('photo-count').textContent=sorted.length+' รูป';
+  const pg=document.getElementById('photo-grid');
+  if(!sorted.length){pg.innerHTML='<div class="emp" style="grid-column:span 4"><div class="emp-i">📸</div>ยังไม่มีรูป<br>กด "+ เพิ่มรูป" เพื่อเริ่มต้น</div>';return;}
+  pg.innerHTML=sorted.map(p=>`<div class="photo-thumb">
+    <img src="${p.src}" alt="${p.date}">
+    <div class="photo-date">${fmt(p.date)}</div>
+    <button onclick="delPhoto('${p.id}')" style="position:absolute;top:4px;right:4px;background:rgba(0,0,0,.6);border:none;color:#fff;border-radius:50%;width:22px;height:22px;font-size:.7rem;cursor:pointer;display:flex;align-items:center;justify-content:center">✕</button>
+  </div>`).join('');
+
+  // compare selects
+  const opts=sorted.map(p=>`<option value="${p.id}">${fmt(p.date)}</option>`).join('');
+  document.getElementById('cmp-a').innerHTML=opts;
+  document.getElementById('cmp-b').innerHTML=opts;
+  if(sorted.length>1) document.getElementById('cmp-b').selectedIndex=1;
+  comparePhotos();
+}
+
+function comparePhotos(){
+  const aid=document.getElementById('cmp-a').value;
+  const bid=document.getElementById('cmp-b').value;
+  const pa=photos.find(p=>p.id===aid);
+  const pb=photos.find(p=>p.id===bid);
+  const show=(el,p)=>{
+    const e=document.getElementById(el);
+    if(p)e.innerHTML=`<img src="${p.src}" style="width:100%;height:100%;object-fit:cover">`;
+    else e.innerHTML='<span style="color:var(--muted)">เลือกรูป</span>';
+  };
+  show('cmp-img-a',pa);show('cmp-img-b',pb);
+}
+
+function delPhoto(id){photos=photos.filter(p=>p.id!==id);save();renderPhotos();toast('ลบรูปแล้ว');}
+
+// ══════════ GOALS ══════════
+function openGoalModal(){document.getElementById('goalModal').classList.add('on');setTimeout(()=>document.getElementById('gm-name').focus(),100);}
+function saveGoal(){
+  const name=document.getElementById('gm-name').value.trim();if(!name)return toast('กรุณาใส่ชื่อ Goal');
+  goals.push({id:uid(),name,cat:document.getElementById('gm-cat').value,desc:document.getElementById('gm-desc').value.trim(),cur:+document.getElementById('gm-cur').value||0,target:+document.getElementById('gm-tgt').value||100,unit:document.getElementById('gm-unit').value.trim(),deadline:document.getElementById('gm-dl').value,done:false,created:today()});
+  save();renderGoals();renderDash();closeModal('goalModal');toast('เพิ่ม Goal แล้ว 🎯');
+  ['gm-name','gm-desc','gm-unit','gm-dl'].forEach(id=>document.getElementById(id).value='');
+}
+function renderGoals(){
+  const ag=goals.filter(g=>!g.done).length;const dn=goals.filter(g=>g.done).length;
+  document.getElementById('g-act').textContent=ag;document.getElementById('g-done').textContent=dn;
+  [{id:'g-fit',cat:'fit'},{id:'g-per',cat:'per'},{id:'g-oth',cat:'oth'}].forEach(({id,cat})=>{
+    const el=document.getElementById(id);
+    const items=goals.filter(g=>g.cat===cat);
+    if(!items.length){el.innerHTML='<div class="emp">ยังไม่มี goal</div>';return;}
+    el.innerHTML=items.map(g=>{
+      const p=Math.min(100,Math.round(g.cur/g.target*100));
+      const dl=g.deadline?Math.ceil((new Date(g.deadline+'T00:00:00')-new Date())/86400000):null;
+      return`<div style="padding:13px 16px;border-bottom:1px solid var(--border)">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px">
+          <div><div style="font-weight:700;font-size:.87rem;${g.done?'text-decoration:line-through;color:var(--muted)':''}">${esc(g.name)}</div>${g.desc?`<div style="font-size:.72rem;color:var(--muted);margin-top:1px">${esc(g.desc)}</div>`:''}</div>
+          <div style="display:flex;gap:5px;align-items:center">
+            ${dl!==null?`<span class="badge" style="background:rgba(245,158,11,.1);color:var(--amber)">${dl>0?dl+'วัน':'หมดเวลา'}</span>`:''}
+            <button class="btn bgh" style="padding:3px 7px;font-size:.7rem" onclick="toggleGoalDone('${g.id}')">${g.done?'↩':'✓'}</button>
+            <button class="btn brd" style="padding:3px 7px;font-size:.7rem" onclick="delGoal('${g.id}')">✕</button>
+          </div>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px">
+          <div class="pw" style="flex:1;margin:0"><div class="pf" style="width:${p}%;background:${g.done?'var(--muted)':'var(--green)'}"></div></div>
+          <span style="font-size:.72rem;color:var(--muted)">${g.cur}/${g.target} ${esc(g.unit||'')} (${p}%)</span>
+        </div>
+        ${!g.done?`<div style="display:flex;gap:5px;margin-top:7px"><input type="number" value="${g.cur}" min="0" max="${g.target}" style="flex:1;padding:5px 8px;font-size:.78rem" onchange="updGoal('${g.id}',this.value)"><span style="align-self:center;font-size:.75rem;color:var(--muted)">/ ${g.target} ${g.unit||''}</span></div>`:''}
+      </div>`;
+    }).join('');
+  });
+}
+function updGoal(id,v){const g=goals.find(x=>x.id===id);if(g){g.cur=Math.min(g.target,Math.max(0,+v));if(g.cur>=g.target)g.done=true;save();renderGoals();renderDash();}}
+function toggleGoalDone(id){const g=goals.find(x=>x.id===id);if(g){g.done=!g.done;save();renderGoals();renderDash();toast(g.done?'Goal สำเร็จ! 🎉':'ยกเลิก');}}
+function delGoal(id){goals=goals.filter(x=>x.id!==id);save();renderGoals();renderDash();}
+
+// ══════════ TODO ══════════
+function addTodo(e){
+  e.preventDefault();const text=document.getElementById('ti').value.trim();if(!text)return;
+  todos.push({id:uid(),text,priority:document.getElementById('tp').value,done:false,date:today()});
+  save();renderTodo();renderDash();document.getElementById('ti').value='';
+}
+function toggleTodo(id){const t=todos.find(x=>x.id===id);if(t){t.done=!t.done;save();renderTodo();renderDash();}}
+function delTodo(id){todos=todos.filter(x=>x.id!==id);save();renderTodo();renderDash();}
+function clearDone(){todos=todos.filter(t=>!t.done);save();renderTodo();renderDash();toast('ลบ Done tasks แล้ว');}
+function renderTodo(){
+  const tod=today();const tt=todos.filter(t=>t.date===tod);
+  const dn=tt.filter(t=>t.done).length;
+  document.getElementById('t-tot').textContent=tt.length;document.getElementById('t-dn').textContent=dn;
+  document.getElementById('t-rem').textContent=tt.length-dn;document.getElementById('t-pct').textContent=tt.length?Math.round(dn/tt.length*100)+'%':'0%';
+  const pi={high:'🔴',med:'🟡',low:'🟢'};const po={high:0,med:1,low:2};
+  const all=[...todos].sort((a,b)=>a.done-b.done||po[a.priority]-po[b.priority]);
+  const tl=document.getElementById('todo-list');
+  if(!all.length){tl.innerHTML='<div class="emp"><div class="emp-i">✅</div>ไม่มี todo</div>';return;}
+  tl.innerHTML=all.map(t=>`<div style="padding:9px 14px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px">
+    <div style="width:20px;height:20px;border-radius:5px;border:2px solid ${t.done?'var(--green)':'var(--border)'};background:${t.done?'var(--green)':'none'};cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:.75rem;color:#000;flex-shrink:0" onclick="toggleTodo('${t.id}')">${t.done?'✓':''}</div>
+    <span style="flex:1;font-size:.85rem;${t.done?'text-decoration:line-through;color:var(--muted)':''}">${pi[t.priority]} ${esc(t.text)}</span>
+    <span style="font-size:.68rem;color:var(--muted)">${t.date!==tod?fmt(t.date):''}</span>
+    <button class="btn brd" style="padding:2px 6px;font-size:.7rem" onclick="delTodo('${t.id}')">✕</button>
+  </div>`).join('');
+  renderHabits();
+}
+
+function openHabitModal(){document.getElementById('habitModal').classList.add('on');setTimeout(()=>document.getElementById('hm-name').focus(),100);}
+function saveHabit(){
+  const name=document.getElementById('hm-name').value.trim();if(!name)return toast('กรุณาใส่ชื่อ');
+  habits.push({id:uid(),name,icon:document.getElementById('hm-icon').value.trim()||'⭐'});
+  save();renderHabits();closeModal('habitModal');toast('เพิ่ม Habit แล้ว');
+  document.getElementById('hm-name').value='';document.getElementById('hm-icon').value='';
+}
+function toggleHabit(hid){const tod=today();const key=tod+'_'+hid;habitLog[key]=!habitLog[key];save();renderHabits();}
+function delHabit(id){habits=habits.filter(h=>h.id!==id);save();renderHabits();}
+function renderHabits(){
+  const tod=today();const hl=document.getElementById('habit-list');
+  if(!habits.length){hl.innerHTML='<div class="emp">เพิ่ม habit เพื่อติดตาม</div>';return;}
+  hl.innerHTML=habits.map(h=>{
+    const done=habitLog[tod+'_'+h.id];
+    let streak=0;for(let i=0;i<365;i++){const d=new Date();d.setDate(d.getDate()-i);if(habitLog[d.toISOString().split('T')[0]+'_'+h.id])streak++;else break;}
+    return`<div class="li" style="gap:8px">
+      <div style="font-size:1.2rem">${esc(h.icon)}</div>
+      <div style="flex:1"><div style="font-weight:600;font-size:.85rem">${esc(h.name)}</div><div style="font-size:.68rem;color:var(--muted)">🔥 ${streak} วันติดต่อกัน</div></div>
+      <div style="width:34px;height:34px;border-radius:50%;border:2px solid ${done?'var(--green)':'var(--border)'};background:${done?'var(--green)':'none'};cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:.9rem;color:${done?'#000':'var(--muted2)'}" onclick="toggleHabit('${h.id}')">${done?'✓':''}</div>
+      <button class="btn brd" style="padding:2px 6px;font-size:.7rem" onclick="delHabit('${h.id}')">✕</button>
+    </div>`;
+  }).join('');
+}
+
+// ══════════ CHART ══════════
+function renderBarChart(elId,days,valFn,color,unit){
+  const el=document.getElementById(elId);if(!el)return;
+  const arr=[];const lbs=[];const dn=['อา','จ','อ','พ','พฤ','ศ','ส'];
+  for(let i=days-1;i>=0;i--){const d=new Date();d.setDate(d.getDate()-i);arr.push(valFn(d.toISOString().split('T')[0]));lbs.push(dn[d.getDay()]);}
+  const mx=Math.max(...arr,1);
+  el.innerHTML=arr.map((v,i)=>`<div class="bw"><div class="bar" style="height:${Math.max(v/mx*100,v>0?3:0)}%;background:${color};opacity:${i===arr.length-1?1:.65}" title="${lbs[i]}: ${typeof v==='number'?v.toLocaleString():v} ${unit}"></div><div class="bl">${lbs[i]}</div></div>`).join('');
+}
+
+// ══════════ BARCODE SCANNER ══════════
+let barcodeScanner = null;
+
+function openBarcodeScanner() {
+  const overlay = document.getElementById('barcode-overlay');
+  overlay.style.display = 'flex';
+  document.getElementById('barcode-status').textContent = 'กำลังเปิดกล้อง...';
+
+  barcodeScanner = new Html5Qrcode('barcode-reader');
+  const config = { fps: 10, qrbox: { width: 250, height: 100 }, formatsToSupport: [
+    Html5QrcodeSupportedFormats.EAN_13, Html5QrcodeSupportedFormats.EAN_8,
+    Html5QrcodeSupportedFormats.UPC_A, Html5QrcodeSupportedFormats.UPC_E,
+    Html5QrcodeSupportedFormats.CODE_128, Html5QrcodeSupportedFormats.CODE_39,
+    Html5QrcodeSupportedFormats.ITF, Html5QrcodeSupportedFormats.QR_CODE
+  ]};
+
+  barcodeScanner.start(
+    { facingMode: 'environment' }, config,
+    (code) => { // สแกนสำเร็จ
+      closeBarcodeScanner();
+      lookupBarcode(code);
+    },
+    () => {} // ยังสแกนไม่ได้ — ไม่ต้องทำอะไร
+  ).then(() => {
+    document.getElementById('barcode-status').textContent = 'จ่อกล้องไปที่ barcode บนฉลากสินค้า';
+  }).catch(err => {
+    document.getElementById('barcode-status').textContent = '❌ เปิดกล้องไม่ได้: ' + err;
+  });
+}
+
+function closeBarcodeScanner() {
+  if (barcodeScanner) {
+    barcodeScanner.stop().catch(() => {}).finally(() => {
+      barcodeScanner.clear();
+      barcodeScanner = null;
+    });
+  }
+  document.getElementById('barcode-overlay').style.display = 'none';
+  document.getElementById('barcode-manual').value = '';
+}
+
+function lookupManualBarcode() {
+  const code = document.getElementById('barcode-manual').value.trim();
+  if (!code) return;
+  closeBarcodeScanner();
+  lookupBarcode(code);
+}
+
+async function lookupBarcode(barcode) {
+  toast('🔍 กำลังค้นหา barcode: ' + barcode);
+  const res = document.getElementById('fs-results');
+  res.innerHTML = `<div style="text-align:center;padding:12px;color:var(--muted)">⏳ กำลังค้นหา ${esc(barcode)}...</div>`;
+  goto('nutrition'); // กลับไปหน้า nutrition
+
+  try {
+    const resp = await fetch(`https://world.openfoodfacts.org/api/v0/product/${barcode}.json`);
+    const data = await resp.json();
+
+    if (data.status === 0 || !data.product) {
+      res.innerHTML = `<div style="padding:12px">
+        <div style="color:var(--red);font-weight:700;margin-bottom:6px">❌ ไม่พบสินค้า barcode: ${esc(barcode)}</div>
+        <div style="font-size:.78rem;color:var(--muted)">สินค้านี้อาจยังไม่มีในฐานข้อมูล Open Food Facts<br>ลองค้นด้วยชื่อสินค้าแทน หรือกรอกเองใน Food Log</div>
+      </div>`;
+      return;
+    }
+
+    const p = data.product;
+    const n = p.nutriments || {};
+    const name = p.product_name_th || p.product_name || p.brands || 'สินค้าไม่ระบุชื่อ';
+    const per = p.serving_size || '100g';
+    const cal  = Math.round(n['energy-kcal_100g'] || n['energy-kcal'] || (n['energy_100g'] || 0) / 4.184 || 0);
+    const pro  = Math.round((n['proteins_100g'] || 0) * 10) / 10;
+    const carb = Math.round((n['carbohydrates_100g'] || 0) * 10) / 10;
+    const fat  = Math.round((n['fat_100g'] || 0) * 10) / 10;
+    const fiber = Math.round((n['fiber_100g'] || 0) * 10) / 10;
+    const sugar = Math.round((n['sugars_100g'] || 0) * 10) / 10;
+    const sodium = Math.round((n['sodium_100g'] || 0) * 1000 * 10) / 10;
+    const img = p.image_front_thumb_url || p.image_thumb_url || '';
+    const brand = p.brands || '';
+    const qty = p.quantity || '';
+    const nutriscore = p.nutriscore_grade?.toUpperCase() || '';
+    const nsColor = {A:'#22c55e',B:'#84cc16',C:'#f59e0b',D:'#f97316',E:'#ef4444'}[nutriscore] || 'var(--muted)';
+
+    res.innerHTML = `
+      <div style="background:var(--card2);border:1px solid var(--green);border-radius:12px;padding:14px;margin-top:6px">
+        <div style="display:flex;gap:12px;align-items:flex-start;margin-bottom:12px">
+          ${img ? `<img src="${img}" style="width:64px;height:64px;object-fit:contain;border-radius:8px;border:1px solid var(--border);background:#fff;flex-shrink:0">` : ''}
+          <div style="flex:1;min-width:0">
+            <div style="font-weight:800;font-size:.92rem;margin-bottom:2px">${esc(name)}</div>
+            ${brand ? `<div style="font-size:.72rem;color:var(--muted)">${esc(brand)} ${esc(qty)}</div>` : ''}
+            <div style="display:flex;gap:6px;align-items:center;margin-top:4px">
+              <span style="font-size:.68rem;color:var(--muted)">barcode: ${barcode}</span>
+              ${nutriscore ? `<span style="background:${nsColor};color:#000;font-size:.65rem;font-weight:800;padding:1px 6px;border-radius:4px">Nutri-Score ${nutriscore}</span>` : ''}
+            </div>
+          </div>
+        </div>
+
+        <div style="font-size:.72rem;color:var(--muted);margin-bottom:8px">ข้อมูลต่อ 100g</div>
+        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:10px;text-align:center">
+          <div style="background:rgba(245,158,11,.1);border-radius:8px;padding:8px">
+            <div style="font-size:1.1rem;font-weight:800;color:var(--amber)">${cal}</div>
+            <div style="font-size:.65rem;color:var(--muted)">kcal</div>
+          </div>
+          <div style="background:rgba(59,130,246,.1);border-radius:8px;padding:8px">
+            <div style="font-size:1.1rem;font-weight:800;color:var(--blue)">${pro}g</div>
+            <div style="font-size:.65rem;color:var(--muted)">โปรตีน</div>
+          </div>
+          <div style="background:rgba(34,197,94,.1);border-radius:8px;padding:8px">
+            <div style="font-size:1.1rem;font-weight:800;color:var(--green)">${carb}g</div>
+            <div style="font-size:.65rem;color:var(--muted)">คาร์บ</div>
+          </div>
+          <div style="background:rgba(236,72,153,.1);border-radius:8px;padding:8px">
+            <div style="font-size:1.1rem;font-weight:800;color:var(--pink)">${fat}g</div>
+            <div style="font-size:.65rem;color:var(--muted)">ไขมัน</div>
+          </div>
+        </div>
+        ${fiber||sugar||sodium ? `<div style="display:flex;gap:10px;font-size:.72rem;color:var(--muted);margin-bottom:10px">
+          ${fiber?`<span>เส้นใย: <strong style="color:var(--text)">${fiber}g</strong></span>`:''}
+          ${sugar?`<span>น้ำตาล: <strong style="color:var(--text)">${sugar}g</strong></span>`:''}
+          ${sodium?`<span>โซเดียม: <strong style="color:var(--text)">${sodium}mg</strong></span>`:''}
+        </div>` : ''}
+
+        <div style="display:flex;gap:6px;align-items:center;margin-bottom:8px">
+          <span style="font-size:.78rem;color:var(--muted)">ปริมาณที่กิน (g):</span>
+          <input type="number" id="bc-serving" value="100" min="1" max="2000" style="width:80px;padding:5px 8px;font-size:.82rem" oninput="updateBcNutrition(${cal},${pro},${carb},${fat})">
+          <span style="font-size:.75rem;color:var(--muted)">g</span>
+        </div>
+        <div id="bc-adj" style="font-size:.78rem;color:var(--muted2);margin-bottom:10px"></div>
+
+        <button class="btn bg bfu" onclick="logBarcodeFood('${encodeURIComponent(name)}',${cal},${pro},${carb},${fat})">
+          + เพิ่มลง Food Log
+        </button>
+      </div>`;
+
+    updateBcNutrition(cal, pro, carb, fat);
+  } catch(err) {
+    res.innerHTML = `<div style="color:var(--red);padding:12px;font-size:.82rem">❌ เกิดข้อผิดพลาด: ${err.message}</div>`;
+  }
+}
+
+function updateBcNutrition(cal100, pro100, carb100, fat100) {
+  const g = +document.getElementById('bc-serving')?.value || 100;
+  const adj = document.getElementById('bc-adj');
+  if (!adj) return;
+  const c = Math.round(cal100 * g / 100);
+  const p = Math.round(pro100 * g / 100 * 10) / 10;
+  const cb = Math.round(carb100 * g / 100 * 10) / 10;
+  const f = Math.round(fat100 * g / 100 * 10) / 10;
+  adj.innerHTML = `ปริมาณที่คำนวณ (${g}g): <strong style="color:var(--amber)">${c} kcal</strong> | P:<strong>${p}g</strong> C:<strong>${cb}g</strong> F:<strong>${f}g</strong>`;
+  // อัปเดตปุ่ม log ให้ใช้ค่าที่ปรับแล้ว
+  const logBtn = document.querySelector('#fs-results .btn.bg');
+  if (logBtn) {
+    const name = decodeURIComponent(logBtn.getAttribute('onclick').match(/'([^']+)'/)?.[1] || '');
+    logBtn.setAttribute('onclick', `logBarcodeFood('${encodeURIComponent(name)}',${c},${p},${cb},${f})`);
+  }
+}
+
+function logBarcodeFood(name, cal, pro, carb, fat) {
+  foods.push({id:uid(), date:today(), name:decodeURIComponent(name), meal:autoMeal(), cal, pro, carb, fat});
+  save(); renderNutrition();
+  document.getElementById('fs-results').innerHTML = '';
+  toast('เพิ่ม ' + decodeURIComponent(name) + ' ลง Food Log แล้ว ✅');
+}
+
+function searchFoodOrBarcode() {
+  const q = document.getElementById('fs-input').value.trim();
+  if (!q) return;
+  // ถ้าเป็นตัวเลขล้วน → สแกน barcode
+  if (/^\d{6,14}$/.test(q)) {
+    lookupBarcode(q);
+  } else {
+    searchFood();
+  }
+}
+
+// ══════════ WATER ══════════
+let waterGoal=DB.get('ml_wg',2000);
+let waterLog=DB.get('ml_wl',[]);
+
+function addWater(ml){
+  if(!ml||ml<=0)return toast('กรุณาใส่ปริมาณน้ำ');
+  waterLog.push({id:uid(),date:today(),ml,time:new Date().toLocaleTimeString('th-TH',{hour:'2-digit',minute:'2-digit'})});
+  DB.set('ml_wl',waterLog);renderWater();document.getElementById('w-custom').value='';
+  toast('เพิ่มน้ำ '+ml+'ml 💧');
+}
+
+function setWaterGoal(){
+  const v=+document.getElementById('w-goal-input').value||2000;
+  waterGoal=v;DB.set('ml_wg',waterGoal);renderWater();toast('ตั้งเป้า '+v+'ml แล้ว');
+}
+
+function clearWaterToday(){
+  waterLog=waterLog.filter(w=>w.date!==today());
+  DB.set('ml_wl',waterLog);renderWater();toast('รีเซ็ตแล้ว');
+}
+
+function renderWater(){
+  const tod=today();
+  const todW=waterLog.filter(w=>w.date===tod);
+  const total=todW.reduce((s,w)=>s+w.ml,0);
+  const pct=Math.min(100,Math.round(total/waterGoal*100));
+  document.getElementById('w-ml').textContent=total;
+  document.getElementById('w-goal-disp').textContent=waterGoal;
+  document.getElementById('w-pct').textContent=pct+'%';
+  document.getElementById('w-cups').textContent=Math.floor(total/250);
+  document.getElementById('w-ml2').textContent=total;
+  document.getElementById('w-goal2').textContent=waterGoal;
+  document.getElementById('w-goal-input').value=waterGoal;
+  const bf=document.getElementById('w-bottle-fill');
+  if(bf){bf.style.height=pct+'%';document.getElementById('w-bottle-pct').textContent=pct+'%';}
+  renderBarChart('wt-chart',7,d=>waterLog.filter(w=>w.date===d).reduce((s,w)=>s+w.ml,0),'var(--blue)','ml');
+  const wl=document.getElementById('w-log');
+  if(!todW.length){wl.innerHTML='<div class="emp">ยังไม่มีการบันทึกวันนี้</div>';return;}
+  wl.innerHTML=[...todW].reverse().map(w=>`<div class="li"><span style="font-size:1rem">💧</span><span style="flex:1;font-size:.85rem">${w.time}</span><span style="color:var(--blue);font-weight:700">${w.ml} ml</span><button class="btn brd" style="padding:2px 6px;font-size:.7rem" onclick="delWater('${w.id}')">✕</button></div>`).join('');
+}
+function delWater(id){waterLog=waterLog.filter(w=>w.id!==id);DB.set('ml_wl',waterLog);renderWater();}
+
+// ══════════ JOURNAL ══════════
+let journals=DB.get('ml_jn',[]);
+let currentMood=3;
+
+function setMood(v){
+  currentMood=v;
+  for(let i=1;i<=5;i++){
+    const b=document.getElementById('mb'+i);
+    if(b)b.style.borderColor=i===v?'var(--green)':'var(--border)';
+  }
+}
+
+function saveJournal(e){
+  e.preventDefault();
+  const note=document.getElementById('j-note').value.trim();
+  const win=document.getElementById('j-win').value.trim();
+  const energy=+document.getElementById('j-energy').value;
+  const stress=+document.getElementById('j-stress').value;
+  const existing=journals.findIndex(j=>j.date===today());
+  const entry={id:uid(),date:today(),mood:currentMood,energy,stress,note,win};
+  if(existing>=0)journals[existing]=entry;else journals.push(entry);
+  DB.set('ml_jn',journals);renderJournal();
+  document.getElementById('j-note').value='';document.getElementById('j-win').value='';
+  toast('บันทึก Journal แล้ว 📝');
+}
+
+function renderJournal(){
+  const sorted=[...journals].sort((a,b)=>b.date.localeCompare(a.date));
+  const avg=arr=>arr.length?+(arr.reduce((s,x)=>s+x,0)/arr.length).toFixed(1):0;
+  document.getElementById('j-mood-avg').textContent=avg(sorted.map(j=>j.mood))||'—';
+  document.getElementById('j-energy-avg').textContent=avg(sorted.map(j=>j.energy))||'—';
+  document.getElementById('j-count').textContent=sorted.length;
+  renderBarChart('j-chart',14,d=>{const j=journals.find(x=>x.date===d);return j?j.mood:0;},'var(--amber)','mood');
+  const MOODS=['','😞','😐','🙂','😄','🤩'];
+  const jl=document.getElementById('j-list');
+  if(!sorted.length){jl.innerHTML='<div class="emp"><div class="emp-i">📝</div>ยังไม่มีบันทึก</div>';return;}
+  jl.innerHTML=sorted.slice(0,20).map(j=>`<div style="padding:13px 16px;border-bottom:1px solid var(--border)">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+      <div style="font-weight:700;font-size:.87rem">${fmt(j.date)}</div>
+      <div style="display:flex;gap:8px;align-items:center">
+        <span title="Mood">${MOODS[j.mood]}</span>
+        <span style="font-size:.72rem;color:var(--amber)">⚡${j.energy}</span>
+        <span style="font-size:.72rem;color:var(--red)">😤${j.stress}</span>
+        <button class="btn brd" style="padding:2px 6px;font-size:.7rem" onclick="delJournal('${j.id}')">✕</button>
+      </div>
+    </div>
+    ${j.win?`<div style="font-size:.78rem;color:var(--green);margin-bottom:3px">🏆 ${esc(j.win)}</div>`:''}
+    ${j.note?`<div style="font-size:.78rem;color:var(--muted2)">${esc(j.note)}</div>`:''}
+  </div>`).join('');
+  // load today if exists
+  const tod=journals.find(j=>j.date===today());
+  if(tod){setMood(tod.mood);document.getElementById('j-energy').value=tod.energy;document.getElementById('j-energy').dispatchEvent(new Event('input'));document.getElementById('j-stress').value=tod.stress;document.getElementById('j-stress').dispatchEvent(new Event('input'));document.getElementById('j-note').value=tod.note||'';document.getElementById('j-win').value=tod.win||'';}
+}
+function delJournal(id){journals=journals.filter(j=>j.id!==id);DB.set('ml_jn',journals);renderJournal();}
+
+// ══════════ PERSONAL RECORDS ══════════
+function renderPRs(){
+  // Strength: max weight per exercise
+  const exMap={};
+  workouts.forEach(w=>{if(!exMap[w.exercise]||w.weight>exMap[w.exercise].weight)exMap[w.exercise]={weight:w.weight,date:w.date,sets:w.sets,reps:w.reps};});
+  const sorted=Object.entries(exMap).sort((a,b)=>b[1].weight-a[1].weight);
+  const ps=document.getElementById('pr-strength');
+  if(!sorted.length){ps.innerHTML='<div class="emp">บันทึก workout เพื่อดู PRs</div>';}
+  else{ps.innerHTML=sorted.map(([name,pr],i)=>`<div class="li">
+    <span style="width:22px;text-align:center;font-size:.75rem;color:${i===0?'var(--amber)':i===1?'var(--muted2)':i===2?'#cd7f32':'var(--muted)'}">${i===0?'🥇':i===1?'🥈':i===2?'🥉':'#'+(i+1)}</span>
+    <div style="flex:1"><div style="font-weight:700;font-size:.85rem">${esc(name)}</div><div style="font-size:.7rem;color:var(--muted)">${fmt(pr.date)}</div></div>
+    <span class="badge" style="background:rgba(245,158,11,.12);color:var(--amber)">${pr.weight} kg</span>
+    <span style="font-size:.72rem;color:var(--muted);margin-left:6px">${pr.sets}×${pr.reps}</span>
+  </div>`).join('');}
+
+  // Volume: max volume per session per exercise
+  const sesMap={};
+  workouts.forEach(w=>{const k=w.exercise+'_'+w.date;const v=w.weight*w.sets*w.reps;if(!sesMap[w.exercise]||v>sesMap[w.exercise].vol)sesMap[w.exercise]={vol:v,date:w.date};});
+  const vsorted=Object.entries(sesMap).sort((a,b)=>b[1].vol-a[1].vol);
+  const pv=document.getElementById('pr-volume');
+  if(!vsorted.length){pv.innerHTML='<div class="emp">บันทึก workout เพื่อดู Volume PRs</div>';}
+  else{pv.innerHTML=vsorted.map(([name,pr],i)=>`<div class="li">
+    <span style="width:22px;text-align:center;font-size:.75rem;color:${i===0?'var(--amber)':i===1?'var(--muted2)':i===2?'#cd7f32':'var(--muted)'}">${i===0?'🥇':i===1?'🥈':i===2?'🥉':'#'+(i+1)}</span>
+    <div style="flex:1"><div style="font-weight:700;font-size:.85rem">${esc(name)}</div><div style="font-size:.7rem;color:var(--muted)">${fmt(pr.date)}</div></div>
+    <span class="badge" style="background:rgba(34,197,94,.1);color:var(--green)">${pr.vol.toLocaleString()} kg</span>
+  </div>`).join('');}
+
+  // populate exercise select
+  const sel=document.getElementById('pr-ex-select');
+  const exNames=[...new Set(workouts.map(w=>w.exercise))].sort();
+  const cur=sel.value;
+  sel.innerHTML='<option value="">— เลือกท่าออกกำลังกาย —</option>'+exNames.map(n=>`<option value="${esc(n)}" ${n===cur?'selected':''}>${esc(n)}</option>`).join('');
+  if(cur)renderPRChart();
+
+  // Weekly summary
+  const wkStart=new Date();wkStart.setDate(wkStart.getDate()-6);const wks=wkStart.toISOString().split('T')[0];
+  const wkW=workouts.filter(w=>w.date>=wks);
+  const wkF=foods.filter(f=>f.date>=wks);
+  const wkS=sleeps.filter(s=>s.date>=wks);
+  document.getElementById('ws-vol').textContent=wkW.reduce((s,w)=>s+w.weight*w.sets*w.reps,0).toLocaleString();
+  const days7=[...new Set(wkF.map(f=>f.date))];
+  document.getElementById('ws-cal').textContent=days7.length?Math.round(wkF.reduce((s,f)=>s+f.cal,0)/days7.length):0;
+  document.getElementById('ws-pro').textContent=days7.length?Math.round(wkF.reduce((s,f)=>s+f.pro,0)/days7.length):0;
+  document.getElementById('ws-sl').textContent=wkS.length?(wkS.reduce((s,x)=>s+x.hours,0)/wkS.length).toFixed(1):'—';
+}
+
+function renderPRChart(){
+  const name=document.getElementById('pr-ex-select').value;if(!name)return;
+  const entries=workouts.filter(w=>w.exercise===name).sort((a,b)=>a.date.localeCompare(b.date));
+  const el=document.getElementById('pr-chart');
+  if(!entries.length){el.innerHTML='<div class="emp">ไม่มีข้อมูล</div>';return;}
+  const mx=Math.max(...entries.map(e=>e.weight),1);
+  const dn=['อา','จ','อ','พ','พฤ','ศ','ส'];
+  el.innerHTML=entries.slice(-14).map(e=>{const d=new Date(e.date+'T00:00:00');return`<div class="bw"><div class="bar" style="height:${Math.max(e.weight/mx*100,3)}%;background:var(--purple)" title="${fmt(e.date)}: ${e.weight}kg"></div><div class="bl">${dn[d.getDay()]}</div></div>`;}).join('');
+}
+
+// ══════════ MEAL PLANNER & PRESETS ══════════
+let presets=DB.get('ml_presets',[]);
+let mealPlan=DB.get('ml_mp',{});
+
+function openPresetModal(){
+  document.getElementById('pm-name').value='';
+  document.getElementById('pm-items').innerHTML='';
+  addPresetItem();
+  document.getElementById('presetModal').classList.add('on');
+}
+
+function addPresetItem(){
+  const c=document.getElementById('pm-items');
+  const idx=c.children.length;
+  const d=document.createElement('div');
+  d.style.cssText='display:grid;grid-template-columns:2fr 1fr 1fr 1fr 1fr auto;gap:6px;align-items:center';
+  d.innerHTML=`<input placeholder="อาหาร..." data-f="name"><input type="number" placeholder="kcal" data-f="cal" min="0"><input type="number" placeholder="P(g)" data-f="pro" min="0"><input type="number" placeholder="C(g)" data-f="carb" min="0"><input type="number" placeholder="F(g)" data-f="fat" min="0"><button type="button" class="btn brd" style="padding:4px 8px" onclick="this.parentNode.remove()">✕</button>`;
+  c.appendChild(d);
+}
+
+function savePreset(){
+  const name=document.getElementById('pm-name').value.trim();
+  if(!name)return toast('กรุณาใส่ชื่อมื้อ');
+  const items=[...document.getElementById('pm-items').children].map(row=>{
+    const fields={};row.querySelectorAll('[data-f]').forEach(i=>fields[i.dataset.f]=i.value);return fields;
+  }).filter(i=>i.name);
+  if(!items.length)return toast('กรุณาเพิ่มรายการอาหาร');
+  presets.push({id:uid(),name,items,cal:items.reduce((s,i)=>s+(+i.cal||0),0),pro:items.reduce((s,i)=>s+(+i.pro||0),0),carb:items.reduce((s,i)=>s+(+i.carb||0),0),fat:items.reduce((s,i)=>s+(+i.fat||0),0)});
+  DB.set('ml_presets',presets);closeModal('presetModal');renderMeals();toast('บันทึก My Meal แล้ว ⭐');
+}
+
+function logPreset(id){
+  const p=presets.find(x=>x.id===id);if(!p)return;
+  p.items.forEach(item=>{
+    foods.push({id:uid(),date:today(),name:item.name,meal:autoMeal(),cal:+item.cal||0,pro:+item.pro||0,carb:+item.carb||0,fat:+item.fat||0});
+  });
+  save();renderNutrition();renderMeals();toast(`Log "${p.name}" แล้ว ✅ (${p.items.length} รายการ)`);
+}
+
+function delPreset(id){presets=presets.filter(p=>p.id!==id);DB.set('ml_presets',presets);renderMeals();}
+
+function planMeal(date,meal,presetId){
+  if(!mealPlan[date])mealPlan[date]={};
+  if(presetId){mealPlan[date][meal]=presetId;}
+  DB.set('ml_mp',mealPlan);renderMeals();
+}
+
+function renderMeals(){
+  // Presets list
+  const pl=document.getElementById('preset-list');
+  if(presets.length===0){pl.innerHTML='<div class="emp">ยังไม่มี preset<br><span style="font-size:.75rem">กด "+ My Meal" เพื่อบันทึกมื้อที่กินบ่อย</span></div>';}
+  else{pl.innerHTML=presets.map(p=>`<div class="li">
+    <div style="flex:1"><div style="font-weight:700;font-size:.85rem">${esc(p.name)}</div><div style="font-size:.72rem;color:var(--muted)">🔥${p.cal} kcal | P:${p.pro}g C:${p.carb}g F:${p.fat}g | ${p.items.length} รายการ</div></div>
+    <button class="btn bg" style="padding:4px 10px;font-size:.75rem" onclick="logPreset('${p.id}')">Log</button>
+    <button class="btn brd" style="padding:4px 8px;font-size:.75rem" onclick="delPreset('${p.id}')">✕</button>
+  </div>`).join('');}
+
+  // 7-day plan
+  const meals=['เช้า','กลางวัน','เย็น','ว่าง'];
+  const mpw=document.getElementById('mp-week');if(!mpw)return;
+  const days=[];for(let i=0;i<7;i++){const d=new Date();d.setDate(d.getDate()+i);days.push(d.toISOString().split('T')[0]);}
+  const DN=['อา','จ','อ','พ','พฤ','ศ','ส'];
+  mpw.innerHTML=`<table style="width:100%;border-collapse:collapse;font-size:.78rem">
+    <tr><th style="padding:8px;text-align:left;border-bottom:1px solid var(--border);color:var(--muted)">มื้อ</th>${days.map(d=>{const dt=new Date(d+'T00:00:00');return`<th style="padding:8px;text-align:center;border-bottom:1px solid var(--border);color:${d===today()?'var(--green)':'var(--muted)'}">${DN[dt.getDay()]}<br><span style="font-size:.65rem">${d.slice(5)}</span></th>`}).join('')}</tr>
+    ${meals.map(m=>`<tr><td style="padding:8px;color:var(--muted2);font-weight:600;border-bottom:1px solid var(--border)">${m}</td>${days.map(d=>{
+      const pid=mealPlan[d]&&mealPlan[d][m];
+      const p=pid&&presets.find(x=>x.id===pid);
+      return`<td style="padding:6px;border-bottom:1px solid var(--border);text-align:center">
+        ${p?`<div style="background:rgba(34,197,94,.1);border-radius:6px;padding:4px 6px;font-size:.72rem;color:var(--green)">${esc(p.name)}<button onclick="planMeal('${d}','${m}',null)" style="background:none;border:none;color:var(--muted);cursor:pointer;margin-left:4px">✕</button></div>`
+        :`<select style="width:100%;padding:3px;font-size:.68rem" onchange="planMeal('${d}','${m}',this.value);this.value=''">
+          <option value="">+ เพิ่ม</option>${presets.map(p=>`<option value="${p.id}">${esc(p.name)}</option>`).join('')}
+        </select>`}
+      </td>`;}).join('')}</tr>`).join('')}
+  </table>`;
+
+  // Calorie Balance
+  renderCalorieBalance();
+}
+
+function renderCalorieBalance(){
+  const todayF=foods.filter(f=>f.date===today());
+  const totalIn=todayF.reduce((s,f)=>s+f.cal,0);
+  const tdee=DB.get('ml_tdee',0);
+  const cbIn=document.getElementById('cb-in');
+  const cbTdee=document.getElementById('cb-tdee');
+  const cbBal=document.getElementById('cb-bal');
+  const cbBar=document.getElementById('cb-bar');
+  const cbLabel=document.getElementById('cb-label');
+  if(cbIn)cbIn.textContent=totalIn;
+  if(cbTdee)cbTdee.textContent=tdee||'—';
+  if(!tdee){if(cbLabel)cbLabel.textContent='ตั้งค่า TDEE ใน Nutrition ก่อนนะครับ';return;}
+  const bal=totalIn-tdee;
+  const isDeficit=bal<0;
+  if(cbBal){cbBal.textContent=(isDeficit?'':'+')+(bal.toLocaleString())+' kcal';cbBal.style.color=isDeficit?'var(--green)':'var(--red)';}
+  const pct=Math.min(100,Math.round(totalIn/tdee*100));
+  if(cbBar){cbBar.style.width=pct+'%';cbBar.style.background=pct>100?'var(--red)':pct>85?'var(--amber)':'var(--green)';}
+  if(cbLabel)cbLabel.textContent=isDeficit?`ขาด ${Math.abs(bal).toLocaleString()} kcal — กำลัง Deficit 🔥`:`เกิน ${bal.toLocaleString()} kcal — Surplus 📈`;
+}
+
+// ══════════ REMINDERS ══════════
+let reminderTimers=[];
+let remindList=DB.get('ml_reminders',[]);
+
+function reqNotifPerm(cb){
+  if(!('Notification' in window))return toast('Browser นี้ไม่รองรับ Notifications');
+  if(Notification.permission==='granted'){cb();}
+  else if(Notification.permission!=='denied'){Notification.requestPermission().then(p=>{if(p==='granted')cb();else toast('กรุณาอนุญาต Notifications ใน browser ของคุณ');});}
+  else{toast('Notification ถูกบล็อก — กรุณาอนุญาตใน Settings ของ browser');}
+}
+
+function sendNotif(title,body,icon='💧'){
+  if(Notification.permission==='granted'){new Notification(title,{body,icon:'data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22/>'});}
+}
+
+function startWaterReminder(){
+  reqNotifPerm(()=>{
+    stopWaterReminder();
+    const mins=+document.getElementById('wr-interval').value||120;
+    const startT=document.getElementById('wr-start').value||'07:00';
+    const endT=document.getElementById('wr-end').value||'22:00';
+    const id=setInterval(()=>{
+      const now=new Date();const t=now.getHours().toString().padStart(2,'0')+':'+now.getMinutes().toString().padStart(2,'0');
+      if(t>=startT&&t<=endT){sendNotif('💧 เวลาดื่มน้ำแล้ว!',`ดื่มน้ำ ${document.getElementById('w-goal-disp').textContent} ml ต่อวัน อย่าลืมนะครับ 💪`);}
+    },mins*60*1000);
+    reminderTimers.push(id);
+    const r={id:uid(),type:'water',label:`💧 น้ำทุก ${mins} นาที (${startT}–${endT})`,created:today()};
+    remindList.push(r);DB.set('ml_reminders',remindList);
+    document.getElementById('wr-status').textContent='✅ เปิดอยู่';
+    document.getElementById('wr-status').style.color='var(--green)';
+    renderReminders();toast(`เปิดเตือนดื่มน้ำทุก ${mins} นาที 💧`);
+    sendNotif('✅ เปิดการแจ้งเตือนแล้ว',`จะเตือนให้ดื่มน้ำทุก ${mins} นาที`);
+  });
+}
+
+function stopWaterReminder(){
+  reminderTimers.forEach(clearInterval);reminderTimers=[];
+  document.getElementById('wr-status').textContent='ปิดอยู่';
+  document.getElementById('wr-status').style.color='';
+  toast('ปิดการแจ้งเตือนแล้ว');
+}
+
+function setMealReminders(){
+  reqNotifPerm(()=>{
+    const times={b:document.getElementById('mr-b').value,l:document.getElementById('mr-l').value,d:document.getElementById('mr-d').value};
+    const meals={b:'🍳 เวลามื้อเช้าแล้ว!',l:'🍚 เวลามื้อกลางวันแล้ว!',d:'🍜 เวลามื้อเย็นแล้ว!'};
+    Object.entries(times).forEach(([key,time])=>{
+      const [hh,mm]=time.split(':').map(Number);
+      const r={id:uid(),type:'meal',label:`${meals[key]} (${time})`,created:today()};
+      remindList.push(r);
+      const id=setInterval(()=>{
+        const n=new Date();if(n.getHours()===hh&&n.getMinutes()===mm){sendNotif(meals[key],'อย่าลืม log อาหารใน MyLife Dashboard ด้วยนะครับ 📱');}
+      },60*1000);
+      reminderTimers.push(id);
+    });
+    DB.set('ml_reminders',remindList);renderReminders();toast('ตั้งเตือนมื้ออาหารแล้ว 🍽️');
+  });
+}
+
+function clearAllReminders(){
+  reminderTimers.forEach(clearInterval);reminderTimers=[];
+  remindList=[];DB.set('ml_reminders',remindList);renderReminders();toast('ลบ reminders ทั้งหมดแล้ว');
+}
+
+function renderReminders(){
+  const rl=document.getElementById('remind-list');if(!rl)return;
+  if(!remindList.length){rl.innerHTML='<div class="emp">ยังไม่มี reminders</div>';return;}
+  rl.innerHTML=[...remindList].reverse().map(r=>`<div class="li"><span style="flex:1;font-size:.82rem">${r.label}</span><button class="btn brd" style="padding:2px 6px;font-size:.7rem" onclick="delReminder('${r.id}')">✕</button></div>`).join('');
+}
+
+function delReminder(id){remindList=remindList.filter(r=>r.id!==id);DB.set('ml_reminders',remindList);renderReminders();}
+
+// ══════════ SLEEP STAGES PREVIEW ══════════
+function updateStagesPct(){
+  const awake=+document.getElementById('s-awake').value||0;
+  const rem=+document.getElementById('s-rem').value||0;
+  const core=+document.getElementById('s-core').value||0;
+  const deep=+document.getElementById('s-deep').value||0;
+  const total=awake+rem+core+deep;
+  const prev=document.getElementById('stages-preview');
+  if(!total){prev.style.display='none';return;}
+  prev.style.display='block';
+  const p=v=>Math.round(v/total*100);
+  document.getElementById('stages-bar').innerHTML=`
+    <div style="width:${p(awake)}%;background:#94a3b8;transition:width .3s" title="Awake"></div>
+    <div style="width:${p(rem)}%;background:#818cf8;transition:width .3s" title="REM"></div>
+    <div style="width:${p(core)}%;background:#38bdf8;transition:width .3s" title="Core"></div>
+    <div style="width:${p(deep)}%;background:#34d399;transition:width .3s" title="Deep"></div>`;
+  document.getElementById('stages-legend').innerHTML=`
+    <span style="color:#94a3b8">■ Awake ${p(awake)}%</span>
+    <span style="color:#818cf8">■ REM ${p(rem)}%</span>
+    <span style="color:#38bdf8">■ Core ${p(core)}%</span>
+    <span style="color:#34d399">■ Deep ${p(deep)}%</span>
+    <span style="color:var(--muted);margin-left:4px">รวม ${total} นาที</span>`;
+}
+
+// ══════════ SLEEP SCORE ══════════
+function calcSleepScore(s){
+  // Algorithm: duration (50%) + quality (30%) + timing (20%)
+  const dur=Math.min(s.hours/8,1)*50;
+  const qual=(s.quality/5)*30;
+  // timing: ideal bed 22:00-23:30, penalty for late/early
+  // normalize: hours 0-5 treated as 24-29 (after midnight) so 00:30 = 24.5h, not early morning
+  let timing=20;
+  if(s.bed){
+    let h=+s.bed.split(':')[0];
+    if(h<6)h+=24;
+    if(h>=23)timing=Math.max(0,20-(h-23)*8);
+    else if(h<21)timing=Math.max(0,20-(21-h)*8);
+  }
+  return Math.round(dur+qual+timing);
+}
+function sleepScoreColor(score){return score>=80?'var(--green)':score>=60?'var(--amber)':'var(--red)';}
+function sleepScoreLabel(score){return score>=85?'ดีมาก 🌟':score>=70?'ดี 👍':score>=55?'พอใช้ 😐':'ต้องปรับปรุง 😴';}
+
+// ══════════ SYNC / EXPORT / IMPORT ══════════
+let deferredPWAPrompt=null;
+window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();deferredPWAPrompt=e;const btn=document.getElementById('pwa-install-btn');if(btn)btn.style.display='';});
+
+function installPWA(){if(deferredPWAPrompt){deferredPWAPrompt.prompt();deferredPWAPrompt.userChoice.then(r=>{if(r.outcome==='accepted')toast('ติดตั้งแอปสำเร็จ 🎉');deferredPWAPrompt=null;});}}
+
+function exportJSON(){
+  const data={
+    version:2,exported:new Date().toISOString(),
+    workouts,sleeps,foods,metrics,goals,todos,habits,habitLog,nutriGoal,
+    routines,photos,
+    waterLog,waterGoal,journals,presets,mealPlan,remindList
+  };
+  const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);
+  a.download=`mylife-backup-${today()}.json`;a.click();
+  const info=document.getElementById('export-info');
+  const size=(blob.size/1024).toFixed(1);
+  if(info)info.innerHTML=`✅ Export สำเร็จ — ขนาด ${size} KB · ${new Date().toLocaleTimeString('th-TH')}`;
+  toast('Export JSON สำเร็จ 📦');
+}
+
+function handleImportDrop(e){
+  e.preventDefault();document.getElementById('import-drop').style.borderColor='var(--amber)';
+  const file=e.dataTransfer.files[0];if(file)loadImportFile(file);
+}
+
+function importJSON(input){const file=input.files[0];if(file)loadImportFile(file);}
+
+function loadImportFile(file){
+  const status=document.getElementById('import-status');
+  status.innerHTML='⏳ กำลังอ่านไฟล์...';status.style.color='var(--muted)';
+  const reader=new FileReader();
+  reader.onload=ev=>{
+    try{
+      const d=JSON.parse(ev.target.result);
+      if(!d.version)throw new Error('ไฟล์ไม่ถูกต้อง');
+      if(!confirm(`นำเข้าข้อมูลจาก ${d.exported?.slice(0,10)||'ไม่ทราบวันที่'}?\n\nข้อมูลเดิมทั้งหมดจะถูกแทนที่`))return;
+      // restore all data
+      if(d.workouts)DB.set('ml_wkt',workouts=d.workouts);
+      if(d.sleeps)DB.set('ml_sl',sleeps=d.sleeps);
+      if(d.foods)DB.set('ml_fd',foods=d.foods);
+      if(d.metrics)DB.set('ml_mt',metrics=d.metrics);
+      if(d.goals)DB.set('ml_gl',goals=d.goals);
+      if(d.todos)DB.set('ml_td',todos=d.todos);
+      if(d.habits)DB.set('ml_hb',habits=d.habits);
+      if(d.habitLog)DB.set('ml_hlg',habitLog=d.habitLog);
+      if(d.nutriGoal)DB.set('ml_ng',nutriGoal=d.nutriGoal);
+      if(d.routines)DB.set('ml_rt',routines=d.routines);
+      if(d.waterLog)DB.set('ml_wl',waterLog=d.waterLog);
+      if(d.waterGoal)DB.set('ml_wg',waterGoal=d.waterGoal);
+      if(d.journals)DB.set('ml_jn',journals=d.journals);
+      if(d.presets)DB.set('ml_presets',presets=d.presets);
+      if(d.mealPlan)DB.set('ml_mp',mealPlan=d.mealPlan);
+      renderAll();renderSyncInfo();
+      status.innerHTML='✅ Import สำเร็จ! ข้อมูลทั้งหมดถูกนำเข้าแล้ว';status.style.color='var(--green)';
+      toast('Import สำเร็จ 📥');
+    }catch(err){status.innerHTML='❌ ไฟล์ผิดพลาด: '+err.message;status.style.color='var(--red)';}
+  };
+  reader.readAsText(file);
+}
+
+function renderSyncInfo(){
+  const el=document.getElementById('sync-info');if(!el)return;
+  const storageUsed=(JSON.stringify(localStorage).length/1024).toFixed(1);
+  el.innerHTML=`<div style="display:flex;flex-direction:column;gap:6px;font-size:.8rem">
+    <div class="li"><span style="color:var(--green)">💪</span><span style="flex:1">Workouts</span><strong>${workouts.length} รายการ</strong></div>
+    <div class="li"><span style="color:var(--purple)">😴</span><span style="flex:1">Sleep</span><strong>${sleeps.length} รายการ</strong></div>
+    <div class="li"><span style="color:var(--amber)">🍽️</span><span style="flex:1">Foods</span><strong>${foods.length} รายการ</strong></div>
+    <div class="li"><span style="color:var(--blue)">💧</span><span style="flex:1">Water</span><strong>${waterLog.length} รายการ</strong></div>
+    <div class="li"><span style="color:var(--pink)">📝</span><span style="flex:1">Journal</span><strong>${journals.length} วัน</strong></div>
+    <div class="li"><span style="color:var(--teal)">🎯</span><span style="flex:1">Goals</span><strong>${goals.length} รายการ</strong></div>
+    <div style="border-top:1px solid var(--border);padding-top:8px;margin-top:2px;display:flex;justify-content:space-between;color:var(--muted)">
+      <span>พื้นที่ที่ใช้</span><strong style="color:var(--text)">${storageUsed} KB</strong>
+    </div>
+    <div style="font-size:.7rem;color:var(--muted);text-align:center">localStorage สูงสุด ~5 MB · เหลือ ${(5120-+storageUsed).toFixed(0)} KB</div>
+  </div>`;
+}
+
+// ══════════ EXPORT CSV ══════════
+function exportCSV(){
+  const lines=['Type,Date,Field1,Field2,Field3,Field4,Field5'];
+  workouts.forEach(w=>lines.push(`Workout,${w.date},${w.exercise},${w.sets},${w.reps},${w.weight},"${w.note||''}"`));
+  sleeps.forEach(s=>lines.push(`Sleep,${s.date},${s.bed},${s.wake},${s.hours},${s.quality},"${s.note||''}"`));
+  foods.forEach(f=>lines.push(`Food,${f.date},"${f.name}",${f.cal},${f.pro},${f.carb},${f.fat}`));
+  metrics.forEach(m=>lines.push(`Metric,${m.date},${m.wt||''},${m.bf||''},${m.wa||''},${m.arm||''},${m.hr||''}`));
+  waterLog.forEach(w=>lines.push(`Water,${w.date},${w.ml},,,,`));
+  journals.forEach(j=>lines.push(`Journal,${j.date},${j.mood},${j.energy},${j.stress},"${j.win||''}","${j.note||''}"`));
+  const blob=new Blob(['﻿'+lines.join('\n')],{type:'text/csv;charset=utf-8'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`mylife-export-${today()}.csv`;a.click();
+  toast('Export สำเร็จ 📤');
+}
+
+// ══════════ MODALS ══════════
+function closeModal(id){document.getElementById(id).classList.remove('on');}
+document.querySelectorAll('.mbg').forEach(m=>m.addEventListener('click',function(e){if(e.target===this)this.classList.remove('on');}));
+
+// ══════════ INIT ══════════
+document.addEventListener('DOMContentLoaded',()=>{
+  document.getElementById('s-date').value=today();
+  document.getElementById('h-date').value=today();
+  initAIProvider();
+  renderAll();
+  if('serviceWorker' in navigator){
+    navigator.serviceWorker.register('./sw.js').catch(e=>console.warn('SW register failed:',e));
+  }
+});
+</script>
+<!-- Barcode Scanner -->
+<script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+<!-- Firebase SDKs -->
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+<script>
+// ══════════ FIREBASE CONFIG ══════════
+const firebaseConfig = {
+  apiKey: "AIzaSyBi9a8fLC9710Zhbo-2KchYlE34P-UPK5Q",
+  authDomain: "plachok.firebaseapp.com",
+  projectId: "plachok",
+  storageBucket: "plachok.firebasestorage.app",
+  messagingSenderId: "543308981926",
+  appId: "1:543308981926:web:0e94e26ea6fd1867f4b667"
+};
+
+firebase.initializeApp(firebaseConfig);
+const fbAuth = firebase.auth();
+const fbDb = firebase.firestore();
+let fbUser = null;
+let syncUnsub = null;
+
+// ── UI helpers ──
+function setSyncStatus(state, label) {
+  const dot = document.getElementById('sync-dot');
+  const lbl = document.getElementById('sync-label');
+  dot.className = 'sync-dot ' + (state || '');
+  if (lbl) lbl.textContent = label || '';
+}
+
+// ── Auth ──
+const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+const isPWA = window.navigator.standalone === true || window.matchMedia('(display-mode: standalone)').matches;
+
+function handleAuth() {
+  if (fbUser) {
+    if (confirm('ออกจากระบบ?')) fbAuth.signOut();
+    return;
+  }
+  const provider = new firebase.auth.GoogleAuthProvider();
+  // PWA standalone หรือ desktop → ใช้ popup
+  // Mobile browser (ไม่ใช่ PWA) → ใช้ redirect
+  if (isMobile && !isPWA) {
+    fbAuth.signInWithRedirect(provider);
+  } else {
+    fbAuth.signInWithPopup(provider)
+      .then(r => toast('ยินดีต้อนรับ ' + r.user.displayName + ' 👋'))
+      .catch(err => toast('Login ไม่สำเร็จ: ' + err.message));
+  }
+}
+
+// รับผลลัพธ์หลัง redirect กลับมา (mobile browser เท่านั้น)
+if (isMobile && !isPWA) {
+  fbAuth.getRedirectResult().then(result => {
+    if (result && result.user) toast('ยินดีต้อนรับ ' + result.user.displayName + ' 👋');
+  }).catch(err => {
+    if (err.code !== 'auth/no-auth-event') console.warn('Redirect result:', err.message);
+  });
+}
+
+fbAuth.onAuthStateChanged(async user => {
+  fbUser = user;
+  const btn = document.getElementById('auth-btn');
+  const sbBtn = document.getElementById('sidebar-auth-btn');
+  const avatar = document.getElementById('user-avatar');
+  const sbUser = document.getElementById('sidebar-user');
+  const sbAvatar = document.getElementById('sidebar-avatar');
+  const sbName = document.getElementById('sidebar-username');
+  const sbFooter = document.getElementById('sidebar-login-footer');
+  if (user) {
+    if (btn) btn.style.display = 'none';
+    if (avatar && user.photoURL) { avatar.src = user.photoURL; avatar.style.display = ''; }
+    if (sbUser) sbUser.style.display = '';
+    if (sbAvatar && user.photoURL) sbAvatar.src = user.photoURL;
+    if (sbName) sbName.textContent = user.displayName || user.email;
+    if (sbFooter) sbFooter.style.display = 'none';
+    setSyncStatus('syncing', 'กำลังดึงข้อมูล...');
+    await pullFromFirestore();
+    subscribeFirestore();
+    setSyncStatus('ok', 'Sync แล้ว ✓');
+    toast('ยินดีต้อนรับ ' + (user.displayName||'') + ' 👋');
+  } else {
+    if (btn) { btn.textContent = 'เข้าสู่ระบบ'; btn.style.display = ''; }
+    if (avatar) avatar.style.display = 'none';
+    if (sbUser) sbUser.style.display = 'none';
+    if (sbFooter) sbFooter.style.display = '';
+    setSyncStatus('', 'ออฟไลน์');
+    if (syncUnsub) { syncUnsub(); syncUnsub = null; }
+  }
+});
+
+// ── Firestore: push all data ──
+async function pushToFirestore() {
+  if (!fbUser) return;
+  setSyncStatus('syncing', 'กำลัง sync...');
+  try {
+    // photos excluded — base64 data exceeds Firestore 1MB doc limit; stored locally only
+    const payload = {
+      workouts, sleeps, foods, metrics, goals, todos,
+      habits, habitLog, nutriGoal,
+      waterLog, waterGoal, journals, presets, mealPlan,
+      routines,
+      updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+    };
+    await fbDb.collection('users').doc(fbUser.uid).collection('data').doc('all').set(payload);
+    setSyncStatus('ok', 'Sync แล้ว ✓');
+  } catch (err) {
+    setSyncStatus('err', 'Sync ผิดพลาด');
+    console.error('Firestore push error:', err);
+  }
+}
+
+// ── Firestore: pull latest data ──
+async function pullFromFirestore() {
+  if (!fbUser) return;
+  try {
+    const snap = await fbDb.collection('users').doc(fbUser.uid).collection('data').doc('all').get();
+    if (snap.exists) {
+      const d = snap.data();
+      if (d.workouts)  { workouts  = d.workouts;  DB.set('ml_wkt', workouts); }
+      if (d.sleeps)    { sleeps    = d.sleeps;    DB.set('ml_sl', sleeps); }
+      if (d.foods)     { foods     = d.foods;     DB.set('ml_fd', foods); }
+      if (d.metrics)   { metrics   = d.metrics;   DB.set('ml_mt', metrics); }
+      if (d.goals)     { goals     = d.goals;     DB.set('ml_gl', goals); }
+      if (d.todos)     { todos     = d.todos;     DB.set('ml_td', todos); }
+      if (d.habits)    { habits    = d.habits;    DB.set('ml_hb', habits); }
+      if (d.habitLog)  { habitLog  = d.habitLog;  DB.set('ml_hlg', habitLog); }
+      if (d.nutriGoal) { nutriGoal = d.nutriGoal; DB.set('ml_ng', nutriGoal); }
+      if (d.waterLog)  { waterLog  = d.waterLog;  DB.set('ml_wl', waterLog); }
+      if (d.waterGoal) { waterGoal = d.waterGoal; DB.set('ml_wg', waterGoal); }
+      if (d.journals)  { journals  = d.journals;  DB.set('ml_jn', journals); }
+      if (d.presets)   { presets   = d.presets;   DB.set('ml_presets', presets); }
+      if (d.mealPlan)  { mealPlan  = d.mealPlan;  DB.set('ml_mp', mealPlan); }
+      if (d.routines)  DB.set('ml_routines', d.routines);
+      if (d.photos)    DB.set('ml_ph', d.photos);
+      renderAll();
+    }
+  } catch (err) {
+    setSyncStatus('err', 'ดึงข้อมูลไม่ได้');
+    console.error('Firestore pull error:', err);
+  }
+}
+
+// ── Real-time listener: อัปเดต UI ทันทีถ้าเครื่องอื่น sync เข้ามา ──
+function subscribeFirestore() {
+  if (syncUnsub) syncUnsub();
+  syncUnsub = fbDb.collection('users').doc(fbUser.uid).collection('data').doc('all')
+    .onSnapshot(snap => {
+      if (!snap.exists || snap.metadata.hasPendingWrites) return;
+      const d = snap.data();
+      if (d.workouts)  workouts  = d.workouts;
+      if (d.sleeps)    sleeps    = d.sleeps;
+      if (d.foods)     foods     = d.foods;
+      if (d.metrics)   metrics   = d.metrics;
+      if (d.goals)     goals     = d.goals;
+      if (d.todos)     todos     = d.todos;
+      if (d.habits)    habits    = d.habits;
+      if (d.habitLog)  habitLog  = d.habitLog;
+      if (d.nutriGoal) nutriGoal = d.nutriGoal;
+      if (d.waterLog)  waterLog  = d.waterLog;
+      if (d.waterGoal) waterGoal = d.waterGoal;
+      if (d.journals)  journals  = d.journals;
+      if (d.presets)   presets   = d.presets;
+      if (d.mealPlan)  mealPlan  = d.mealPlan;
+      renderAll();
+      setSyncStatus('ok', 'Sync แล้ว ✓');
+    }, err => {
+      setSyncStatus('err', 'Sync ผิดพลาด');
+    });
+}
+</script>
+</body>
+</html>
