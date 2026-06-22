@@ -415,11 +415,18 @@ textarea{resize:vertical;min-height:60px}
             </div>
           </div>
         </div>
-        <div style="margin-top:12px;border:1px solid var(--green);border-radius:10px;padding:12px;background:rgba(34,197,94,.04)">
-          <div class="fg"><label>🟦 Gemini API Key <span style="color:var(--green);font-weight:700">(ฟรี)</span> — aistudio.google.com</label>
-            <input id="gemini-key" type="password" placeholder="AIza..." oninput="saveGeminiKey()">
+        <div style="margin-top:12px;border:1px solid var(--blue);border-radius:10px;padding:12px;background:rgba(59,130,246,.04)">
+          <div style="font-size:.8rem;font-weight:700;margin-bottom:8px;color:var(--blue)">🤖 AI Provider — เลือกใส่อย่างใดอย่างหนึ่ง</div>
+          <div class="fg" style="margin-bottom:8px">
+            <label style="display:flex;justify-content:space-between"><span>🟠 OpenRouter API Key <span style="color:var(--blue);font-weight:700">(แนะนำ · ฟรี)</span></span><a href="https://openrouter.ai/keys" target="_blank" style="font-size:.7rem;color:var(--blue)">openrouter.ai →</a></label>
+            <input id="or-key" type="password" placeholder="sk-or-..." oninput="saveORKey()">
+            <div style="font-size:.68rem;color:var(--blue);margin-top:3px">✅ ฟรี ไม่ต้องบัตรเครดิต · ใช้ได้ทุกประเทศ · vision + text ครบ</div>
           </div>
-          <div style="font-size:.68rem;color:var(--green);margin-top:4px">✅ ฟรี 1,500 ครั้ง/วัน · ไม่ต้องใส่บัตรเครดิต · key เก็บใน browser เท่านั้น</div>
+          <div class="fg">
+            <label style="display:flex;justify-content:space-between"><span>🟦 Gemini API Key <span style="color:var(--muted);font-weight:400">(สำรอง)</span></span><a href="https://aistudio.google.com/apikey" target="_blank" style="font-size:.7rem;color:var(--muted)">aistudio.google.com →</a></label>
+            <input id="gemini-key" type="password" placeholder="AIza..." oninput="saveGeminiKey()">
+            <div style="font-size:.68rem;color:var(--muted);margin-top:3px">ใช้ถ้ามี Gemini key ที่ใช้งานได้ (บางประเทศไม่รองรับ free tier)</div>
+          </div>
         </div>
       </div></div>
       <!-- FOOD SEARCH -->
@@ -1433,10 +1440,16 @@ function saveGeminiKey(){DB.set('ml_geminikey',document.getElementById('gemini-k
 function initAIProvider(){
   const gk=DB.get('ml_geminikey','');
   if(gk){const el=document.getElementById('gemini-key');if(el)el.value=gk;}
+  const ok=DB.get('ml_orkey','');
+  if(ok){const el=document.getElementById('or-key');if(el)el.value=ok;}
 }
 
 function getGeminiKey(){return document.getElementById('gemini-key')?.value.trim()||DB.get('ml_geminikey','');}
+function saveORKey(){DB.set('ml_orkey',document.getElementById('or-key').value);}
+function getORKey(){return document.getElementById('or-key')?.value.trim()||DB.get('ml_orkey','');}
 function autoMeal(){const h=new Date().getHours();return h<10?'เช้า':h<14?'กลางวัน':h<19?'เย็น':'ของว่าง';}
+
+// ══ Gemini API ══
 async function callGeminiText(prompt,key){
   const r=await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${key}`,
     {method:'POST',headers:{'Content-Type':'application/json'},
@@ -1445,17 +1458,51 @@ async function callGeminiText(prompt,key){
   const d=await r.json();return d.candidates?.[0]?.content?.parts?.[0]?.text||'';
 }
 
+// ══ OpenRouter API ══
+const OR_HDR=(key)=>({'Content-Type':'application/json','Authorization':'Bearer '+key,'HTTP-Referer':'https://plachok.github.io/mylife-dashboard/','X-Title':'MyLife Dashboard'});
+async function callORText(prompt,key){
+  const r=await fetch('https://openrouter.ai/api/v1/chat/completions',
+    {method:'POST',headers:OR_HDR(key),
+     body:JSON.stringify({model:'meta-llama/llama-3.1-8b-instruct:free',messages:[{role:'user',content:prompt}],max_tokens:400})});
+  if(!r.ok){const e=await r.json();throw new Error(e.error?.message||r.statusText);}
+  const d=await r.json();return d.choices?.[0]?.message?.content||'';
+}
+async function callORVision(b64,key){
+  const r=await fetch('https://openrouter.ai/api/v1/chat/completions',
+    {method:'POST',headers:OR_HDR(key),
+     body:JSON.stringify({model:'meta-llama/llama-3.2-11b-vision-instruct:free',
+       messages:[{role:'user',content:[
+         {type:'image_url',image_url:{url:'data:image/jpeg;base64,'+b64}},
+         {type:'text',text:AI_PROMPT}
+       ]}],max_tokens:600})});
+  if(!r.ok){const e=await r.json();throw new Error(e.error?.message||r.statusText);}
+  const d=await r.json();return d.choices?.[0]?.message?.content||'';
+}
+
+// ══ Smart wrapper — ใช้ OpenRouter ก่อน, fallback Gemini ══
+async function callAIText(prompt){
+  const orKey=getORKey();const gemKey=getGeminiKey();
+  if(!orKey&&!gemKey)throw new Error('กรุณาใส่ OpenRouter หรือ Gemini API Key ก่อน');
+  if(orKey)return callORText(prompt,orKey);
+  return callGeminiText(prompt,gemKey);
+}
+async function callAIVision(b64){
+  const orKey=getORKey();const gemKey=getGeminiKey();
+  if(!orKey&&!gemKey)throw new Error('กรุณาใส่ OpenRouter หรือ Gemini API Key ก่อน');
+  if(orKey)return callORVision(b64,orKey);
+  return callGeminiVision(b64,gemKey);
+}
+
 async function askAI(){
   const input=document.getElementById('ai-input').value.trim();if(!input)return;
-  const key=getGeminiKey();
-  if(!key)return toast('กรุณาใส่ Gemini API Key ก่อน (ฟรี ที่ aistudio.google.com)');
+  if(!getORKey()&&!getGeminiKey())return toast('กรุณาใส่ OpenRouter หรือ Gemini API Key ก่อน');
   const chat=document.getElementById('ai-chat');
   chat.innerHTML+=`<div class="ai-bubble user">🙋 ${esc(input)}</div>`;
   document.getElementById('ai-btn').textContent='กำลังคำนวณ...';
   document.getElementById('ai-btn').disabled=true;
   document.getElementById('ai-input').value='';
   try{
-    const text=await callGeminiText(`คำนวณ Calories และ Macronutrients ของ: "${input}"\nตอบเป็น JSON เท่านั้น:\n{"calories":0,"protein":0,"carbs":0,"fat":0,"note":"คำอธิบายสั้นๆ"}`,key);
+    const text=await callAIText(`คำนวณ Calories และ Macronutrients ของ: "${input}"\nตอบเป็น JSON เท่านั้น:\n{"calories":0,"protein":0,"carbs":0,"fat":0,"note":"คำอธิบายสั้นๆ"}`);
     const match=text.match(/\{[\s\S]*\}/);
     if(match){
       const j=JSON.parse(match[0]);
@@ -1568,14 +1615,13 @@ function renderPhotoResult(text,res){
 
 async function analyzePhoto(){
   if(!currentFoodPhotoB64)return toast('กรุณาเลือกรูปอาหารก่อน');
-  const key=getGeminiKey();
-  if(!key)return toast('กรุณาใส่ Gemini API Key ก่อน (ฟรี ที่ aistudio.google.com)');
+  if(!getORKey()&&!getGeminiKey())return toast('กรุณาใส่ OpenRouter หรือ Gemini API Key ก่อน');
   const btn=document.getElementById('analyze-btn');
   btn.textContent='⏳ กำลังวิเคราะห์...';btn.disabled=true;
   const res=document.getElementById('photo-ai-result');
-  res.innerHTML=`<div style="font-size:.8rem;color:var(--muted);text-align:center;padding:12px">🤖 Gemini กำลังวิเคราะห์รูปอาหาร...</div>`;
+  res.innerHTML=`<div style="font-size:.8rem;color:var(--muted);text-align:center;padding:12px">🤖 AI กำลังวิเคราะห์รูปอาหาร...</div>`;
   try{
-    const text=await callGeminiVision(currentFoodPhotoB64,key);
+    const text=await callAIVision(currentFoodPhotoB64);
     renderPhotoResult(text,res);
   }catch(err){
     res.innerHTML=`<div style="color:var(--red);font-size:.8rem;padding:8px">❌ ${err.message}</div>`;
