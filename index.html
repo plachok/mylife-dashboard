@@ -423,11 +423,11 @@ textarea{resize:vertical;min-height:60px}
           <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px">
             <div class="fg">
               <label style="font-size:.72rem">📝 Text Model</label>
-              <input id="or-text-model" type="text" placeholder="google/gemini-flash-1.5" style="font-size:.72rem" oninput="saveORModels()">
+              <input id="or-text-model" type="text" placeholder="openai/gpt-4o-mini" style="font-size:.72rem" oninput="saveORModels()">
             </div>
             <div class="fg">
               <label style="font-size:.72rem">🖼️ Vision Model</label>
-              <input id="or-vision-model" type="text" placeholder="google/gemini-flash-1.5" style="font-size:.72rem" oninput="saveORModels()">
+              <input id="or-vision-model" type="text" placeholder="openai/gpt-4o-mini" style="font-size:.72rem" oninput="saveORModels()">
             </div>
           </div>
           <div style="font-size:.65rem;color:var(--muted);margin-top:5px">ดู free models ได้ที่ <a href="https://openrouter.ai/models?order=newest&supported_parameters=free" target="_blank" style="color:var(--blue)">openrouter.ai/models → filter: Free</a></div>
@@ -1448,7 +1448,7 @@ function initAIProvider(){
   if(ok){const el=document.getElementById('or-key');if(el)el.value=ok;}
   // migrate old broken slugs
   const BAD=['google/gemini-2.0-flash-001','google/gemma-3-12b-it:free','deepseek/deepseek-chat-v3-0324:free','meta-llama/llama-3.1-8b-instruct:free','mistralai/mistral-7b-instruct:free'];
-  const GOOD='google/gemini-flash-1.5';
+  const GOOD='openai/gpt-4o-mini';
   if(BAD.includes(DB.get('ml_or_tmodel',''))){DB.set('ml_or_tmodel',GOOD);}
   if(BAD.includes(DB.get('ml_or_vmodel',''))){DB.set('ml_or_vmodel',GOOD);}
   const tm=DB.get('ml_or_tmodel','');const el1=document.getElementById('or-text-model');if(el1)el1.value=tm;
@@ -1459,8 +1459,8 @@ function getGeminiKey(){return document.getElementById('gemini-key')?.value.trim
 function saveORKey(){DB.set('ml_orkey',document.getElementById('or-key').value);}
 function getORKey(){return document.getElementById('or-key')?.value.trim()||DB.get('ml_orkey','');}
 function saveORModels(){DB.set('ml_or_tmodel',document.getElementById('or-text-model').value);DB.set('ml_or_vmodel',document.getElementById('or-vision-model').value);}
-function getORTextModel(){return document.getElementById('or-text-model')?.value.trim()||DB.get('ml_or_tmodel','')||'google/gemini-flash-1.5';}
-function getORVisionModel(){return document.getElementById('or-vision-model')?.value.trim()||DB.get('ml_or_vmodel','')||'google/gemini-flash-1.5';}
+function getORTextModel(){return document.getElementById('or-text-model')?.value.trim()||DB.get('ml_or_tmodel','')||'openai/gpt-4o-mini';}
+function getORVisionModel(){return document.getElementById('or-vision-model')?.value.trim()||DB.get('ml_or_vmodel','')||'openai/gpt-4o-mini';}
 function autoMeal(){const h=new Date().getHours();return h<10?'เช้า':h<14?'กลางวัน':h<19?'เย็น':'ของว่าง';}
 
 // ══ Gemini API ══
