@@ -416,11 +416,21 @@ textarea{resize:vertical;min-height:60px}
           </div>
         </div>
         <div style="margin-top:12px;border:1px solid var(--blue);border-radius:10px;padding:12px;background:rgba(59,130,246,.04)">
-          <div class="fg">
+          <div class="fg" style="margin-bottom:8px">
             <label style="display:flex;justify-content:space-between"><span>🤖 OpenRouter API Key <span style="color:var(--blue);font-weight:700">(ฟรี)</span></span><a href="https://openrouter.ai/keys" target="_blank" style="font-size:.7rem;color:var(--blue)">openrouter.ai →</a></label>
             <input id="or-key" type="password" placeholder="sk-or-..." oninput="saveORKey()">
-            <div style="font-size:.68rem;color:var(--blue);margin-top:3px">✅ ฟรี · ไม่ต้องบัตรเครดิต · ใช้ได้ทุกประเทศ · รองรับทั้ง text และ vision</div>
           </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px">
+            <div class="fg">
+              <label style="font-size:.72rem">📝 Text Model</label>
+              <input id="or-text-model" type="text" placeholder="mistralai/mistral-7b-instruct:free" style="font-size:.72rem" oninput="saveORModels()">
+            </div>
+            <div class="fg">
+              <label style="font-size:.72rem">🖼️ Vision Model</label>
+              <input id="or-vision-model" type="text" placeholder="qwen/qwen2.5-vl-7b-instruct:free" style="font-size:.72rem" oninput="saveORModels()">
+            </div>
+          </div>
+          <div style="font-size:.65rem;color:var(--muted);margin-top:5px">ดู free models ได้ที่ <a href="https://openrouter.ai/models?order=newest&supported_parameters=free" target="_blank" style="color:var(--blue)">openrouter.ai/models → filter: Free</a></div>
         </div>
       </div></div>
       <!-- FOOD SEARCH -->
@@ -1436,11 +1446,16 @@ function initAIProvider(){
   if(gk){const el=document.getElementById('gemini-key');if(el)el.value=gk;}
   const ok=DB.get('ml_orkey','');
   if(ok){const el=document.getElementById('or-key');if(el)el.value=ok;}
+  const tm=DB.get('ml_or_tmodel','');if(tm){const el=document.getElementById('or-text-model');if(el)el.value=tm;}
+  const vm=DB.get('ml_or_vmodel','');if(vm){const el=document.getElementById('or-vision-model');if(el)el.value=vm;}
 }
 
 function getGeminiKey(){return document.getElementById('gemini-key')?.value.trim()||DB.get('ml_geminikey','');}
 function saveORKey(){DB.set('ml_orkey',document.getElementById('or-key').value);}
 function getORKey(){return document.getElementById('or-key')?.value.trim()||DB.get('ml_orkey','');}
+function saveORModels(){DB.set('ml_or_tmodel',document.getElementById('or-text-model').value);DB.set('ml_or_vmodel',document.getElementById('or-vision-model').value);}
+function getORTextModel(){return document.getElementById('or-text-model')?.value.trim()||DB.get('ml_or_tmodel','')||'mistralai/mistral-7b-instruct:free';}
+function getORVisionModel(){return document.getElementById('or-vision-model')?.value.trim()||DB.get('ml_or_vmodel','')||'qwen/qwen2.5-vl-7b-instruct:free';}
 function autoMeal(){const h=new Date().getHours();return h<10?'เช้า':h<14?'กลางวัน':h<19?'เย็น':'ของว่าง';}
 
 // ══ Gemini API ══
@@ -1457,14 +1472,14 @@ const OR_HDR=(key)=>({'Content-Type':'application/json','Authorization':'Bearer 
 async function callORText(prompt,key){
   const r=await fetch('https://openrouter.ai/api/v1/chat/completions',
     {method:'POST',headers:OR_HDR(key),
-     body:JSON.stringify({model:'google/gemma-3-12b-it:free',messages:[{role:'user',content:prompt}],max_tokens:400})});
+     body:JSON.stringify({model:getORTextModel(),messages:[{role:'user',content:prompt}],max_tokens:400})});
   if(!r.ok){const e=await r.json();throw new Error(e.error?.message||r.statusText);}
   const d=await r.json();return d.choices?.[0]?.message?.content||'';
 }
 async function callORVision(b64,key){
   const r=await fetch('https://openrouter.ai/api/v1/chat/completions',
     {method:'POST',headers:OR_HDR(key),
-     body:JSON.stringify({model:'qwen/qwen2.5-vl-7b-instruct:free',
+     body:JSON.stringify({model:getORVisionModel(),
        messages:[{role:'user',content:[
          {type:'image_url',image_url:{url:'data:image/jpeg;base64,'+b64}},
          {type:'text',text:AI_PROMPT}
