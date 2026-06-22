@@ -278,10 +278,19 @@ textarea{resize:vertical;min-height:60px}
   <div class="g12">
     <div style="display:flex;flex-direction:column;gap:14px">
       <div class="card"><div class="ch"><span class="ct">ชั่วโมงนอน 14 คืน</span></div><div class="cb"><div class="bars" id="sl-chart"></div></div></div>
+      <div class="card"><div class="ch"><span class="ct">Sleep Score 14 คืน</span><span id="sl-score-label" style="font-size:.75rem;color:var(--muted)"></span></div><div class="cb"><div class="bars" id="sl-score-chart"></div></div></div>
       <div class="g3">
         <div class="stat" style="--ac:var(--purple)"><div class="sl">เฉลี่ย</div><div class="sv" id="sl-avg">—</div><div class="ss">ชม./คืน</div></div>
         <div class="stat" style="--ac:var(--blue)"><div class="sl">คืนล่าสุด</div><div class="sv" id="sl-last">—</div><div class="ss">ชั่วโมง</div></div>
-        <div class="stat" style="--ac:var(--green)"><div class="sl">คุณภาพ</div><div class="sv" id="sl-qual">—</div><div class="ss">/ 5</div></div>
+        <div class="stat" style="--ac:var(--green)"><div class="sl">Score เฉลี่ย</div><div class="sv" id="sl-score-avg">—</div><div class="ss">/ 100</div></div>
+      </div>
+      <!-- Sleep Score breakdown legend -->
+      <div class="card" style="font-size:.78rem;color:var(--muted)">
+        <div style="display:flex;gap:12px;padding:10px 16px;flex-wrap:wrap">
+          <span>📏 <strong style="color:var(--purple)">Duration</strong> เต็ม 50 คะแนน (8 ชม. = 100%)</span>
+          <span>🌙 <strong style="color:var(--blue)">Bedtime</strong> เต็ม 30 คะแนน (22:00–23:00 = ideal)</span>
+          <span>😴 <strong style="color:var(--green)">Interruptions</strong> เต็ม 20 คะแนน (ใช้ Awake stage / ดาวคุณภาพ)</span>
+        </div>
       </div>
       <div class="card"><div class="ch"><span class="ct">ประวัติ</span></div><div id="sl-list"></div></div>
     </div>
@@ -1316,8 +1325,12 @@ function renderSleep(){
   const avg=sorted.length?sorted.reduce((s,x)=>s+x.hours,0)/sorted.length:0;
   document.getElementById('sl-avg').textContent=avg?avg.toFixed(1):'—';
   document.getElementById('sl-last').textContent=sorted[0]?sorted[0].hours.toFixed(1):'—';
-  document.getElementById('sl-qual').textContent=sorted.length?(sorted.reduce((s,x)=>s+x.quality,0)/sorted.length).toFixed(1):'—';
+  const scores=sorted.map(s=>calcSleepScore(s));
+  const avgScore=scores.length?Math.round(scores.reduce((a,b)=>a+b,0)/scores.length):0;
+  document.getElementById('sl-score-avg').textContent=avgScore||'—';
+  if(avgScore){const lbl=document.getElementById('sl-score-label');if(lbl)lbl.textContent=sleepScoreLabel(avgScore);}
   renderBarChart('sl-chart',14,d=>{const s=sleeps.find(x=>x.date===d);return s?s.hours:0;},'var(--purple)','ชม.');
+  renderBarChart('sl-score-chart',14,d=>{const s=sleeps.find(x=>x.date===d);return s?calcSleepScore(s):0;},'var(--blue)','คะแนน');
   const sl=document.getElementById('sl-list');
   if(!sorted.length){sl.innerHTML='<div class="emp"><div class="emp-i">😴</div>ยังไม่มีข้อมูล</div>';return;}
   sl.innerHTML=sorted.slice(0,20).map(s=>{
@@ -1343,13 +1356,19 @@ function renderSleep(){
       ${vt.hrLow||vt.hrHigh?`<span>❤️ ${vt.hrLow||'?'}–${vt.hrHigh||'?'} BPM</span>`:''}
       ${vt.respLow||vt.respHigh?`<span>🫁 ${vt.respLow||'?'}–${vt.respHigh||'?'} br/min</span>`:''}
     </div>`:'';
+    const bd=sleepScoreBreakdown(s);
     return`<div style="padding:12px 16px;border-bottom:1px solid var(--border)">
-      <div class="li" style="padding:0;border:none;margin-bottom:${hasSt||vtRow?'6px':'0'}">
+      <div class="li" style="padding:0;border:none;margin-bottom:6px">
         <div style="flex:1"><div style="font-weight:700;font-size:.87rem">${fmt(s.date)}</div><div style="font-size:.72rem;color:var(--muted)">${s.bed} → ${s.wake}${s.note?' · '+esc(s.note):''}</div></div>
-        <div style="text-align:center;margin-right:6px"><div style="font-size:1.1rem;font-weight:800;color:${sleepScoreColor(sc)}">${sc}</div><div style="font-size:.6rem;color:var(--muted)">score</div></div>
+        <div style="text-align:center;margin-right:6px"><div style="font-size:1.1rem;font-weight:800;color:${sleepScoreColor(sc)}">${sc}</div><div style="font-size:.6rem;color:var(--muted)">${sleepScoreLabel(sc)}</div></div>
         <span class="badge" style="background:rgba(139,92,246,.15);color:var(--purple)">${s.hours.toFixed(1)} ชม.</span>
         <span style="color:var(--amber);margin-left:4px">${'★'.repeat(s.quality)}</span>
         <button class="btn brd" style="padding:3px 7px;font-size:.72rem;margin-left:6px" onclick="delSleep('${s.id}')">✕</button>
+      </div>
+      <div style="display:flex;gap:6px;font-size:.68rem;margin-bottom:${hasSt||vtRow?'6px':'0'}">
+        <span style="background:rgba(139,92,246,.1);border-radius:6px;padding:2px 7px;color:var(--purple)">📏 ${bd.dur}/50</span>
+        <span style="background:rgba(59,130,246,.1);border-radius:6px;padding:2px 7px;color:var(--blue)">🌙 ${bd.bed}/30</span>
+        <span style="background:rgba(34,197,94,.1);border-radius:6px;padding:2px 7px;color:var(--green)">😴 ${bd.int}/20</span>
       </div>
       ${stBar}${vtRow}
     </div>`;
@@ -1817,29 +1836,53 @@ function renderBarChart(elId,days,valFn,color,unit){
 let barcodeScanner = null;
 
 function openBarcodeScanner() {
+  if(typeof Html5Qrcode==='undefined'){
+    toast('⚠️ Barcode Scanner ยังโหลดไม่เสร็จ กรุณารอสักครู่แล้วลองใหม่');
+    return;
+  }
   const overlay = document.getElementById('barcode-overlay');
   overlay.style.display = 'flex';
-  document.getElementById('barcode-status').textContent = 'กำลังเปิดกล้อง...';
+  const statusEl = document.getElementById('barcode-status');
+  statusEl.textContent = 'กำลังขอสิทธิ์กล้อง...';
+  statusEl.style.color = '#94a3b8';
+
+  // clear previous instance
+  if(barcodeScanner){try{barcodeScanner.stop().catch(()=>{});}catch(e){}barcodeScanner=null;}
+  document.getElementById('barcode-reader').innerHTML='';
 
   barcodeScanner = new Html5Qrcode('barcode-reader');
-  const config = { fps: 10, qrbox: { width: 250, height: 100 }, formatsToSupport: [
-    Html5QrcodeSupportedFormats.EAN_13, Html5QrcodeSupportedFormats.EAN_8,
-    Html5QrcodeSupportedFormats.UPC_A, Html5QrcodeSupportedFormats.UPC_E,
-    Html5QrcodeSupportedFormats.CODE_128, Html5QrcodeSupportedFormats.CODE_39,
-    Html5QrcodeSupportedFormats.ITF, Html5QrcodeSupportedFormats.QR_CODE
-  ]};
+  const config = {
+    fps: 10,
+    qrbox: { width: 250, height: 100 },
+    aspectRatio: 1.7,
+    formatsToSupport: [
+      Html5QrcodeSupportedFormats.EAN_13, Html5QrcodeSupportedFormats.EAN_8,
+      Html5QrcodeSupportedFormats.UPC_A, Html5QrcodeSupportedFormats.UPC_E,
+      Html5QrcodeSupportedFormats.CODE_128, Html5QrcodeSupportedFormats.CODE_39,
+      Html5QrcodeSupportedFormats.ITF
+    ]
+  };
 
   barcodeScanner.start(
     { facingMode: 'environment' }, config,
-    (code) => { // สแกนสำเร็จ
+    (code) => {
       closeBarcodeScanner();
       lookupBarcode(code);
     },
-    () => {} // ยังสแกนไม่ได้ — ไม่ต้องทำอะไร
+    () => {}
   ).then(() => {
-    document.getElementById('barcode-status').textContent = 'จ่อกล้องไปที่ barcode บนฉลากสินค้า';
+    statusEl.textContent = '📷 จ่อกล้องไปที่ barcode บนฉลากสินค้า';
+    statusEl.style.color = '#94a3b8';
   }).catch(err => {
-    document.getElementById('barcode-status').textContent = '❌ เปิดกล้องไม่ได้: ' + err;
+    const msg = String(err);
+    if(msg.includes('Permission')||msg.includes('permission')||msg.includes('NotAllowed')){
+      statusEl.innerHTML = '❌ ไม่ได้รับสิทธิ์กล้อง<br><span style="font-size:.75rem">กรุณาอนุญาต Camera ใน Settings ของ browser แล้วโหลดหน้าใหม่</span>';
+    } else if(msg.includes('NotFound')||msg.includes('notfound')){
+      statusEl.innerHTML = '❌ ไม่พบกล้อง<br><span style="font-size:.75rem">ลองพิมพ์ barcode number ด้านล่างแทน</span>';
+    } else {
+      statusEl.innerHTML = '❌ เปิดกล้องไม่ได้<br><span style="font-size:.75rem">'+esc(msg)+'</span>';
+    }
+    statusEl.style.color = '#ef4444';
   });
 }
 
@@ -2338,22 +2381,44 @@ function updateStagesPct(){
 
 // ══════════ SLEEP SCORE ══════════
 function calcSleepScore(s){
-  // Algorithm: duration (50%) + quality (30%) + timing (20%)
+  // Duration (50pts): 8h = full score
   const dur=Math.min(s.hours/8,1)*50;
-  const qual=(s.quality/5)*30;
-  // timing: ideal bed 22:00-23:30, penalty for late/early
-  // normalize: hours 0-5 treated as 24-29 (after midnight) so 00:30 = 24.5h, not early morning
-  let timing=20;
+
+  // Bedtime (30pts): ideal 22:00–23:00, penalty outside that window
+  let bedScore=30;
   if(s.bed){
     let h=+s.bed.split(':')[0];
-    if(h<6)h+=24;
-    if(h>=23)timing=Math.max(0,20-(h-23)*8);
-    else if(h<21)timing=Math.max(0,20-(21-h)*8);
+    const m=+s.bed.split(':')[1]||0;
+    const hDec=h+(m/60);
+    const hNorm=hDec<6?hDec+24:hDec; // normalize after-midnight: 00:30 → 24.5
+    if(hNorm>23)bedScore=Math.max(0,30-(hNorm-23)*15);
+    else if(hNorm<22)bedScore=Math.max(0,30-(22-hNorm)*10);
   }
-  return Math.round(dur+qual+timing);
+
+  // Interruptions (20pts): use Awake stage% if available, else quality stars
+  let intScore=20;
+  const st=s.stages||{};
+  const totalStMin=(st.awake||0)+(st.rem||0)+(st.core||0)+(st.deep||0);
+  if(totalStMin>0){
+    const awakePct=(st.awake||0)/totalStMin; // 0–1
+    intScore=Math.max(0,Math.round(20-(awakePct*100)));
+  }else{
+    // fallback: quality stars (5★ = 20pts, 1★ = 4pts)
+    intScore=Math.round((s.quality/5)*20);
+  }
+
+  return Math.round(dur+bedScore+intScore);
 }
 function sleepScoreColor(score){return score>=80?'var(--green)':score>=60?'var(--amber)':'var(--red)';}
 function sleepScoreLabel(score){return score>=85?'ดีมาก 🌟':score>=70?'ดี 👍':score>=55?'พอใช้ 😐':'ต้องปรับปรุง 😴';}
+function sleepScoreBreakdown(s){
+  const dur=Math.min(s.hours/8,1)*50;
+  let bedScore=30;
+  if(s.bed){let h=+s.bed.split(':')[0];const m=+s.bed.split(':')[1]||0;const hDec=h+(m/60);const hNorm=hDec<6?hDec+24:hDec;if(hNorm>23)bedScore=Math.max(0,30-(hNorm-23)*15);else if(hNorm<22)bedScore=Math.max(0,30-(22-hNorm)*10);}
+  const st=s.stages||{};const totalStMin=(st.awake||0)+(st.rem||0)+(st.core||0)+(st.deep||0);
+  let intScore=totalStMin>0?Math.max(0,Math.round(20-((st.awake||0)/totalStMin*100))):Math.round((s.quality/5)*20);
+  return {dur:Math.round(dur),bed:Math.round(bedScore),int:intScore};
+}
 
 // ══════════ SYNC / EXPORT / IMPORT ══════════
 let deferredPWAPrompt=null;
