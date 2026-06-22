@@ -1463,14 +1463,14 @@ const OR_HDR=(key)=>({'Content-Type':'application/json','Authorization':'Bearer 
 async function callORText(prompt,key){
   const r=await fetch('https://openrouter.ai/api/v1/chat/completions',
     {method:'POST',headers:OR_HDR(key),
-     body:JSON.stringify({model:'meta-llama/llama-3.1-8b-instruct:free',messages:[{role:'user',content:prompt}],max_tokens:400})});
+     body:JSON.stringify({model:'deepseek/deepseek-chat-v3-0324:free',messages:[{role:'user',content:prompt}],max_tokens:400})});
   if(!r.ok){const e=await r.json();throw new Error(e.error?.message||r.statusText);}
   const d=await r.json();return d.choices?.[0]?.message?.content||'';
 }
 async function callORVision(b64,key){
   const r=await fetch('https://openrouter.ai/api/v1/chat/completions',
     {method:'POST',headers:OR_HDR(key),
-     body:JSON.stringify({model:'meta-llama/llama-3.2-11b-vision-instruct:free',
+     body:JSON.stringify({model:'qwen/qwen2.5-vl-7b-instruct:free',
        messages:[{role:'user',content:[
          {type:'image_url',image_url:{url:'data:image/jpeg;base64,'+b64}},
          {type:'text',text:AI_PROMPT}
