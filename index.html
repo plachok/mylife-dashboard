@@ -423,11 +423,11 @@ textarea{resize:vertical;min-height:60px}
           <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px">
             <div class="fg">
               <label style="font-size:.72rem">📝 Text Model</label>
-              <input id="or-text-model" type="text" placeholder="google/gemini-2.0-flash-001" style="font-size:.72rem" oninput="saveORModels()">
+              <input id="or-text-model" type="text" placeholder="google/gemini-flash-1.5" style="font-size:.72rem" oninput="saveORModels()">
             </div>
             <div class="fg">
               <label style="font-size:.72rem">🖼️ Vision Model</label>
-              <input id="or-vision-model" type="text" placeholder="google/gemini-2.0-flash-001" style="font-size:.72rem" oninput="saveORModels()">
+              <input id="or-vision-model" type="text" placeholder="google/gemini-flash-1.5" style="font-size:.72rem" oninput="saveORModels()">
             </div>
           </div>
           <div style="font-size:.65rem;color:var(--muted);margin-top:5px">ดู free models ได้ที่ <a href="https://openrouter.ai/models?order=newest&supported_parameters=free" target="_blank" style="color:var(--blue)">openrouter.ai/models → filter: Free</a></div>
@@ -1454,8 +1454,8 @@ function getGeminiKey(){return document.getElementById('gemini-key')?.value.trim
 function saveORKey(){DB.set('ml_orkey',document.getElementById('or-key').value);}
 function getORKey(){return document.getElementById('or-key')?.value.trim()||DB.get('ml_orkey','');}
 function saveORModels(){DB.set('ml_or_tmodel',document.getElementById('or-text-model').value);DB.set('ml_or_vmodel',document.getElementById('or-vision-model').value);}
-function getORTextModel(){return document.getElementById('or-text-model')?.value.trim()||DB.get('ml_or_tmodel','')||'google/gemini-2.0-flash-001';}
-function getORVisionModel(){return document.getElementById('or-vision-model')?.value.trim()||DB.get('ml_or_vmodel','')||'google/gemini-2.0-flash-001';}
+function getORTextModel(){return document.getElementById('or-text-model')?.value.trim()||DB.get('ml_or_tmodel','')||'google/gemini-flash-1.5';}
+function getORVisionModel(){return document.getElementById('or-vision-model')?.value.trim()||DB.get('ml_or_vmodel','')||'google/gemini-flash-1.5';}
 function autoMeal(){const h=new Date().getHours();return h<10?'เช้า':h<14?'กลางวัน':h<19?'เย็น':'ของว่าง';}
 
 // ══ Gemini API ══
