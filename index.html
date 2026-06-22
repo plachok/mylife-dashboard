@@ -1446,8 +1446,13 @@ function initAIProvider(){
   if(gk){const el=document.getElementById('gemini-key');if(el)el.value=gk;}
   const ok=DB.get('ml_orkey','');
   if(ok){const el=document.getElementById('or-key');if(el)el.value=ok;}
-  const tm=DB.get('ml_or_tmodel','');if(tm){const el=document.getElementById('or-text-model');if(el)el.value=tm;}
-  const vm=DB.get('ml_or_vmodel','');if(vm){const el=document.getElementById('or-vision-model');if(el)el.value=vm;}
+  // migrate old broken slugs
+  const BAD=['google/gemini-2.0-flash-001','google/gemma-3-12b-it:free','deepseek/deepseek-chat-v3-0324:free','meta-llama/llama-3.1-8b-instruct:free','mistralai/mistral-7b-instruct:free'];
+  const GOOD='google/gemini-flash-1.5';
+  if(BAD.includes(DB.get('ml_or_tmodel',''))){DB.set('ml_or_tmodel',GOOD);}
+  if(BAD.includes(DB.get('ml_or_vmodel',''))){DB.set('ml_or_vmodel',GOOD);}
+  const tm=DB.get('ml_or_tmodel','');const el1=document.getElementById('or-text-model');if(el1)el1.value=tm;
+  const vm=DB.get('ml_or_vmodel','');const el2=document.getElementById('or-vision-model');if(el2)el2.value=vm;
 }
 
 function getGeminiKey(){return document.getElementById('gemini-key')?.value.trim()||DB.get('ml_geminikey','');}
