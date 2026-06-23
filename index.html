@@ -421,7 +421,7 @@ textarea{resize:vertical;min-height:60px}
   <!-- AI & SEARCH TOOLS (collapsible) -->
   <div style="margin-bottom:10px">
     <button class="btn brd bfu" style="font-size:.82rem;padding:10px" onclick="toggleSection('n-ai-tools',this)">🤖 AI วิเคราะห์ / ค้นหา / TDEE ▾</button>
-    <div id="n-ai-tools" style="display:none;margin-top:8px;display:flex;flex-direction:column;gap:10px">
+    <div id="n-ai-tools" style="display:none;margin-top:8px;flex-direction:column;gap:10px">
       <div style="display:flex;flex-direction:column;gap:14px">
       <!-- AI FOOD -->
       <div class="card"><div class="ch"><span class="ct">🤖 AI คำนวณ Calories</span><div style="display:flex;gap:6px"><button class="btn bgh" style="padding:3px 9px;font-size:.72rem" onclick="switchAIMode('text')" id="ai-mode-text">✏️ ข้อความ</button><button class="btn bg" style="padding:3px 9px;font-size:.72rem" onclick="switchAIMode('photo')" id="ai-mode-photo">📷 ถ่ายรูป</button></div></div><div class="cb">
@@ -508,6 +508,7 @@ textarea{resize:vertical;min-height:60px}
       </div></div>
     </div><!-- end n-ai-tools -->
   </div><!-- end collapsible wrapper -->
+</div><!-- end outer margin wrapper -->
 
   <!-- BARCODE SCANNER OVERLAY (page-level fixed) -->
   <div id="barcode-overlay" style="display:none;position:fixed;inset:0;background:#000;z-index:1000;flex-direction:column">
