@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://www.gstatic.com https://unpkg.com; style-src 'self' 'unsafe-inline'; connect-src 'self' https://*.googleapis.com https://openrouter.ai https://world.openfoodfacts.org https://generativelanguage.googleapis.com https://securetoken.googleapis.com https://identitytoolkit.googleapis.com; img-src 'self' data: blob: https:; worker-src 'self'; manifest-src 'self';">`
 <title>MyLife Dashboard</title>
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -2516,8 +2517,16 @@ function loadImportFile(file){
   reader.onload=ev=>{
     try{
       const d=JSON.parse(ev.target.result);
-      if(!d.version)throw new Error('ไฟล์ไม่ถูกต้อง');
-      if(!confirm(`นำเข้าข้อมูลจาก ${d.exported?.slice(0,10)||'ไม่ทราบวันที่'}?\n\nข้อมูลเดิมทั้งหมดจะถูกแทนที่`))return;
+      // schema validation
+      if(typeof d!=='object'||d===null||Array.isArray(d))throw new Error('ไฟล์ต้องเป็น JSON object');
+      if(!d.version)throw new Error('ไม่พบ version — ไฟล์ไม่ถูกต้อง');
+      if(typeof d.version!=='string'&&typeof d.version!=='number')throw new Error('version ต้องเป็น string หรือ number');
+      const arrFields=['workouts','sleeps','foods','metrics','goals','todos','habits','habitLog','waterLog','journals','routines','presets','mealPlan'];
+      for(const f of arrFields){if(d[f]!==undefined&&!Array.isArray(d[f]))throw new Error(`${f} ต้องเป็น array`);}
+      // strip unexpected top-level keys to prevent prototype pollution
+      const allowed=new Set([...arrFields,'version','exported','nutriGoal','waterGoal']);
+      Object.keys(d).forEach(k=>{if(!allowed.has(k))delete d[k];});
+      if(!confirm(`นำเข้าข้อมูลจาก ${String(d.exported||'').slice(0,10)||'ไม่ทราบวันที่'}?\n\nข้อมูลเดิมทั้งหมดจะถูกแทนที่`))return;
       // restore all data
       if(d.workouts)DB.set('ml_wkt',workouts=d.workouts);
       if(d.sleeps)DB.set('ml_sl',sleeps=d.sleeps);
