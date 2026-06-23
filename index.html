@@ -3205,7 +3205,7 @@ const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
 const isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
 const isPWA = window.navigator.standalone === true || window.matchMedia('(display-mode: standalone)').matches;
 // iOS Safari blocks popups in ALL modes — must use redirect
-const useRedirect = isIOS || (isMobile && !isPWA);
+const useRedirect = isMobile; // mobile (all modes) & iOS always redirect — popups are blocked
 
 function handleAuth() {
   if (fbUser) {
