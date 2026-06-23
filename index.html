@@ -412,6 +412,17 @@ textarea{resize:vertical;min-height:60px}
     </div>
   </div>
 
+  <!-- MY FOODS quick-add bar -->
+  <div style="margin-bottom:10px">
+    <button class="btn brd bfu" style="font-size:.82rem;padding:10px;display:flex;align-items:center;gap:6px;width:100%;justify-content:space-between" onclick="toggleSection('n-myfoods-wrap',this)">
+      <span>📚 My Foods Library</span><span style="font-size:.72rem;color:var(--muted)" id="n-myfoods-count"></span><span>▾</span>
+    </button>
+    <div id="n-myfoods-wrap" style="display:none;flex-direction:column;gap:8px;margin-top:8px">
+      <button class="btn bg" style="font-size:.8rem;padding:8px" onclick="openMyFoodModal()">+ เพิ่มอาหารใหม่ใน My Foods</button>
+      <div id="n-myfoods-list"></div>
+    </div>
+  </div>
+
   <!-- MEAL SECTIONS (rendered by JS) -->
   <div id="n-meal-sections"></div>
 
@@ -955,6 +966,11 @@ textarea{resize:vertical;min-height:60px}
 <div class="mbg" id="foodModal">
   <div class="modal">
     <div class="mt" id="fm-title">🍽️ บันทึกอาหาร</div>
+    <!-- My Foods search -->
+    <div style="position:relative;margin-bottom:10px">
+      <input id="fm-food-search" placeholder="🔍 ค้นหาจาก My Foods... (หรือกรอกชื่อใหม่ด้านล่าง)" oninput="searchMyFoodsModal(this.value)" autocomplete="off" style="width:100%;box-sizing:border-box">
+      <div id="fm-food-suggest" style="display:none;position:absolute;top:100%;left:0;right:0;background:var(--card2);border:1px solid var(--border);border-radius:10px;z-index:10;max-height:200px;overflow-y:auto;margin-top:3px"></div>
+    </div>
     <div class="fg"><label>ชื่ออาหาร</label><input id="fm-name" placeholder="เช่น อกไก่, ข้าวผัด..."></div>
     <div class="fg"><label>มื้อ</label><select id="fm-meal"><option value="เช้า">🌅 เช้า</option><option value="กลางวัน" selected>☀️ กลางวัน</option><option value="บ่าย">🌤️ บ่าย</option><option value="เย็น">🌆 เย็น</option><option value="ของว่าง">🍿 ของว่าง</option></select></div>
     <div id="fm-gram-row" style="display:none">
@@ -984,7 +1000,36 @@ textarea{resize:vertical;min-height:60px}
     </div>
     <div class="r2"><div class="fg"><label>Calories (kcal)</label><input type="number" id="fm-cal" min="0"></div><div class="fg"><label>Protein (g)</label><input type="number" id="fm-pro" min="0" step=".1"></div></div>
     <div class="r2"><div class="fg"><label>Carbs (g)</label><input type="number" id="fm-carb" min="0" step=".1"></div><div class="fg"><label>Fat (g)</label><input type="number" id="fm-fat" min="0" step=".1"></div></div>
+    <div style="margin-bottom:8px"><button class="btn brd bfu" style="font-size:.78rem;padding:7px" onclick="saveToMyFoods()">💾 บันทึกอาหารนี้ลง My Foods (ใช้ซ้ำได้)</button></div>
     <div class="mf"><button class="btn bgh" style="flex:1" onclick="closeFoodModal()">ยกเลิก</button><button class="btn bg" style="flex:2" onclick="saveFood()">บันทึก</button></div>
+  </div>
+</div>
+
+<!-- MY FOODS MODAL -->
+<div class="mbg" id="myFoodModal">
+  <div class="modal">
+    <div class="mt">📚 เพิ่มอาหารใน My Foods</div>
+    <div class="fg"><label>ชื่ออาหาร</label><input id="mf-name" placeholder="เช่น เวย์โปรตีน, อกไก่..."></div>
+    <div class="fg"><label>⚖️ ปริมาณ Base (กรัม) — ค่าโภชนาการด้านล่างคือต่อปริมาณนี้</label>
+      <div style="display:flex;gap:8px;align-items:center">
+        <input type="number" id="mf-base" value="100" min="1" step="1" style="flex:1">
+        <select id="mf-base-unit" style="flex:0 0 90px;background:var(--card);color:var(--text);border:1px solid var(--border);border-radius:8px;padding:0 8px">
+          <option value="g">กรัม (g)</option>
+          <option value="ml">มล. (ml)</option>
+          <option value="ชิ้น">ชิ้น</option>
+          <option value="ลูก">ลูก</option>
+        </select>
+      </div>
+    </div>
+    <div class="r2"><div class="fg"><label>Calories (kcal)</label><input type="number" id="mf-cal" min="0"></div><div class="fg"><label>Protein (g)</label><input type="number" id="mf-pro" min="0" step=".1"></div></div>
+    <div class="r2"><div class="fg"><label>Carbs (g)</label><input type="number" id="mf-carb" min="0" step=".1"></div><div class="fg"><label>Fat (g)</label><input type="number" id="mf-fat" min="0" step=".1"></div></div>
+    <div class="fg"><label style="font-size:.75rem;color:var(--muted)">Serving เริ่มต้น (ไม่บังคับ) — จะโหลดค่านี้เวลาเลือกจาก My Foods</label>
+      <div style="display:flex;gap:8px;align-items:center">
+        <input type="number" id="mf-serving" placeholder="เช่น 30" min="1" step="1" style="flex:1">
+        <span style="color:var(--muted);font-size:.8rem" id="mf-serving-unit-lbl">g</span>
+      </div>
+    </div>
+    <div class="mf"><button class="btn bgh" style="flex:1" onclick="closeModal('myFoodModal')">ยกเลิก</button><button class="btn bg" style="flex:2" onclick="saveMyFood()">บันทึกใน My Foods</button></div>
   </div>
 </div>
 
@@ -1045,6 +1090,7 @@ const DB={
 let workouts=DB.get('ml_wkt');
 let sleeps=DB.get('ml_sl');
 let foods=DB.get('ml_fd');
+let myFoods=DB.get('ml_myfd',[]);
 let metrics=DB.get('ml_mt');
 let goals=DB.get('ml_gl');
 let todos=DB.get('ml_td');
@@ -1576,6 +1622,124 @@ function saveFood(){
   toast(_editFoodId?'แก้ไขอาหารแล้ว ✅':'บันทึกอาหารแล้ว 🥗');
 }
 
+// ── MY FOODS LIBRARY ──────────────────────────────────────────────
+function openMyFoodModal(prefill){
+  const modal=document.getElementById('myFoodModal');if(!modal)return;
+  document.getElementById('mf-name').value=prefill?.name||'';
+  document.getElementById('mf-base').value=prefill?.baseGrams||100;
+  document.getElementById('mf-base-unit').value=prefill?.baseUnit||'g';
+  document.getElementById('mf-cal').value=prefill?.cal||'';
+  document.getElementById('mf-pro').value=prefill?.pro||'';
+  document.getElementById('mf-carb').value=prefill?.carb||'';
+  document.getElementById('mf-fat').value=prefill?.fat||'';
+  document.getElementById('mf-serving').value=prefill?.serving||'';
+  document.getElementById('mf-serving-unit-lbl').textContent=prefill?.baseUnit||'g';
+  modal.style.display='flex';
+}
+function saveMyFood(){
+  const name=document.getElementById('mf-name').value.trim();
+  if(!name)return toast('กรุณาใส่ชื่ออาหาร');
+  const baseGrams=+document.getElementById('mf-base').value||100;
+  const baseUnit=document.getElementById('mf-base-unit').value||'g';
+  const cal=+document.getElementById('mf-cal').value||0;
+  const pro=+document.getElementById('mf-pro').value||0;
+  const carb=+document.getElementById('mf-carb').value||0;
+  const fat=+document.getElementById('mf-fat').value||0;
+  const serving=+document.getElementById('mf-serving').value||null;
+  myFoods.push({id:uid(),name,cal,pro,carb,fat,baseGrams,baseUnit,serving});
+  DB.set('ml_myfd',myFoods);
+  closeModal('myFoodModal');
+  renderMyFoods();
+  toast('บันทึกใน My Foods แล้ว 📚');
+}
+function delMyFood(id){
+  myFoods=myFoods.filter(f=>f.id!==id);
+  DB.set('ml_myfd',myFoods);
+  renderMyFoods();
+}
+function renderMyFoods(){
+  const cnt=document.getElementById('n-myfoods-count');
+  if(cnt)cnt.textContent=myFoods.length?`(${myFoods.length} รายการ)`:'';
+  const el=document.getElementById('n-myfoods-list');if(!el)return;
+  if(!myFoods.length){el.innerHTML='<div class="emp" style="font-size:.8rem">ยังไม่มีอาหารใน My Foods<br>กด "เพิ่มอาหารใหม่" หรือกด "💾" ตอน log อาหาร</div>';return;}
+  el.innerHTML=myFoods.map(f=>`<div class="li" style="flex-wrap:wrap;gap:6px">
+    <div style="flex:1;min-width:0">
+      <div style="font-weight:700;font-size:.85rem">${esc(f.name)}</div>
+      <div style="font-size:.7rem;color:var(--muted)">🔥${f.cal} kcal | P:${f.pro}g C:${f.carb}g F:${f.fat}g <span style="color:var(--muted2)">ต่อ ${f.baseGrams}${f.baseUnit}</span>${f.serving?` | serving: ${f.serving}${f.baseUnit}`:''}</div>
+    </div>
+    <div style="display:flex;gap:4px">
+      <button class="btn bg" style="padding:4px 8px;font-size:.72rem" onclick="logFromMyFood('${f.id}')">+ Log</button>
+      <button class="btn brd" style="padding:4px 6px;font-size:.72rem" onclick="delMyFood('${f.id}')">✕</button>
+    </div>
+  </div>`).join('');
+}
+function logFromMyFood(id){
+  const f=myFoods.find(x=>x.id===id);if(!f)return;
+  openFoodModal();
+  document.getElementById('fm-name').value=f.name;
+  _editFoodBase={cal:f.cal,pro:f.pro,carb:f.carb,fat:f.fat,grams:f.baseGrams};
+  const nos=document.getElementById('fm-nos');
+  const unit=document.getElementById('fm-nos-unit');
+  const nosRow=document.getElementById('fm-nos-row');
+  if(nos)nos.value=f.serving||f.baseGrams;
+  if(unit){
+    unit.innerHTML=`<option value="gram">${f.baseUnit==='ml'?'มล. (ml)':'กรัม (g)'}</option>`;
+    unit.value='gram';
+  }
+  if(nosRow)nosRow.style.display='';
+  recalcFoodModal();
+  toast('เลือก '+f.name+' แล้ว — แก้ปริมาณได้เลย ⚖️');
+}
+function searchMyFoodsModal(q){
+  const box=document.getElementById('fm-food-suggest');if(!box)return;
+  const trimmed=q.trim().toLowerCase();
+  if(!trimmed||!myFoods.length){box.style.display='none';return;}
+  const matches=myFoods.filter(f=>f.name.toLowerCase().includes(trimmed));
+  if(!matches.length){box.style.display='none';return;}
+  box.style.display='block';
+  box.innerHTML=matches.map(f=>`<div onclick="pickMyFoodInModal('${f.id}')" style="padding:10px 14px;cursor:pointer;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center" onmouseover="this.style.background='var(--card)'" onmouseout="this.style.background=''">
+    <div><div style="font-weight:700;font-size:.85rem">${esc(f.name)}</div><div style="font-size:.7rem;color:var(--muted)">🔥${f.cal}/${f.baseGrams}${f.baseUnit} | P:${f.pro} C:${f.carb} F:${f.fat}</div></div>
+    <span style="color:var(--green);font-size:.75rem">เลือก</span>
+  </div>`).join('');
+}
+function pickMyFoodInModal(id){
+  const f=myFoods.find(x=>x.id===id);if(!f)return;
+  document.getElementById('fm-food-search').value='';
+  document.getElementById('fm-food-suggest').style.display='none';
+  document.getElementById('fm-name').value=f.name;
+  _editFoodBase={cal:f.cal,pro:f.pro,carb:f.carb,fat:f.fat,grams:f.baseGrams};
+  const nos=document.getElementById('fm-nos');
+  const unit=document.getElementById('fm-nos-unit');
+  const nosRow=document.getElementById('fm-nos-row');
+  if(nos)nos.value=f.serving||f.baseGrams;
+  if(unit){
+    // rebuild unit options so gram/ml is first
+    const isML=f.baseUnit==='ml';
+    unit.innerHTML=`
+      <option value="gram">${isML?'มล. (ml)':'กรัม (g)'}</option>
+      <option value="serving">serving (x${f.baseGrams}${f.baseUnit})</option>
+      <option value="ชิ้น">ชิ้น</option><option value="ลูก">ลูก</option>
+      <option value="ถ้วย">ถ้วย</option><option value="ช้อนโต๊ะ">ช้อนโต๊ะ</option>`;
+    unit.value='gram';
+  }
+  if(nosRow)nosRow.style.display='';
+  document.getElementById('fm-gram-row').style.display='none';
+  recalcFoodModal();
+}
+function saveToMyFoods(){
+  const name=document.getElementById('fm-name').value.trim();
+  if(!name)return toast('กรอกชื่ออาหารก่อนนะครับ');
+  const cal=+document.getElementById('fm-cal').value||0;
+  const pro=+document.getElementById('fm-pro').value||0;
+  const carb=+document.getElementById('fm-carb').value||0;
+  const fat=+document.getElementById('fm-fat').value||0;
+  const base=_editFoodBase;
+  openMyFoodModal({
+    name,cal:base?.cal||cal,pro:base?.pro||pro,carb:base?.carb||carb,fat:base?.fat||fat,
+    baseGrams:base?.grams||100,baseUnit:'g',serving:null
+  });
+}
+
 function toggleSection(id,btn){
   const el=document.getElementById(id);if(!el)return;
   const open=el.style.display==='none'||el.style.display==='';
@@ -1593,6 +1757,7 @@ const MEAL_DEFS=[
 ];
 
 function renderNutrition(){
+  renderMyFoods();
   const tod=today();const tf=foods.filter(f=>f.date===tod);
   const cal=tf.reduce((s,f)=>s+f.cal,0);
   const pro=tf.reduce((s,f)=>s+f.pro,0);
