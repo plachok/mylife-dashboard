@@ -918,8 +918,23 @@ textarea{resize:vertical;min-height:60px}
       </div>
     </div>
     <div id="fm-nos-row" style="display:none">
-      <div class="fg"><label>🍽️ จำนวน Serving — เปลี่ยนเพื่อคำนวณใหม่</label>
-        <input type="number" id="fm-nos" min="0.1" step="0.1" value="1" oninput="recalcFoodModal()">
+      <div class="fg"><label>⚖️ ปริมาณที่กิน — เปลี่ยนเพื่อคำนวณใหม่</label>
+        <div style="display:flex;gap:8px">
+          <input type="number" id="fm-nos" min="0.01" step="0.1" value="1" oninput="recalcFoodModal()" style="flex:1;min-width:0">
+          <select id="fm-nos-unit" onchange="recalcFoodModal()" style="flex:0 0 105px;background:var(--card);color:var(--text);border:1px solid var(--border);border-radius:8px;padding:0 8px;font-size:.9rem">
+            <option value="serving">serving</option>
+            <option value="gram">กรัม (g)</option>
+            <option value="ml">มล. (ml)</option>
+            <option value="ชิ้น">ชิ้น</option>
+            <option value="ลูก">ลูก</option>
+            <option value="ถ้วย">ถ้วย</option>
+            <option value="ช้อนโต๊ะ">ช้อนโต๊ะ</option>
+            <option value="ช้อนชา">ช้อนชา</option>
+            <option value="แก้ว">แก้ว</option>
+            <option value="กล่อง">กล่อง</option>
+          </select>
+        </div>
+        <div id="fm-unit-note" style="display:none;font-size:.75rem;color:var(--amber);margin-top:4px"></div>
       </div>
     </div>
     <div class="r2"><div class="fg"><label>Calories (kcal)</label><input type="number" id="fm-cal" min="0"></div><div class="fg"><label>Protein (g)</label><input type="number" id="fm-pro" min="0" step=".1"></div></div>
@@ -1408,6 +1423,8 @@ function openFoodModal(){
   document.getElementById('fm-meal').value='กลางวัน';
   ['fm-cal','fm-pro','fm-carb','fm-fat','fm-gram'].forEach(id=>document.getElementById(id).value='');
   document.getElementById('fm-nos').value=1;
+  if(document.getElementById('fm-nos-unit'))document.getElementById('fm-nos-unit').value='serving';
+  document.getElementById('fm-unit-note').style.display='none';
   document.getElementById('fm-gram-row').style.display='none';
   document.getElementById('fm-nos-row').style.display='none';
   document.getElementById('foodModal').classList.add('on');
@@ -1439,17 +1456,37 @@ function editFood(id){
 
 function recalcFoodModal(){
   if(!_editFoodBase)return;
-  const nos=parseFloat(document.getElementById('fm-nos').value)||1;
+  const amt=parseFloat(document.getElementById('fm-nos').value)||1;
+  const unit=document.getElementById('fm-nos-unit')?.value||'serving';
+  const note=document.getElementById('fm-unit-note');
   let cal=_editFoodBase.cal,pro=_editFoodBase.pro,carb=_editFoodBase.carb,fat=_editFoodBase.fat;
-  if(_editFoodBase.grams){
+
+  // gram row (legacy, still works if visible)
+  if(_editFoodBase.grams&&document.getElementById('fm-gram-row').style.display!=='none'){
     const g=parseFloat(document.getElementById('fm-gram').value)||_editFoodBase.grams;
-    const r=g/_editFoodBase.grams;
-    cal*=r;pro*=r;carb*=r;fat*=r;
+    const r=g/_editFoodBase.grams;cal*=r;pro*=r;carb*=r;fat*=r;
   }
-  document.getElementById('fm-cal').value=Math.round(cal*nos);
-  document.getElementById('fm-pro').value=+(pro*nos).toFixed(1);
-  document.getElementById('fm-carb').value=+(carb*nos).toFixed(1);
-  document.getElementById('fm-fat').value=+(fat*nos).toFixed(1);
+
+  if(unit==='gram'||unit==='ml'){
+    if(_editFoodBase.grams){
+      const r=amt/_editFoodBase.grams;
+      cal=_editFoodBase.cal*r;pro=_editFoodBase.pro*r;carb=_editFoodBase.carb*r;fat=_editFoodBase.fat*r;
+      if(note){note.style.display='none';}
+    }else{
+      // no gram data — treat as multiplier, warn user
+      cal*=amt;pro*=amt;carb*=amt;fat*=amt;
+      if(note){note.textContent='⚠️ ไม่มีข้อมูลกรัม/serving — คำนวณเป็นตัวคูณแทน (สแกนด้วย AI เพื่อความแม่นยำ)';note.style.display='';}
+    }
+  }else{
+    // serving / ชิ้น / ลูก / etc. → multiply
+    cal*=amt;pro*=amt;carb*=amt;fat*=amt;
+    if(note){note.style.display='none';}
+  }
+
+  document.getElementById('fm-cal').value=Math.round(cal);
+  document.getElementById('fm-pro').value=+pro.toFixed(1);
+  document.getElementById('fm-carb').value=+carb.toFixed(1);
+  document.getElementById('fm-fat').value=+fat.toFixed(1);
 }
 
 function saveFood(){
