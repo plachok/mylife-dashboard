@@ -909,12 +909,17 @@ textarea{resize:vertical;min-height:60px}
 <!-- FOOD MODAL -->
 <div class="mbg" id="foodModal">
   <div class="modal">
-    <div class="mt">🍽️ บันทึกอาหาร</div>
+    <div class="mt" id="fm-title">🍽️ บันทึกอาหาร</div>
     <div class="fg"><label>ชื่ออาหาร</label><input id="fm-name" placeholder="เช่น อกไก่, ข้าวผัด..."></div>
-    <div class="fg"><label>มื้อ</label><select id="fm-meal"><option value="เช้า">🌅 เช้า</option><option value="กลางวัน" selected>☀️ กลางวัน</option><option value="เย็น">🌆 เย็น</option><option value="ของว่าง">🍿 ของว่าง</option></select></div>
+    <div class="fg"><label>มื้อ</label><select id="fm-meal"><option value="เช้า">🌅 เช้า</option><option value="กลางวัน" selected>☀️ กลางวัน</option><option value="บ่าย">🌤️ บ่าย</option><option value="เย็น">🌆 เย็น</option><option value="ของว่าง">🍿 ของว่าง</option></select></div>
+    <div id="fm-gram-row" style="display:none">
+      <div class="fg"><label>⚖️ ปริมาณ (กรัม) — เปลี่ยนเพื่อคำนวณใหม่</label>
+        <input type="number" id="fm-gram" min="1" step="1" placeholder="กรัม" oninput="recalcFoodModal()">
+      </div>
+    </div>
     <div class="r2"><div class="fg"><label>Calories (kcal)</label><input type="number" id="fm-cal" min="0"></div><div class="fg"><label>Protein (g)</label><input type="number" id="fm-pro" min="0" step=".1"></div></div>
     <div class="r2"><div class="fg"><label>Carbs (g)</label><input type="number" id="fm-carb" min="0" step=".1"></div><div class="fg"><label>Fat (g)</label><input type="number" id="fm-fat" min="0" step=".1"></div></div>
-    <div class="mf"><button class="btn bgh" style="flex:1" onclick="closeModal('foodModal')">ยกเลิก</button><button class="btn bg" style="flex:2" onclick="saveFood()">บันทึก</button></div>
+    <div class="mf"><button class="btn bgh" style="flex:1" onclick="closeFoodModal()">ยกเลิก</button><button class="btn bg" style="flex:2" onclick="saveFood()">บันทึก</button></div>
   </div>
 </div>
 
@@ -1389,20 +1394,66 @@ function renderSleep(){
 function delSleep(id){sleeps=sleeps.filter(s=>s.id!==id);save();renderSleep();}
 
 // ══════════ NUTRITION ══════════
+let _editFoodId=null,_editFoodBase=null;
+
 function openFoodModal(){
+  _editFoodId=null;_editFoodBase=null;
+  document.getElementById('fm-title').textContent='🍽️ บันทึกอาหาร';
   document.getElementById('fm-name').value='';
-  ['fm-cal','fm-pro','fm-carb','fm-fat'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('fm-meal').value='กลางวัน';
+  ['fm-cal','fm-pro','fm-carb','fm-fat','fm-gram'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('fm-gram-row').style.display='none';
   document.getElementById('foodModal').classList.add('on');
   setTimeout(()=>document.getElementById('fm-name').focus(),100);
+}
+function closeFoodModal(){_editFoodId=null;_editFoodBase=null;closeModal('foodModal');}
+
+function editFood(id){
+  const f=foods.find(x=>x.id===id);if(!f)return;
+  _editFoodId=id;
+  document.getElementById('fm-title').textContent='✏️ แก้ไขอาหาร';
+  document.getElementById('fm-name').value=f.name;
+  document.getElementById('fm-meal').value=f.meal||'กลางวัน';
+  document.getElementById('fm-cal').value=f.cal||0;
+  document.getElementById('fm-pro').value=f.pro||0;
+  document.getElementById('fm-carb').value=f.carb||0;
+  document.getElementById('fm-fat').value=f.fat||0;
+  if(f.grams){
+    _editFoodBase={cal:f.cal,pro:f.pro,carb:f.carb,fat:f.fat,grams:f.grams};
+    document.getElementById('fm-gram').value=f.grams;
+    document.getElementById('fm-gram-row').style.display='';
+  }else{
+    _editFoodBase=null;
+    document.getElementById('fm-gram-row').style.display='none';
+  }
+  document.getElementById('foodModal').classList.add('on');
+}
+
+function recalcFoodModal(){
+  if(!_editFoodBase)return;
+  const g=parseFloat(document.getElementById('fm-gram').value)||_editFoodBase.grams;
+  const r=g/_editFoodBase.grams;
+  document.getElementById('fm-cal').value=Math.round(_editFoodBase.cal*r);
+  document.getElementById('fm-pro').value=+(_editFoodBase.pro*r).toFixed(1);
+  document.getElementById('fm-carb').value=+(_editFoodBase.carb*r).toFixed(1);
+  document.getElementById('fm-fat').value=+(_editFoodBase.fat*r).toFixed(1);
 }
 
 function saveFood(){
   const name=document.getElementById('fm-name').value.trim();
   if(!name) return toast('กรุณาใส่ชื่ออาหาร');
-  foods.push({id:uid(),date:today(),name,meal:document.getElementById('fm-meal').value,
+  const entry={name,meal:document.getElementById('fm-meal').value,
     cal:+document.getElementById('fm-cal').value||0,pro:+document.getElementById('fm-pro').value||0,
-    carb:+document.getElementById('fm-carb').value||0,fat:+document.getElementById('fm-fat').value||0});
-  save();renderNutrition();renderDash();closeModal('foodModal');toast('บันทึกอาหารแล้ว 🥗');
+    carb:+document.getElementById('fm-carb').value||0,fat:+document.getElementById('fm-fat').value||0,
+    grams:+document.getElementById('fm-gram').value||null};
+  if(_editFoodId){
+    const idx=foods.findIndex(f=>f.id===_editFoodId);
+    if(idx>-1)foods[idx]={...foods[idx],...entry};
+  }else{
+    foods.push({id:uid(),date:today(),...entry});
+  }
+  save();renderNutrition();renderDash();closeFoodModal();
+  toast(_editFoodId?'แก้ไขอาหารแล้ว ✅':'บันทึกอาหารแล้ว 🥗');
 }
 
 function renderNutrition(){
@@ -1430,10 +1481,11 @@ function renderNutrition(){
   }else{
     const mo=['เช้า','กลางวัน','เย็น','ของว่าง'];
     nl.innerHTML=[...tf].sort((a,b)=>mo.indexOf(a.meal)-mo.indexOf(b.meal)).map(f=>`
-      <div class="li"><div style="flex:1"><div style="font-weight:700;font-size:.87rem">${esc(f.name)}</div><div style="font-size:.72rem;color:var(--muted)">${esc(f.meal)}</div></div>
+      <div class="li"><div style="flex:1"><div style="font-weight:700;font-size:.87rem">${esc(f.name)}</div><div style="font-size:.72rem;color:var(--muted)">${esc(f.meal)}${f.grams?` · ${f.grams}g`:''}</div></div>
       <span style="font-size:.8rem;color:var(--amber)">${f.cal} kcal</span>
       <span style="font-size:.75rem;color:var(--blue);margin-left:6px">P:${Math.round(f.pro)}g</span>
-      <button class="btn brd" style="padding:3px 7px;font-size:.72rem;margin-left:6px" onclick="delFood('${f.id}')">✕</button></div>`).join('');
+      <button class="btn bgh" style="padding:3px 7px;font-size:.72rem;margin-left:4px" onclick="editFood('${f.id}')">✏️</button>
+      <button class="btn brd" style="padding:3px 7px;font-size:.72rem;margin-left:2px" onclick="delFood('${f.id}')">✕</button></div>`).join('');
   }
   renderBarChart('n-chart',7,d=>foods.filter(f=>f.date===d).reduce((s,f)=>s+f.cal,0),'var(--amber)','kcal');
   renderCalorieBalance();
@@ -1517,11 +1569,22 @@ async function askAI(){
   document.getElementById('ai-btn').disabled=true;
   document.getElementById('ai-input').value='';
   try{
-    const text=await callAIText(`คำนวณ Calories และ Macronutrients ของ: "${input}"\nตอบเป็น JSON เท่านั้น:\n{"calories":0,"protein":0,"carbs":0,"fat":0,"note":"คำอธิบายสั้นๆ"}`);
+    const text=await callAIText(`คำนวณ Calories และ Macronutrients ของ: "${input}"\nตอบเป็น JSON เท่านั้น:\n{"calories":0,"protein":0,"carbs":0,"fat":0,"grams":100,"note":"คำอธิบายสั้นๆ"}`);
     const match=text.match(/\{[\s\S]*\}/);
     if(match){
       const j=JSON.parse(match[0]);
-      chat.innerHTML+=`<div class="ai-bubble">🤖 <strong>${esc(input)}</strong><br>🔥 ${j.calories} kcal | 🥩 P:${j.protein}g | 🍞 C:${j.carbs}g | 🧈 F:${j.fat}g<br><span style="color:var(--muted);font-size:.75rem">${esc(j.note||'')}</span><br><button class="btn bg" style="margin-top:6px;padding:5px 12px;font-size:.75rem" onclick="fillFoodFromAI('${encodeURIComponent(input)}',${j.calories},${j.protein},${j.carbs},${j.fat})">+ เพิ่มลง Food Log</button></div>`;
+      const bid='cb'+Date.now();
+      _chatBases[bid]={input,cal:j.calories,pro:j.protein,carb:j.carbs,fat:j.fat,grams:j.grams||100};
+      chat.innerHTML+=`<div class="ai-bubble">🤖 <strong>${esc(input)}</strong>
+        <div style="display:flex;align-items:center;gap:6px;margin:6px 0;background:rgba(255,255,255,.03);border-radius:6px;padding:6px">
+          <span style="font-size:.75rem;color:var(--muted)">⚖️</span>
+          <input type="number" id="cg-${bid}" value="${j.grams||100}" min="1" style="width:60px;padding:2px 4px;border-radius:4px;border:1px solid var(--border);background:var(--card);color:var(--text);font-size:.82rem;text-align:center" oninput="updateChatGram('${bid}')">
+          <span style="font-size:.75rem;color:var(--muted)">กรัม</span>
+          <span id="cd-${bid}" style="font-size:.82rem;margin-left:4px">🔥 <b>${j.calories}</b> kcal | P:<b>${j.protein}</b>g | C:<b>${j.carbs}</b>g | F:<b>${j.fat}</b>g</span>
+        </div>
+        <span style="color:var(--muted);font-size:.73rem">${esc(j.note||'')}</span><br>
+        <button class="btn bg" style="margin-top:6px;padding:5px 12px;font-size:.75rem" onclick="fillFoodFromAIAdj('${bid}','${encodeURIComponent(input)}')">+ เพิ่มลง Food Log</button>
+      </div>`;
     }else{chat.innerHTML+=`<div class="ai-bubble">🤖 ${esc(text)}</div>`;}
   }catch(err){chat.innerHTML+=`<div class="ai-bubble" style="border-color:var(--red)">❌ ${esc(err.message)}</div>`;}
   document.getElementById('ai-btn').textContent='คำนวณ';
@@ -1588,8 +1651,8 @@ function clearFoodPhoto(){
 }
 
 const AI_PROMPT=`วิเคราะห์อาหารในรูปนี้และประมาณค่าโภชนาการ ตอบเป็น JSON เท่านั้น ไม่มีข้อความอื่น:
-{"dish":"ชื่ออาหาร","items":[{"name":"ชื่อ","amount":"ปริมาณ","cal":0,"pro":0,"carb":0,"fat":0}],"total":{"cal":0,"pro":0,"carb":0,"fat":0},"confidence":"low|medium|high","tips":"คำแนะนำเพื่อความแม่นยำ"}
-ประมาณปริมาณจากขนาดภาพ ถ้าไม่แน่ใจให้ระบุ confidence=low`;
+{"dish":"ชื่ออาหาร","grams":100,"items":[{"name":"ชื่อ","amount":"ปริมาณ","cal":0,"pro":0,"carb":0,"fat":0}],"total":{"cal":0,"pro":0,"carb":0,"fat":0},"confidence":"low|medium|high","tips":"คำแนะนำเพื่อความแม่นยำ"}
+ประมาณปริมาณ grams จากขนาดภาพให้ดีที่สุด ถ้าไม่แน่ใจให้ระบุ confidence=low`;
 
 async function callGeminiVision(b64,key){
   const url=`https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${key}`;
@@ -1604,10 +1667,50 @@ async function callGeminiVision(b64,key){
 }
 
 
+let _photoAIBase=null;
+const _chatBases={};
+
+function updatePhotoGram(){
+  if(!_photoAIBase)return;
+  const g=parseFloat(document.getElementById('photo-gram-input').value)||_photoAIBase.grams;
+  const r=g/_photoAIBase.grams;
+  const cal=Math.round(_photoAIBase.cal*r);
+  const pro=+(_photoAIBase.pro*r).toFixed(1);
+  const carb=+(_photoAIBase.carb*r).toFixed(1);
+  const fat=+(_photoAIBase.fat*r).toFixed(1);
+  document.getElementById('photo-cal-disp').textContent=cal;
+  document.getElementById('photo-pro-disp').textContent=pro+'g';
+  document.getElementById('photo-carb-disp').textContent=carb+'g';
+  document.getElementById('photo-fat-disp').textContent=fat+'g';
+  Object.assign(_photoAIBase,{_cal:cal,_pro:pro,_carb:carb,_fat:fat});
+}
+function logPhotoFoodCurrent(){
+  if(!_photoAIBase)return;
+  const g=parseFloat(document.getElementById('photo-gram-input')?.value)||_photoAIBase.grams;
+  logPhotoFood(encodeURIComponent(_photoAIBase.dish),
+    _photoAIBase._cal??_photoAIBase.cal,_photoAIBase._pro??_photoAIBase.pro,
+    _photoAIBase._carb??_photoAIBase.carb,_photoAIBase._fat??_photoAIBase.fat,g);
+}
+function updateChatGram(bid){
+  const base=_chatBases[bid];if(!base)return;
+  const g=parseFloat(document.getElementById('cg-'+bid).value)||base.grams;
+  const r=g/base.grams;
+  const cal=Math.round(base.cal*r),pro=+(base.pro*r).toFixed(1),carb=+(base.carb*r).toFixed(1),fat=+(base.fat*r).toFixed(1);
+  document.getElementById('cd-'+bid).innerHTML=`🔥 <b>${cal}</b> kcal | P:<b>${pro}</b>g | C:<b>${carb}</b>g | F:<b>${fat}</b>g`;
+  Object.assign(base,{_cal:cal,_pro:pro,_carb:carb,_fat:fat});
+}
+function fillFoodFromAIAdj(bid,nameEnc){
+  const base=_chatBases[bid];if(!base)return;
+  const g=parseFloat(document.getElementById('cg-'+bid)?.value)||base.grams;
+  fillFoodFromAI(nameEnc,base._cal??base.cal,base._pro??base.pro,base._carb??base.carb,base._fat??base.fat,g);
+}
+
 function renderPhotoResult(text,res){
   const match=text.match(/\{[\s\S]*\}/);
   if(!match)throw new Error('ไม่สามารถแปลผลลัพธ์ได้');
   const j=JSON.parse(match[0]);
+  const grams=j.grams||100;
+  _photoAIBase={dish:j.dish,grams,cal:j.total.cal,pro:j.total.pro,carb:j.total.carb,fat:j.total.fat};
   const confColor=j.confidence==='high'?'var(--green)':j.confidence==='medium'?'var(--amber)':'var(--red)';
   const confLabel=j.confidence==='high'?'แม่นยำสูง ✅':j.confidence==='medium'?'แม่นยำปานกลาง ⚠️':'ประมาณการ ⚠️';
   res.innerHTML=`
@@ -1616,15 +1719,20 @@ function renderPhotoResult(text,res){
         <div style="font-weight:700;font-size:.9rem">🍽️ ${esc(j.dish)}</div>
         <span style="font-size:.7rem;color:${confColor};font-weight:700">${confLabel}</span>
       </div>
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;background:rgba(255,255,255,.04);border-radius:8px;padding:8px">
+        <span style="font-size:.8rem;color:var(--muted)">⚖️ ปรับปริมาณ:</span>
+        <input type="number" id="photo-gram-input" value="${grams}" min="1" max="9999" style="width:68px;padding:4px 6px;border-radius:6px;border:1px solid var(--border);background:var(--card);color:var(--text);font-size:.85rem;text-align:center" oninput="updatePhotoGram()">
+        <span style="font-size:.8rem;color:var(--muted)">กรัม</span>
+      </div>
       <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:8px;text-align:center">
-        <div style="background:rgba(245,158,11,.1);border-radius:8px;padding:6px"><div style="font-size:1.1rem;font-weight:800;color:var(--amber)">${j.total.cal}</div><div style="font-size:.65rem;color:var(--muted)">kcal</div></div>
-        <div style="background:rgba(59,130,246,.1);border-radius:8px;padding:6px"><div style="font-size:1.1rem;font-weight:800;color:var(--blue)">${j.total.pro}g</div><div style="font-size:.65rem;color:var(--muted)">protein</div></div>
-        <div style="background:rgba(34,197,94,.1);border-radius:8px;padding:6px"><div style="font-size:1.1rem;font-weight:800;color:var(--green)">${j.total.carb}g</div><div style="font-size:.65rem;color:var(--muted)">carbs</div></div>
-        <div style="background:rgba(236,72,153,.1);border-radius:8px;padding:6px"><div style="font-size:1.1rem;font-weight:800;color:var(--pink)">${j.total.fat}g</div><div style="font-size:.65rem;color:var(--muted)">fat</div></div>
+        <div style="background:rgba(245,158,11,.1);border-radius:8px;padding:6px"><div id="photo-cal-disp" style="font-size:1.1rem;font-weight:800;color:var(--amber)">${j.total.cal}</div><div style="font-size:.65rem;color:var(--muted)">kcal</div></div>
+        <div style="background:rgba(59,130,246,.1);border-radius:8px;padding:6px"><div id="photo-pro-disp" style="font-size:1.1rem;font-weight:800;color:var(--blue)">${j.total.pro}g</div><div style="font-size:.65rem;color:var(--muted)">protein</div></div>
+        <div style="background:rgba(34,197,94,.1);border-radius:8px;padding:6px"><div id="photo-carb-disp" style="font-size:1.1rem;font-weight:800;color:var(--green)">${j.total.carb}g</div><div style="font-size:.65rem;color:var(--muted)">carbs</div></div>
+        <div style="background:rgba(236,72,153,.1);border-radius:8px;padding:6px"><div id="photo-fat-disp" style="font-size:1.1rem;font-weight:800;color:var(--pink)">${j.total.fat}g</div><div style="font-size:.65rem;color:var(--muted)">fat</div></div>
       </div>
       ${j.items?.length?`<div style="font-size:.72rem;color:var(--muted);margin-bottom:6px">${j.items.map(i=>`<div style="display:flex;justify-content:space-between;padding:2px 0;border-bottom:1px solid var(--border)"><span>${esc(i.name)} ${esc(i.amount)}</span><span style="color:var(--amber)">${i.cal} kcal</span></div>`).join('')}</div>`:''}
       ${j.tips?`<div style="font-size:.72rem;color:var(--amber);margin-bottom:8px">💡 ${esc(j.tips)}</div>`:''}
-      <button class="btn bg bfu" onclick="logPhotoFood('${encodeURIComponent(j.dish)}',${j.total.cal},${j.total.pro},${j.total.carb},${j.total.fat})">+ เพิ่มลง Food Log</button>
+      <button class="btn bg bfu" onclick="logPhotoFoodCurrent()">+ เพิ่มลง Food Log</button>
     </div>`;
 }
 
@@ -1644,13 +1752,13 @@ async function analyzePhoto(){
   btn.textContent='🤖 วิเคราะห์ด้วย AI';btn.disabled=false;
 }
 
-function logPhotoFood(name,cal,pro,carb,fat){
-  foods.push({id:uid(),date:today(),name:decodeURIComponent(name),meal:autoMeal(),cal,pro,carb,fat});
+function logPhotoFood(name,cal,pro,carb,fat,grams){
+  foods.push({id:uid(),date:today(),name:decodeURIComponent(name),meal:autoMeal(),cal,pro,carb,fat,grams:grams||null});
   save();renderNutrition();toast('เพิ่มลง Food Log แล้ว ✅');clearFoodPhoto();
 }
 
-function fillFoodFromAI(name,cal,pro,carb,fat){
-  foods.push({id:uid(),date:today(),name:decodeURIComponent(name),meal:autoMeal(),cal,pro,carb,fat});
+function fillFoodFromAI(name,cal,pro,carb,fat,grams){
+  foods.push({id:uid(),date:today(),name:decodeURIComponent(name),meal:autoMeal(),cal,pro,carb,fat,grams:grams||null});
   save();renderNutrition();toast('เพิ่มลง Food Log แล้ว ✅');
 }
 
@@ -1907,15 +2015,18 @@ function openBarcodeScanner() {
   statusEl.textContent = 'กำลังขอสิทธิ์กล้อง...';
   statusEl.style.color = '#94a3b8';
 
-  // clear previous instance
-  if(barcodeScanner){try{barcodeScanner.stop().catch(()=>{});}catch(e){}barcodeScanner=null;}
-  document.getElementById('barcode-reader').innerHTML='';
-
-  barcodeScanner = new Html5Qrcode('barcode-reader');
+  // reuse existing instance to avoid re-asking camera permission
+  if(!barcodeScanner){
+    document.getElementById('barcode-reader').innerHTML='';
+    barcodeScanner = new Html5Qrcode('barcode-reader');
+  } else {
+    try{await barcodeScanner.stop().catch(()=>{});}catch(e){}
+  }
   const config = {
-    fps: 10,
-    qrbox: { width: 250, height: 100 },
+    fps: 15,
+    qrbox: { width: 280, height: 120 },
     aspectRatio: 1.7,
+    experimentalFeatures: { useBarCodeDetectorIfSupported: true },
     formatsToSupport: [
       Html5QrcodeSupportedFormats.EAN_13, Html5QrcodeSupportedFormats.EAN_8,
       Html5QrcodeSupportedFormats.UPC_A, Html5QrcodeSupportedFormats.UPC_E,
