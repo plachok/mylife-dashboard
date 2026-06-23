@@ -1444,6 +1444,25 @@ function editFood(id){
   document.getElementById('fm-carb').value=f.carb||0;
   document.getElementById('fm-fat').value=f.fat||0;
   document.getElementById('fm-nos').value=1;
+  document.getElementById('fm-unit-note').style.display='none';
+  // build unit dropdown: gram/ml only available if we have per-gram data
+  const unitSel=document.getElementById('fm-nos-unit');
+  if(unitSel){
+    const hasGrams=!!f.grams;
+    unitSel.innerHTML=`
+      <option value="serving">serving</option>
+      ${hasGrams?'<option value="gram">กรัม (g)</option>':''}
+      ${hasGrams?'<option value="ml">มล. (ml)</option>':''}
+      <option value="ชิ้น">ชิ้น</option>
+      <option value="ลูก">ลูก</option>
+      <option value="ถ้วย">ถ้วย</option>
+      <option value="ช้อนโต๊ะ">ช้อนโต๊ะ</option>
+      <option value="ช้อนชา">ช้อนชา</option>
+      <option value="แก้ว">แก้ว</option>
+      <option value="กล่อง">กล่อง</option>
+    `;
+    unitSel.value='serving';
+  }
   document.getElementById('fm-nos-row').style.display='';
   if(f.grams){
     document.getElementById('fm-gram').value=f.grams;
