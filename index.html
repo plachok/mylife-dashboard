@@ -2020,7 +2020,7 @@ function openBarcodeScanner() {
     document.getElementById('barcode-reader').innerHTML='';
     barcodeScanner = new Html5Qrcode('barcode-reader');
   } else {
-    try{await barcodeScanner.stop().catch(()=>{});}catch(e){}
+    try{barcodeScanner.stop().catch(()=>{});}catch(e){}
   }
   const config = {
     fps: 15,
@@ -2859,25 +2859,33 @@ function subscribeFirestore() {
   syncUnsub = fbDb.collection('users').doc(fbUser.uid).collection('data').doc('all')
     .onSnapshot(snap => {
       if (!snap.exists || snap.metadata.hasPendingWrites) return;
-      const d = snap.data();
-      if (d.workouts)  workouts  = d.workouts;
-      if (d.sleeps)    sleeps    = d.sleeps;
-      if (d.foods)     foods     = d.foods;
-      if (d.metrics)   metrics   = d.metrics;
-      if (d.goals)     goals     = d.goals;
-      if (d.todos)     todos     = d.todos;
-      if (d.habits)    habits    = d.habits;
-      if (d.habitLog)  habitLog  = d.habitLog;
-      if (d.nutriGoal) nutriGoal = d.nutriGoal;
-      if (d.waterLog)  waterLog  = d.waterLog;
-      if (d.waterGoal) waterGoal = d.waterGoal;
-      if (d.journals)  journals  = d.journals;
-      if (d.presets)   presets   = d.presets;
-      if (d.mealPlan)  mealPlan  = d.mealPlan;
-      renderAll();
-      setSyncStatus('ok', 'Sync แล้ว ✓');
+      try {
+        const d = snap.data();
+        if (d.workouts)  workouts  = d.workouts;
+        if (d.sleeps)    sleeps    = d.sleeps;
+        if (d.foods)     foods     = d.foods;
+        if (d.metrics)   metrics   = d.metrics;
+        if (d.goals)     goals     = d.goals;
+        if (d.todos)     todos     = d.todos;
+        if (d.habits)    habits    = d.habits;
+        if (d.habitLog)  habitLog  = d.habitLog;
+        if (d.nutriGoal) nutriGoal = d.nutriGoal;
+        if (d.waterLog)  waterLog  = d.waterLog;
+        if (d.waterGoal) waterGoal = d.waterGoal;
+        if (d.journals)  journals  = d.journals;
+        if (d.presets)   presets   = d.presets;
+        if (d.mealPlan)  mealPlan  = d.mealPlan;
+        // only re-render the active page + dash stats (not all 16 pages)
+        try { renderPage(_activePage); } catch(e) { console.warn('renderPage error:', e); }
+        if (_activePage !== 'dash') { try { renderDash(); } catch(e) {} }
+        setSyncStatus('ok', 'Sync แล้ว ✓');
+      } catch(err) {
+        console.error('Snapshot processing error:', err);
+        setSyncStatus('err', 'Sync ผิดพลาด');
+      }
     }, err => {
       setSyncStatus('err', 'Sync ผิดพลาด');
+      console.error('Firestore listener error:', err);
     });
 }
 </script>
