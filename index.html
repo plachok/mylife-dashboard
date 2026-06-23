@@ -1048,17 +1048,17 @@ function goto(id){
 // ══════════ RENDER ══════════
 const PAGE_RENDER={
   dash:()=>{renderDash();},
-  routines:()=>{renderRoutines();},
+  routine:()=>{renderRoutines();},
   workout:()=>{renderWorkout();},
   sleep:()=>{renderSleep();},
   nutrition:()=>{renderNutrition();renderMeals();},
   health:()=>{renderHealth();},
-  photos:()=>{renderPhotos();},
+  photo:()=>{renderPhotos();},
   goals:()=>{renderGoals();},
   todo:()=>{renderTodo();},
   water:()=>{renderWater();},
   journal:()=>{renderJournal();},
-  prs:()=>{renderPRs();},
+  pr:()=>{renderPRs();},
   sync:()=>{renderSyncInfo();renderReminders();},
 };
 function renderPage(id){const fn=PAGE_RENDER[id];if(fn)fn();}
@@ -1461,7 +1461,7 @@ function getORKey(){return document.getElementById('or-key')?.value.trim()||DB.g
 function saveORModels(){DB.set('ml_or_tmodel',document.getElementById('or-text-model').value);DB.set('ml_or_vmodel',document.getElementById('or-vision-model').value);}
 function getORTextModel(){return document.getElementById('or-text-model')?.value.trim()||DB.get('ml_or_tmodel','')||'openai/gpt-4o-mini';}
 function getORVisionModel(){return document.getElementById('or-vision-model')?.value.trim()||DB.get('ml_or_vmodel','')||'openai/gpt-4o-mini';}
-function autoMeal(){const h=new Date().getHours();return h<10?'เช้า':h<14?'กลางวัน':h<19?'เย็น':'ของว่าง';}
+function autoMeal(){const h=new Date().getHours();return h<10?'เช้า':h<14?'กลางวัน':h<17?'บ่าย':h<21?'เย็น':'ของว่าง';}
 
 // ══ Gemini API ══
 async function callGeminiText(prompt,key){
@@ -1638,7 +1638,7 @@ async function analyzePhoto(){
     const text=await callAIVision(currentFoodPhotoB64);
     renderPhotoResult(text,res);
   }catch(err){
-    res.innerHTML=`<div style="color:var(--red);font-size:.8rem;padding:8px">❌ ${err.message}</div>`;
+    res.innerHTML=`<div style="color:var(--red);font-size:.8rem;padding:8px">❌ ${esc(err.message)}</div>`;
   }
   btn.textContent='🤖 วิเคราะห์ด้วย AI';btn.disabled=false;
 }
@@ -2052,7 +2052,7 @@ async function lookupBarcode(barcode) {
 
     updateBcNutrition(cal, pro, carb, fat);
   } catch(err) {
-    res.innerHTML = `<div style="color:var(--red);padding:12px;font-size:.82rem">❌ เกิดข้อผิดพลาด: ${err.message}</div>`;
+    res.innerHTML = `<div style="color:var(--red);padding:12px;font-size:.82rem">❌ เกิดข้อผิดพลาด: ${esc(err.message)}</div>`;
   }
 }
 
@@ -2410,7 +2410,7 @@ function clearAllReminders(){
 function renderReminders(){
   const rl=document.getElementById('remind-list');if(!rl)return;
   if(!remindList.length){rl.innerHTML='<div class="emp">ยังไม่มี reminders</div>';return;}
-  rl.innerHTML=[...remindList].reverse().map(r=>`<div class="li"><span style="flex:1;font-size:.82rem">${r.label}</span><button class="btn brd" style="padding:2px 6px;font-size:.7rem" onclick="delReminder('${r.id}')">✕</button></div>`).join('');
+  rl.innerHTML=[...remindList].reverse().map(r=>`<div class="li"><span style="flex:1;font-size:.82rem">${esc(r.label)}</span><button class="btn brd" style="padding:2px 6px;font-size:.7rem" onclick="delReminder('${r.id}')">✕</button></div>`).join('');
 }
 
 function delReminder(id){remindList=remindList.filter(r=>r.id!==id);DB.set('ml_reminders',remindList);renderReminders();}
@@ -2562,12 +2562,13 @@ function renderSyncInfo(){
 // ══════════ EXPORT CSV ══════════
 function exportCSV(){
   const lines=['Type,Date,Field1,Field2,Field3,Field4,Field5'];
-  workouts.forEach(w=>lines.push(`Workout,${w.date},${w.exercise},${w.sets},${w.reps},${w.weight},"${w.note||''}"`));
-  sleeps.forEach(s=>lines.push(`Sleep,${s.date},${s.bed},${s.wake},${s.hours},${s.quality},"${s.note||''}"`));
-  foods.forEach(f=>lines.push(`Food,${f.date},"${f.name}",${f.cal},${f.pro},${f.carb},${f.fat}`));
+  const csv=v=>'"'+String(v==null?'':v).replace(/"/g,'""')+'"';
+  workouts.forEach(w=>lines.push(`Workout,${w.date},${csv(w.exercise)},${w.sets},${w.reps},${w.weight},${csv(w.note||'')}`));
+  sleeps.forEach(s=>lines.push(`Sleep,${s.date},${s.bed},${s.wake},${s.hours},${s.quality},${csv(s.note||'')}`));
+  foods.forEach(f=>lines.push(`Food,${f.date},${csv(f.name)},${f.cal},${f.pro},${f.carb},${f.fat}`));
   metrics.forEach(m=>lines.push(`Metric,${m.date},${m.wt||''},${m.bf||''},${m.wa||''},${m.arm||''},${m.hr||''}`));
   waterLog.forEach(w=>lines.push(`Water,${w.date},${w.ml},,,,`));
-  journals.forEach(j=>lines.push(`Journal,${j.date},${j.mood},${j.energy},${j.stress},"${j.win||''}","${j.note||''}"`));
+  journals.forEach(j=>lines.push(`Journal,${j.date},${j.mood},${j.energy},${j.stress},${csv(j.win||'')},${csv(j.note||'')}`));;
   const blob=new Blob(['﻿'+lines.join('\n')],{type:'text/csv;charset=utf-8'});
   const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`mylife-export-${today()}.csv`;a.click();
   toast('Export สำเร็จ 📤');
@@ -2722,8 +2723,8 @@ async function pullFromFirestore() {
       if (d.journals)  { journals  = d.journals;  DB.set('ml_jn', journals); }
       if (d.presets)   { presets   = d.presets;   DB.set('ml_presets', presets); }
       if (d.mealPlan)  { mealPlan  = d.mealPlan;  DB.set('ml_mp', mealPlan); }
-      if (d.routines)  DB.set('ml_routines', d.routines);
-      if (d.photos)    DB.set('ml_ph', d.photos);
+      if (d.routines) { routines = d.routines; DB.set('ml_rt', routines); }
+      if (d.photos)   { photos   = d.photos;   DB.set('ml_ph', photos); }
       renderAll();
     }
   } catch (err) {

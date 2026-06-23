@@ -1,10 +1,10 @@
-const CACHE='mylife-v13';
+const CACHE='mylife-v14';
 const SHELL=[
   './',
   './index.html',
-  'https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js',
-  'https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js',
-  'https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js',
+  'https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js',
+  'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js',
+  'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js',
   'https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js',
 ];
 
@@ -21,11 +21,12 @@ self.addEventListener('activate',e=>{
 
 self.addEventListener('fetch',e=>{
   const url=new URL(e.request.url);
-  // API calls (Gemini, OpenFoodFacts, Firebase) — network only, no cache
+  // API calls — network only, no cache
   if(url.hostname.includes('generativelanguage.googleapis.com')||
      url.hostname.includes('openfoodfacts.org')||
      url.hostname.includes('firestore.googleapis.com')||
-     url.hostname.includes('identitytoolkit.googleapis.com')){
+     url.hostname.includes('identitytoolkit.googleapis.com')||
+     url.hostname.includes('openrouter.ai')){
     return;
   }
   // Shell: cache-first
