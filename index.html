@@ -406,7 +406,7 @@ textarea{resize:vertical;min-height:60px}
                 <div style="font-weight:700;font-size:.85rem">คลิกเพื่อเลือกรูป / ลากวาง</div>
                 <div style="font-size:.72rem;color:var(--muted);margin-top:4px">รองรับ JPG, PNG — แนะนำถ่ายจากด้านบน มีช้อนหรือมือเป็น reference</div>
               </div>
-              <input type="file" id="food-photo-input" accept="image/*" capture="environment" style="display:none" onchange="handleFoodPhoto(this)">
+              <input type="file" id="food-photo-input" accept="image/*" style="display:none" onchange="handleFoodPhoto(this)">
             </label>
             <img id="food-photo-preview" style="display:none;max-width:100%;max-height:220px;border-radius:10px;border:2px solid var(--border);object-fit:cover">
             <div id="photo-ai-result" style="width:100%"></div>
@@ -1748,23 +1748,26 @@ const _chatBases={};
 function updatePhotoGram(){
   if(!_photoAIBase)return;
   const g=parseFloat(document.getElementById('photo-gram-input').value)||_photoAIBase.grams;
+  const nos=parseFloat(document.getElementById('photo-nos-input')?.value)||1;
   const r=g/_photoAIBase.grams;
-  const cal=Math.round(_photoAIBase.cal*r);
-  const pro=+(_photoAIBase.pro*r).toFixed(1);
-  const carb=+(_photoAIBase.carb*r).toFixed(1);
-  const fat=+(_photoAIBase.fat*r).toFixed(1);
+  const cal=Math.round(_photoAIBase.cal*r*nos);
+  const pro=+(_photoAIBase.pro*r*nos).toFixed(1);
+  const carb=+(_photoAIBase.carb*r*nos).toFixed(1);
+  const fat=+(_photoAIBase.fat*r*nos).toFixed(1);
   document.getElementById('photo-cal-disp').textContent=cal;
   document.getElementById('photo-pro-disp').textContent=pro+'g';
   document.getElementById('photo-carb-disp').textContent=carb+'g';
   document.getElementById('photo-fat-disp').textContent=fat+'g';
-  Object.assign(_photoAIBase,{_cal:cal,_pro:pro,_carb:carb,_fat:fat});
+  Object.assign(_photoAIBase,{_cal:cal,_pro:pro,_carb:carb,_fat:fat,_grams:g*nos});
 }
 function logPhotoFoodCurrent(){
   if(!_photoAIBase)return;
   const g=parseFloat(document.getElementById('photo-gram-input')?.value)||_photoAIBase.grams;
+  const nos=parseFloat(document.getElementById('photo-nos-input')?.value)||1;
   logPhotoFood(encodeURIComponent(_photoAIBase.dish),
     _photoAIBase._cal??_photoAIBase.cal,_photoAIBase._pro??_photoAIBase.pro,
-    _photoAIBase._carb??_photoAIBase.carb,_photoAIBase._fat??_photoAIBase.fat,g);
+    _photoAIBase._carb??_photoAIBase.carb,_photoAIBase._fat??_photoAIBase.fat,
+    _photoAIBase._grams??(g*nos));
 }
 function updateChatGram(bid){
   const base=_chatBases[bid];if(!base)return;
@@ -1794,10 +1797,22 @@ function renderPhotoResult(text,res){
         <div style="font-weight:700;font-size:.9rem">🍽️ ${esc(j.dish)}</div>
         <span style="font-size:.7rem;color:${confColor};font-weight:700">${confLabel}</span>
       </div>
-      <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;background:rgba(255,255,255,.04);border-radius:8px;padding:8px">
-        <span style="font-size:.8rem;color:var(--muted)">⚖️ ปรับปริมาณ:</span>
-        <input type="number" id="photo-gram-input" value="${grams}" min="1" max="9999" style="width:68px;padding:4px 6px;border-radius:6px;border:1px solid var(--border);background:var(--card);color:var(--text);font-size:.85rem;text-align:center" oninput="updatePhotoGram()">
-        <span style="font-size:.8rem;color:var(--muted)">กรัม</span>
+      <div style="background:rgba(255,255,255,.04);border-radius:8px;padding:8px;margin-bottom:8px;display:flex;flex-direction:column;gap:6px">
+        <div style="display:flex;align-items:center;gap:8px">
+          <span style="font-size:.8rem;color:var(--muted);white-space:nowrap">⚖️ กรัม:</span>
+          <input type="number" id="photo-gram-input" value="${grams}" min="1" max="9999" style="width:68px;padding:4px 6px;border-radius:6px;border:1px solid var(--border);background:var(--card);color:var(--text);font-size:.85rem;text-align:center" oninput="updatePhotoGram()">
+          <span style="font-size:.8rem;color:var(--muted)">g</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px">
+          <span style="font-size:.8rem;color:var(--muted);white-space:nowrap">🍽️ Serving:</span>
+          <input type="number" id="photo-nos-input" value="1" min="0.1" step="0.1" style="width:68px;padding:4px 6px;border-radius:6px;border:1px solid var(--border);background:var(--card);color:var(--text);font-size:.85rem;text-align:center" oninput="updatePhotoGram()">
+          <select id="photo-nos-unit" onchange="updatePhotoGram()" style="padding:4px 6px;border-radius:6px;border:1px solid var(--border);background:var(--card);color:var(--text);font-size:.8rem">
+            <option value="serving">serving</option>
+            <option value="ชิ้น">ชิ้น</option><option value="ลูก">ลูก</option>
+            <option value="ถ้วย">ถ้วย</option><option value="แก้ว">แก้ว</option>
+            <option value="ช้อนโต๊ะ">ช้อนโต๊ะ</option><option value="กล่อง">กล่อง</option>
+          </select>
+        </div>
       </div>
       <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:8px;text-align:center">
         <div style="background:rgba(245,158,11,.1);border-radius:8px;padding:6px"><div id="photo-cal-disp" style="font-size:1.1rem;font-weight:800;color:var(--amber)">${j.total.cal}</div><div style="font-size:.65rem;color:var(--muted)">kcal</div></div>
@@ -1863,12 +1878,27 @@ async function searchFood(){
 }
 
 function fillFoodSearch(name,cal,pro,carb,fat){
+  // values from Open Food Facts are per 100g — treat as 1 serving = 100g
+  _editFoodId=null;
+  _editFoodBase={cal,pro,carb,fat,grams:100};
+  document.getElementById('fm-title').textContent='🍽️ บันทึกอาหาร';
   document.getElementById('fm-name').value=decodeURIComponent(name);
+  document.getElementById('fm-meal').value=autoMeal();
   document.getElementById('fm-cal').value=cal;
   document.getElementById('fm-pro').value=pro;
   document.getElementById('fm-carb').value=carb;
   document.getElementById('fm-fat').value=fat;
-  openFoodModal();
+  document.getElementById('fm-gram').value=100;
+  document.getElementById('fm-gram-row').style.display='';
+  document.getElementById('fm-nos').value=1;
+  const unitSel=document.getElementById('fm-nos-unit');
+  if(unitSel){
+    unitSel.innerHTML=`<option value="serving">serving</option><option value="gram">กรัม (g)</option><option value="ml">มล. (ml)</option><option value="ชิ้น">ชิ้น</option><option value="ลูก">ลูก</option><option value="ถ้วย">ถ้วย</option><option value="ช้อนโต๊ะ">ช้อนโต๊ะ</option><option value="ช้อนชา">ช้อนชา</option><option value="แก้ว">แก้ว</option><option value="กล่อง">กล่อง</option>`;
+    unitSel.value='gram';
+  }
+  document.getElementById('fm-unit-note').style.display='none';
+  document.getElementById('fm-nos-row').style.display='';
+  document.getElementById('foodModal').classList.add('on');
 }
 
 function calcTDEE(){
@@ -2460,11 +2490,60 @@ function openPresetModal(){
 
 function addPresetItem(){
   const c=document.getElementById('pm-items');
-  const idx=c.children.length;
   const d=document.createElement('div');
-  d.style.cssText='display:grid;grid-template-columns:2fr 1fr 1fr 1fr 1fr auto;gap:6px;align-items:center';
-  d.innerHTML=`<input placeholder="อาหาร..." data-f="name"><input type="number" placeholder="kcal" data-f="cal" min="0"><input type="number" placeholder="P(g)" data-f="pro" min="0"><input type="number" placeholder="C(g)" data-f="carb" min="0"><input type="number" placeholder="F(g)" data-f="fat" min="0"><button type="button" class="btn brd" style="padding:4px 8px" onclick="this.parentNode.remove()">✕</button>`;
+  d.style.cssText='display:flex;flex-direction:column;gap:4px;padding:8px;background:var(--card2);border-radius:8px;border:1px solid var(--border)';
+  d.innerHTML=`
+    <div style="display:flex;gap:6px;align-items:center">
+      <input placeholder="ชื่ออาหาร..." data-f="name" style="flex:1;min-width:0">
+      <button type="button" class="btn brd" style="padding:4px 10px;font-size:.75rem;white-space:nowrap" onclick="lookupPresetItemAI(this.closest('div[style]'))">🤖 AI</button>
+      <button type="button" class="btn brd" style="padding:4px 8px;color:var(--red)" onclick="this.closest('div[style]').remove()">✕</button>
+    </div>
+    <div style="display:flex;gap:6px;align-items:center">
+      <span style="font-size:.78rem;color:var(--muted);white-space:nowrap">Serving:</span>
+      <input type="number" data-f="nos" value="1" min="0.1" step="0.1" style="width:60px;text-align:center">
+      <select data-f="unit" style="flex:1;background:var(--card);color:var(--text);border:1px solid var(--border);border-radius:8px;padding:4px 6px;font-size:.8rem">
+        <option value="serving">serving</option>
+        <option value="gram">กรัม (g)</option><option value="ml">มล.</option>
+        <option value="ชิ้น">ชิ้น</option><option value="ลูก">ลูก</option>
+        <option value="ถ้วย">ถ้วย</option><option value="แก้ว">แก้ว</option>
+        <option value="ช้อนโต๊ะ">ช้อนโต๊ะ</option><option value="กล่อง">กล่อง</option>
+      </select>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:4px">
+      <input type="number" placeholder="kcal" data-f="cal" min="0" style="text-align:center;font-size:.8rem">
+      <input type="number" placeholder="P(g)" data-f="pro" min="0" style="text-align:center;font-size:.8rem">
+      <input type="number" placeholder="C(g)" data-f="carb" min="0" style="text-align:center;font-size:.8rem">
+      <input type="number" placeholder="F(g)" data-f="fat" min="0" style="text-align:center;font-size:.8rem">
+    </div>
+    <div data-f="ai-note" style="display:none;font-size:.72rem;color:var(--amber)"></div>`;
   c.appendChild(d);
+}
+
+async function lookupPresetItemAI(row){
+  const nameEl=row.querySelector('[data-f="name"]');
+  const name=nameEl?.value.trim();
+  if(!name)return toast('กรุณาใส่ชื่ออาหารก่อน');
+  const nos=parseFloat(row.querySelector('[data-f="nos"]')?.value)||1;
+  const unit=row.querySelector('[data-f="unit"]')?.value||'serving';
+  const noteEl=row.querySelector('[data-f="ai-note"]');
+  nameEl.disabled=true;noteEl.style.display='';noteEl.textContent='🤖 AI กำลังค้นหา...';
+  try{
+    const prompt=`ข้อมูลโภชนาการของ "${name}" จำนวน ${nos} ${unit} ตอบเป็น JSON เท่านั้น:
+{"cal":0,"pro":0,"carb":0,"fat":0,"note":"แหล่งข้อมูล/ความแม่นยำ"}
+ตัวเลขเป็นตัวเลขจริงสำหรับ ${nos} ${unit} ไม่ใช่ต่อ 100g`;
+    const text=await callAIText(prompt);
+    const m=text.match(/\{[\s\S]*\}/);
+    if(!m)throw new Error('ไม่ได้รับ JSON');
+    const j=JSON.parse(m[0]);
+    row.querySelector('[data-f="cal"]').value=Math.round(j.cal||0);
+    row.querySelector('[data-f="pro"]').value=+(j.pro||0).toFixed(1);
+    row.querySelector('[data-f="carb"]').value=+(j.carb||0).toFixed(1);
+    row.querySelector('[data-f="fat"]').value=+(j.fat||0).toFixed(1);
+    noteEl.textContent='✅ '+(j.note||'AI ประมาณการ');
+  }catch(e){
+    noteEl.textContent='❌ '+esc(e.message);
+  }
+  nameEl.disabled=false;
 }
 
 function savePreset(){
