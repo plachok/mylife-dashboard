@@ -1,10 +1,11 @@
-const CACHE='mylife-v17';
+const CACHE='mylife-v18';
 const SHELL=[
   './',
   './index.html',
   'https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js',
   'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js',
   'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js',
+  'https://www.gstatic.com/firebasejs/10.12.0/firebase-storage-compat.js',
   'https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js',
 ];
 
@@ -25,6 +26,7 @@ self.addEventListener('fetch',e=>{
   if(url.hostname.includes('generativelanguage.googleapis.com')||
      url.hostname.includes('openfoodfacts.org')||
      url.hostname.includes('firestore.googleapis.com')||
+     url.hostname.includes('firebasestorage.googleapis.com')||
      url.hostname.includes('identitytoolkit.googleapis.com')||
      url.hostname.includes('openrouter.ai')){
     return;

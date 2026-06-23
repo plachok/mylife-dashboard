@@ -917,6 +917,11 @@ textarea{resize:vertical;min-height:60px}
         <input type="number" id="fm-gram" min="1" step="1" placeholder="กรัม" oninput="recalcFoodModal()">
       </div>
     </div>
+    <div id="fm-nos-row" style="display:none">
+      <div class="fg"><label>🍽️ จำนวน Serving — เปลี่ยนเพื่อคำนวณใหม่</label>
+        <input type="number" id="fm-nos" min="0.1" step="0.1" value="1" oninput="recalcFoodModal()">
+      </div>
+    </div>
     <div class="r2"><div class="fg"><label>Calories (kcal)</label><input type="number" id="fm-cal" min="0"></div><div class="fg"><label>Protein (g)</label><input type="number" id="fm-pro" min="0" step=".1"></div></div>
     <div class="r2"><div class="fg"><label>Carbs (g)</label><input type="number" id="fm-carb" min="0" step=".1"></div><div class="fg"><label>Fat (g)</label><input type="number" id="fm-fat" min="0" step=".1"></div></div>
     <div class="mf"><button class="btn bgh" style="flex:1" onclick="closeFoodModal()">ยกเลิก</button><button class="btn bg" style="flex:2" onclick="saveFood()">บันทึก</button></div>
@@ -1402,7 +1407,9 @@ function openFoodModal(){
   document.getElementById('fm-name').value='';
   document.getElementById('fm-meal').value='กลางวัน';
   ['fm-cal','fm-pro','fm-carb','fm-fat','fm-gram'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('fm-nos').value=1;
   document.getElementById('fm-gram-row').style.display='none';
+  document.getElementById('fm-nos-row').style.display='none';
   document.getElementById('foodModal').classList.add('on');
   setTimeout(()=>document.getElementById('fm-name').focus(),100);
 }
@@ -1411,6 +1418,7 @@ function closeFoodModal(){_editFoodId=null;_editFoodBase=null;closeModal('foodMo
 function editFood(id){
   const f=foods.find(x=>x.id===id);if(!f)return;
   _editFoodId=id;
+  _editFoodBase={cal:f.cal,pro:f.pro,carb:f.carb,fat:f.fat,grams:f.grams||null};
   document.getElementById('fm-title').textContent='✏️ แก้ไขอาหาร';
   document.getElementById('fm-name').value=f.name;
   document.getElementById('fm-meal').value=f.meal||'กลางวัน';
@@ -1418,12 +1426,12 @@ function editFood(id){
   document.getElementById('fm-pro').value=f.pro||0;
   document.getElementById('fm-carb').value=f.carb||0;
   document.getElementById('fm-fat').value=f.fat||0;
+  document.getElementById('fm-nos').value=1;
+  document.getElementById('fm-nos-row').style.display='';
   if(f.grams){
-    _editFoodBase={cal:f.cal,pro:f.pro,carb:f.carb,fat:f.fat,grams:f.grams};
     document.getElementById('fm-gram').value=f.grams;
     document.getElementById('fm-gram-row').style.display='';
   }else{
-    _editFoodBase=null;
     document.getElementById('fm-gram-row').style.display='none';
   }
   document.getElementById('foodModal').classList.add('on');
@@ -1431,12 +1439,17 @@ function editFood(id){
 
 function recalcFoodModal(){
   if(!_editFoodBase)return;
-  const g=parseFloat(document.getElementById('fm-gram').value)||_editFoodBase.grams;
-  const r=g/_editFoodBase.grams;
-  document.getElementById('fm-cal').value=Math.round(_editFoodBase.cal*r);
-  document.getElementById('fm-pro').value=+(_editFoodBase.pro*r).toFixed(1);
-  document.getElementById('fm-carb').value=+(_editFoodBase.carb*r).toFixed(1);
-  document.getElementById('fm-fat').value=+(_editFoodBase.fat*r).toFixed(1);
+  const nos=parseFloat(document.getElementById('fm-nos').value)||1;
+  let cal=_editFoodBase.cal,pro=_editFoodBase.pro,carb=_editFoodBase.carb,fat=_editFoodBase.fat;
+  if(_editFoodBase.grams){
+    const g=parseFloat(document.getElementById('fm-gram').value)||_editFoodBase.grams;
+    const r=g/_editFoodBase.grams;
+    cal*=r;pro*=r;carb*=r;fat*=r;
+  }
+  document.getElementById('fm-cal').value=Math.round(cal*nos);
+  document.getElementById('fm-pro').value=+(pro*nos).toFixed(1);
+  document.getElementById('fm-carb').value=+(carb*nos).toFixed(1);
+  document.getElementById('fm-fat').value=+(fat*nos).toFixed(1);
 }
 
 function saveFood(){
@@ -1843,22 +1856,32 @@ function delMetric(id){metrics=metrics.filter(m=>m.id!==id);save();renderHealth(
 // ══════════ PHOTOS ══════════
 function addPhotos(input){
   const files=[...input.files];
-  let done=0;
-  const total=files.length;
+  let done=0;const total=files.length;
+  toast('⏳ กำลังประมวลผลรูป...');
   files.forEach(file=>{
     const reader=new FileReader();
     reader.onload=ev=>{
       const img=new Image();
-      img.onload=()=>{
-        const MAX=1200;
-        const canvas=document.createElement('canvas');
+      img.onload=async()=>{
+        const MAX=1200,canvas=document.createElement('canvas');
         let w=img.width,h=img.height;
         if(w>MAX||h>MAX){if(w>h){h=Math.round(h*MAX/w);w=MAX;}else{w=Math.round(w*MAX/h);h=MAX;}}
         canvas.width=w;canvas.height=h;
         canvas.getContext('2d').drawImage(img,0,0,w,h);
-        const src=canvas.toDataURL('image/jpeg',0.82);
-        photos.push({id:uid(),date:today(),src,note:''});
-        done++;if(done===total){save();renderPhotos();toast(`เพิ่ม ${total} รูปแล้ว 📸`);}
+        const b64=canvas.toDataURL('image/jpeg',0.82);
+        const photoId=uid();
+        let url=null,src=b64;
+        if(fbUser&&fbStorage){
+          try{
+            const ref=fbStorage.ref(`users/${fbUser.uid}/photos/${photoId}.jpg`);
+            await ref.putString(b64,'data_url');
+            url=await ref.getDownloadURL();
+            src=null;
+          }catch(e){console.warn('Storage upload failed:',e);}
+        }
+        photos.push({id:photoId,date:today(),src,url,note:''});
+        done++;
+        if(done===total){save();renderPhotos();toast(`เพิ่ม ${total} รูปแล้ว 📸 ${url?'(sync cloud ✅)':'(local only)'}`);}
       };
       img.src=ev.target.result;
     };
@@ -1873,8 +1896,8 @@ function renderPhotos(){
   const pg=document.getElementById('photo-grid');
   if(!sorted.length){pg.innerHTML='<div class="emp" style="grid-column:span 4"><div class="emp-i">📸</div>ยังไม่มีรูป<br>กด "+ เพิ่มรูป" เพื่อเริ่มต้น</div>';return;}
   pg.innerHTML=sorted.map(p=>`<div class="photo-thumb">
-    <img src="${p.src}" alt="${p.date}">
-    <div class="photo-date">${fmt(p.date)}</div>
+    <img src="${esc(p.url||p.src)}" alt="${p.date}" loading="lazy">
+    <div class="photo-date">${fmt(p.date)}${p.url?'<span style="font-size:.6rem;color:var(--blue)"> ☁️</span>':''}</div>
     <button onclick="delPhoto('${p.id}')" style="position:absolute;top:4px;right:4px;background:rgba(0,0,0,.6);border:none;color:#fff;border-radius:50%;width:22px;height:22px;font-size:.7rem;cursor:pointer;display:flex;align-items:center;justify-content:center">✕</button>
   </div>`).join('');
 
@@ -1893,13 +1916,19 @@ function comparePhotos(){
   const pb=photos.find(p=>p.id===bid);
   const show=(el,p)=>{
     const e=document.getElementById(el);
-    if(p)e.innerHTML=`<img src="${p.src}" style="width:100%;height:100%;object-fit:cover">`;
+    if(p)e.innerHTML=`<img src="${esc(p.url||p.src)}" style="width:100%;height:100%;object-fit:cover" loading="lazy">`;
     else e.innerHTML='<span style="color:var(--muted)">เลือกรูป</span>';
   };
   show('cmp-img-a',pa);show('cmp-img-b',pb);
 }
 
-function delPhoto(id){photos=photos.filter(p=>p.id!==id);save();renderPhotos();toast('ลบรูปแล้ว');}
+function delPhoto(id){
+  const p=photos.find(x=>x.id===id);
+  if(p?.url&&fbUser&&fbStorage){
+    fbStorage.ref(`users/${fbUser.uid}/photos/${id}.jpg`).delete().catch(()=>{});
+  }
+  photos=photos.filter(x=>x.id!==id);save();renderPhotos();toast('ลบรูปแล้ว');
+}
 
 // ══════════ GOALS ══════════
 function openGoalModal(){document.getElementById('goalModal').classList.add('on');setTimeout(()=>document.getElementById('gm-name').focus(),100);}
@@ -2715,6 +2744,7 @@ document.addEventListener('DOMContentLoaded',()=>{
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-storage-compat.js"></script>
 <script>
 // ══════════ FIREBASE CONFIG ══════════
 const firebaseConfig = {
@@ -2729,6 +2759,7 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const fbAuth = firebase.auth();
 const fbDb = firebase.firestore();
+const fbStorage = firebase.storage();
 let fbUser = null;
 let syncUnsub = null;
 
@@ -2806,12 +2837,13 @@ async function pushToFirestore() {
   if (!fbUser) return;
   setSyncStatus('syncing', 'กำลัง sync...');
   try {
-    // photos excluded — base64 data exceeds Firestore 1MB doc limit; stored locally only
+    // photos: only sync metadata (url) — base64 excluded to stay under Firestore 1MB limit
+    const photosSync = photos.filter(p=>p.url).map(p=>({id:p.id,date:p.date,url:p.url,note:p.note||''}));
     const payload = {
       workouts, sleeps, foods, metrics, goals, todos,
       habits, habitLog, nutriGoal,
       waterLog, waterGoal, journals, presets, mealPlan,
-      routines,
+      routines, photos: photosSync,
       updatedAt: firebase.firestore.FieldValue.serverTimestamp()
     };
     await fbDb.collection('users').doc(fbUser.uid).collection('data').doc('all').set(payload);
@@ -2875,6 +2907,7 @@ function subscribeFirestore() {
         if (d.journals)  journals  = d.journals;
         if (d.presets)   presets   = d.presets;
         if (d.mealPlan)  mealPlan  = d.mealPlan;
+        if (d.photos)    { photos = d.photos.map(p=>({...p,src:null})); DB.set('ml_ph',photos); }
         // only re-render the active page + dash stats (not all 16 pages)
         try { renderPage(_activePage); } catch(e) { console.warn('renderPage error:', e); }
         if (_activePage !== 'dash') { try { renderDash(); } catch(e) {} }
