@@ -3224,21 +3224,23 @@ function handleAuth() {
   const provider = new firebase.auth.GoogleAuthProvider();
   provider.setCustomParameters({'prompt': 'select_account'});
 
-  // iOS Safari (any mode) + PWA: popup cross-origin window fails — redirect only
-  // Desktop browser: popup works fine
-  if (isIOS || isPWA) {
+  // iOS PWA (standalone): redirect เท่านั้น (popup window context broken)
+  // iOS Safari browser + Desktop: popup (direct user click = allowed, ไม่ผ่าน Firebase redirect domain)
+  // Android: redirect
+  if (isPWA || (!isIOS && isMobile)) {
     fbAuth.signInWithRedirect(provider);
   } else {
     fbAuth.signInWithPopup(provider)
       .then(r => toast('ยินดีต้อนรับ ' + r.user.displayName + ' 👋'))
       .catch(err => {
         const code = err.code || '';
-        if (code === 'auth/popup-blocked' || code === 'auth/internal-error' ||
-            code === 'auth/cancelled-popup-request') {
-          fbAuth.signInWithRedirect(provider);
+        console.warn('Popup auth failed:', code, err.message);
+        if (code === 'auth/popup-blocked' || code === 'auth/cancelled-popup-request') {
+          toast('กรุณาอนุญาต popup แล้วลองใหม่');
+        } else if (code === 'auth/popup-closed-by-user') {
+          // user closed popup — do nothing
         } else {
           toast('Login ไม่สำเร็จ: ' + code);
-          console.warn('Popup auth:', code, err.message);
         }
       });
   }
