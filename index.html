@@ -3204,8 +3204,16 @@ function setSyncStatus(state, label) {
 const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
 const isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
 const isPWA = window.navigator.standalone === true || window.matchMedia('(display-mode: standalone)').matches;
-// iOS Safari blocks popups in ALL modes — must use redirect
-const useRedirect = isMobile; // mobile (all modes) & iOS always redirect — popups are blocked
+
+// Always check for redirect result on load (covers all cases)
+fbAuth.getRedirectResult().then(result => {
+  if (result && result.user) toast('ยินดีต้อนรับ ' + result.user.displayName + ' 👋');
+}).catch(err => {
+  if (err.code && err.code !== 'auth/no-auth-event') {
+    console.warn('Auth redirect error:', err.code, err.message);
+    toast('⚠️ Login error: ' + err.code + '\n' + err.message);
+  }
+});
 
 function handleAuth() {
   if (fbUser) {
@@ -3213,23 +3221,28 @@ function handleAuth() {
     return;
   }
   const provider = new firebase.auth.GoogleAuthProvider();
-  // iOS Safari บล็อก popup ทุกกรณี → ใช้ redirect เสมอสำหรับ iOS
-  if (useRedirect) {
+  provider.setCustomParameters({'prompt': 'select_account'});
+
+  if (isPWA) {
+    // PWA: popup window context is broken — must use redirect
     fbAuth.signInWithRedirect(provider);
   } else {
+    // Browser: try popup first (triggered from direct user click = allowed)
+    // If popup fails → fall back to redirect
     fbAuth.signInWithPopup(provider)
       .then(r => toast('ยินดีต้อนรับ ' + r.user.displayName + ' 👋'))
-      .catch(err => toast('Login ไม่สำเร็จ: ' + err.message));
+      .catch(err => {
+        const code = err.code || '';
+        console.warn('Popup auth failed:', code, err.message);
+        if (code === 'auth/popup-blocked' || code === 'auth/internal-error' ||
+            code === 'auth/cancelled-popup-request' || code === 'auth/popup-closed-by-user') {
+          toast('Popup ถูกบล็อก — กำลังลอง redirect...');
+          fbAuth.signInWithRedirect(provider);
+        } else {
+          toast('Login ไม่สำเร็จ: ' + code + '\n' + err.message);
+        }
+      });
   }
-}
-
-// รับผลลัพธ์หลัง redirect (iOS ทุกกรณี + Android mobile browser)
-if (useRedirect) {
-  fbAuth.getRedirectResult().then(result => {
-    if (result && result.user) toast('ยินดีต้อนรับ ' + result.user.displayName + ' 👋');
-  }).catch(err => {
-    if (err.code !== 'auth/no-auth-event') console.warn('Redirect result:', err.message);
-  });
 }
 
 fbAuth.onAuthStateChanged(async user => {
