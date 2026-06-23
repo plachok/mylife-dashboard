@@ -51,6 +51,32 @@ textarea{resize:vertical;min-height:60px}
 .brd{background:rgba(239,68,68,.12);color:var(--red);border:1px solid rgba(239,68,68,.25)}.brd:hover{background:rgba(239,68,68,.22)}
 .bbl{background:rgba(59,130,246,.12);color:var(--blue);border:1px solid rgba(59,130,246,.25)}
 .bfu{width:100%;justify-content:center;margin-top:6px}
+/* ── MFP-style Nutrition ── */
+.mfp-summary{background:var(--card);border-radius:14px;padding:14px 16px;margin-bottom:10px}
+.mfp-cal-row{display:grid;grid-template-columns:1fr auto 1fr auto 1fr;align-items:center;text-align:center;gap:4px;margin-bottom:12px}
+.mfp-cal-label{font-size:.65rem;color:var(--muted);text-transform:uppercase;letter-spacing:.5px}
+.mfp-cal-num{font-size:1.25rem;font-weight:900;line-height:1.1}
+.mfp-cal-unit{font-size:.6rem;color:var(--muted)}
+.mfp-cal-op{font-size:1.3rem;color:var(--muted2)}
+.mfp-macro-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
+.meal-sec{background:var(--card);border-radius:12px;margin-bottom:10px;overflow:hidden}
+.meal-hdr{display:flex;align-items:center;padding:11px 14px;gap:8px;border-bottom:1px solid var(--border);cursor:pointer}
+.meal-hdr-name{font-weight:700;flex:1;font-size:.88rem}
+.meal-hdr-cal{font-size:.82rem;color:var(--amber);font-weight:700}
+.meal-item{display:flex;align-items:center;padding:9px 14px;border-bottom:1px solid rgba(255,255,255,.03);gap:8px}
+.meal-item-info{flex:1;min-width:0}
+.meal-item-name{font-weight:600;font-size:.83rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.meal-item-sub{font-size:.68rem;color:var(--muted)}
+.meal-item-cal{font-size:.85rem;font-weight:700;color:var(--amber);white-space:nowrap}
+.meal-foot{padding:7px 14px;font-size:.7rem;color:var(--muted);display:flex;justify-content:space-between;background:var(--card2)}
+/* Meal Planner day tabs */
+.mp-day-tabs{display:flex;gap:6px;overflow-x:auto;padding:4px 0 10px;scrollbar-width:none}
+.mp-day-tabs::-webkit-scrollbar{display:none}
+.mp-day-tab{flex:0 0 auto;padding:6px 14px;border-radius:20px;font-size:.78rem;font-weight:700;cursor:pointer;border:1px solid var(--border);background:var(--card);color:var(--muted);white-space:nowrap;transition:.15s}
+.mp-day-tab.active{background:var(--green);color:#000;border-color:var(--green)}
+.mp-plan-meal{background:var(--card);border-radius:12px;margin-bottom:10px;overflow:hidden}
+.mp-plan-hdr{display:flex;align-items:center;padding:10px 14px;border-bottom:1px solid var(--border);gap:8px}
+.mp-plan-item{display:flex;align-items:center;padding:8px 14px;border-bottom:1px solid rgba(255,255,255,.03);font-size:.82rem;gap:8px}
 .badge{padding:3px 9px;border-radius:20px;font-size:.7rem;font-weight:700}
 .pw{height:5px;background:var(--card2);border-radius:3px;overflow:hidden;margin:5px 0}
 .pf{height:100%;border-radius:3px;transition:width .5s}
@@ -355,36 +381,48 @@ textarea{resize:vertical;min-height:60px}
 
 <!-- ═══ NUTRITION ═══ -->
 <div id="page-nutrition" class="page">
-  <div class="sh"><div class="st">🥗 Nutrition & Calories</div></div>
-  <div class="g4" style="margin-bottom:16px">
-    <div class="stat" style="--ac:var(--amber)"><div class="sl">Calories วันนี้</div><div class="sv" id="n-cal">0</div><div class="ss">/ <span id="n-goal">2000</span> kcal</div></div>
-    <div class="stat" style="--ac:var(--blue)"><div class="sl">Protein</div><div class="sv" id="n-pro">0</div><div class="ss">g วันนี้</div></div>
-    <div class="stat" style="--ac:var(--green)"><div class="sl">Carbs</div><div class="sv" id="n-carb">0</div><div class="ss">g วันนี้</div></div>
-    <div class="stat" style="--ac:var(--red)"><div class="sl">Fat</div><div class="sv" id="n-fat">0</div><div class="ss">g วันนี้</div></div>
-  </div>
-  <div class="g12">
-    <div style="display:flex;flex-direction:column;gap:14px">
-      <div class="g2">
-        <div class="card"><div class="ch"><span class="ct">Calories วันนี้</span></div><div class="cb" style="display:flex;flex-direction:column;align-items:center;gap:10px">
-          <div id="calRing" style="width:130px;height:130px;border-radius:50%;background:conic-gradient(var(--green) 0%,var(--card2) 0%);display:flex;align-items:center;justify-content:center">
-            <div style="width:90px;height:90px;border-radius:50%;background:var(--card);display:flex;flex-direction:column;align-items:center;justify-content:center">
-              <div style="font-size:1.4rem;font-weight:800;color:var(--green)" id="crNum">0</div>
-              <div style="font-size:.6rem;color:var(--muted)">kcal</div>
-            </div>
-          </div>
-          <div style="font-size:.75rem;color:var(--muted)">เป้า <span id="crGoal" style="color:var(--text);font-weight:700">2000</span> kcal</div>
-        </div></div>
-        <div class="card"><div class="ch"><span class="ct">Macros</span></div><div class="cb" style="display:flex;flex-direction:column;gap:12px">
-          <div><div style="display:flex;justify-content:space-between;font-size:.75rem;margin-bottom:3px"><span style="color:var(--blue)">Protein</span><span id="np2">0/150g</span></div><div class="pw"><div class="pf" style="background:var(--blue)" id="pb-p"></div></div></div>
-          <div><div style="display:flex;justify-content:space-between;font-size:.75rem;margin-bottom:3px"><span style="color:var(--green)">Carbs</span><span id="nc2">0/250g</span></div><div class="pw"><div class="pf" style="background:var(--green)" id="pb-c"></div></div></div>
-          <div><div style="display:flex;justify-content:space-between;font-size:.75rem;margin-bottom:3px"><span style="color:var(--red)">Fat</span><span id="nf2">0/65g</span></div><div class="pw"><div class="pf" style="background:var(--red)" id="pb-f"></div></div></div>
-          <div><div style="display:flex;justify-content:space-between;font-size:.75rem;margin-bottom:3px"><span style="color:var(--amber)">เหลือ</span><span id="n-rem">2000 kcal</span></div><div class="pw"><div class="pf" style="background:var(--amber)" id="pb-cal"></div></div></div>
-        </div></div>
-      </div>
-      <div class="card"><div class="ch"><span class="ct">บันทึกอาหารวันนี้</span><button class="btn bg" style="padding:5px 10px;font-size:.75rem" onclick="openFoodModal()">+ เพิ่ม</button></div><div id="n-list"></div></div>
-      <div class="card"><div class="ch"><span class="ct">Calories 7 วัน</span></div><div class="cb"><div class="bars" id="n-chart"></div></div></div>
+  <!-- hidden legacy IDs used by renderNutrition internals -->
+  <span id="n-cal" style="display:none">0</span><span id="n-pro" style="display:none">0</span>
+  <span id="n-carb" style="display:none">0</span><span id="n-fat" style="display:none">0</span>
+  <span id="n-goal" style="display:none">2000</span>
+  <span id="calRing" style="display:none"></span><span id="crNum" style="display:none">0</span><span id="crGoal" style="display:none">2000</span>
+  <span id="n-rem" style="display:none">2000 kcal</span><span id="pb-cal" style="display:none"></span>
+
+  <div class="sh">
+    <div class="st">🥗 Nutrition</div>
+    <div style="display:flex;gap:6px">
+      <button class="btn brd" style="padding:5px 10px;font-size:.75rem" onclick="openBarcodeScanner()">📷 สแกน</button>
+      <button class="btn bg" style="padding:5px 10px;font-size:.75rem" onclick="openFoodModal()">+ เพิ่ม</button>
     </div>
-    <div style="display:flex;flex-direction:column;gap:14px">
+  </div>
+
+  <!-- CALORIE SUMMARY (MFP style) -->
+  <div class="mfp-summary">
+    <div class="mfp-cal-row">
+      <div><div class="mfp-cal-label">เป้าหมาย</div><div class="mfp-cal-num" id="nb-goal">2000</div><div class="mfp-cal-unit">kcal</div></div>
+      <div class="mfp-cal-op">−</div>
+      <div><div class="mfp-cal-label">กินแล้ว</div><div class="mfp-cal-num" style="color:var(--amber)" id="nb-ate">0</div><div class="mfp-cal-unit">kcal</div></div>
+      <div class="mfp-cal-op">=</div>
+      <div><div class="mfp-cal-label">เหลือ</div><div class="mfp-cal-num" id="nb-rem" style="color:var(--green)">2000</div><div class="mfp-cal-unit">kcal</div></div>
+    </div>
+    <div class="mfp-macro-row">
+      <div><div style="display:flex;justify-content:space-between;font-size:.7rem;margin-bottom:3px"><span style="color:var(--blue);font-weight:600">Protein</span><span id="np2">0g</span></div><div class="pw"><div class="pf" style="background:var(--blue)" id="pb-p"></div></div><div style="font-size:.63rem;color:var(--muted);text-align:right;margin-top:2px" id="np-goal-lbl"></div></div>
+      <div><div style="display:flex;justify-content:space-between;font-size:.7rem;margin-bottom:3px"><span style="color:var(--green);font-weight:600">Carbs</span><span id="nc2">0g</span></div><div class="pw"><div class="pf" style="background:var(--green)" id="pb-c"></div></div><div style="font-size:.63rem;color:var(--muted);text-align:right;margin-top:2px" id="nc-goal-lbl"></div></div>
+      <div><div style="display:flex;justify-content:space-between;font-size:.7rem;margin-bottom:3px"><span style="color:var(--red);font-weight:600">Fat</span><span id="nf2">0g</span></div><div class="pw"><div class="pf" style="background:var(--red)" id="pb-f"></div></div><div style="font-size:.63rem;color:var(--muted);text-align:right;margin-top:2px" id="nf-goal-lbl"></div></div>
+    </div>
+  </div>
+
+  <!-- MEAL SECTIONS (rendered by JS) -->
+  <div id="n-meal-sections"></div>
+
+  <!-- 7-day chart -->
+  <div class="card" style="margin-bottom:10px"><div class="ch" onclick="toggleSection('n-chart-wrap',this)" style="cursor:pointer"><span class="ct">📊 Calories 7 วัน</span><span style="color:var(--muted);font-size:.75rem">▾</span></div><div id="n-chart-wrap"><div class="cb"><div class="bars" id="n-chart"></div></div></div></div>
+
+  <!-- AI & SEARCH TOOLS (collapsible) -->
+  <div style="margin-bottom:10px">
+    <button class="btn brd bfu" style="font-size:.82rem;padding:10px" onclick="toggleSection('n-ai-tools',this)">🤖 AI วิเคราะห์ / ค้นหา / TDEE ▾</button>
+    <div id="n-ai-tools" style="display:none;margin-top:8px;display:flex;flex-direction:column;gap:10px">
+      <div style="display:flex;flex-direction:column;gap:14px">
       <!-- AI FOOD -->
       <div class="card"><div class="ch"><span class="ct">🤖 AI คำนวณ Calories</span><div style="display:flex;gap:6px"><button class="btn bgh" style="padding:3px 9px;font-size:.72rem" onclick="switchAIMode('text')" id="ai-mode-text">✏️ ข้อความ</button><button class="btn bg" style="padding:3px 9px;font-size:.72rem" onclick="switchAIMode('photo')" id="ai-mode-photo">📷 ถ่ายรูป</button></div></div><div class="cb">
         <!-- TEXT MODE -->
@@ -435,33 +473,13 @@ textarea{resize:vertical;min-height:60px}
         </div>
       </div></div>
       <!-- FOOD SEARCH -->
-      <div class="card"><div class="ch"><span class="ct">🔍 ค้นหา / สแกน Barcode</span><button class="btn bg" style="padding:4px 10px;font-size:.75rem" onclick="openBarcodeScanner()">📷 สแกน</button></div><div class="cb">
+      <div class="card"><div class="ch"><span class="ct">🔍 ค้นหาอาหาร (Open Food Facts)</span></div><div class="cb">
         <div style="display:flex;gap:6px;margin-bottom:8px">
           <input id="fs-input" placeholder="ค้นชื่ออาหาร หรือพิมพ์ barcode number..." onkeydown="if(event.key==='Enter')searchFoodOrBarcode()">
           <button class="btn bbl" onclick="searchFoodOrBarcode()">ค้นหา</button>
         </div>
         <div id="fs-results"></div>
       </div></div>
-
-      <!-- BARCODE SCANNER OVERLAY -->
-      <div id="barcode-overlay" style="display:none;position:fixed;inset:0;background:#000;z-index:1000;flex-direction:column">
-        <div style="display:flex;justify-content:space-between;align-items:center;padding:16px;background:rgba(0,0,0,.7)">
-          <div style="color:#fff;font-weight:700;font-size:1rem">📷 สแกน Barcode</div>
-          <button onclick="closeBarcodeScanner()" style="background:rgba(255,255,255,.15);border:none;color:#fff;padding:8px 14px;border-radius:8px;font-size:.85rem;cursor:pointer">✕ ปิด</button>
-        </div>
-        <div style="flex:1;position:relative;display:flex;align-items:center;justify-content:center">
-          <div id="barcode-reader" style="width:100%;max-width:500px"></div>
-          <!-- viewfinder overlay -->
-          <div style="position:absolute;pointer-events:none;border:2px solid var(--green);width:260px;height:120px;border-radius:8px;box-shadow:0 0 0 9999px rgba(0,0,0,.5)"></div>
-        </div>
-        <div style="padding:16px;text-align:center">
-          <div id="barcode-status" style="color:#94a3b8;font-size:.85rem;margin-bottom:10px">จ่อกล้องไปที่ barcode บนฉลากสินค้า</div>
-          <div style="display:flex;gap:8px;justify-content:center">
-            <input id="barcode-manual" placeholder="หรือพิมพ์ barcode number..." style="width:220px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);color:#fff;padding:8px 12px;border-radius:8px;font-size:.85rem" onkeydown="if(event.key==='Enter')lookupManualBarcode()">
-            <button onclick="lookupManualBarcode()" style="background:var(--green);border:none;color:#000;padding:8px 14px;border-radius:8px;font-weight:700;cursor:pointer">ค้นหา</button>
-          </div>
-        </div>
-      </div>
       <!-- TDEE -->
       <div class="card"><div class="ch"><span class="ct">🔢 TDEE Calculator</span></div><div class="cb">
         <div class="r2">
@@ -488,6 +506,25 @@ textarea{resize:vertical;min-height:60px}
           <button class="btn bgh bfu" style="margin-top:8px" onclick="applyTDEE()">ตั้งเป็นเป้าของฉัน</button>
         </div>
       </div></div>
+    </div><!-- end n-ai-tools -->
+  </div><!-- end collapsible wrapper -->
+
+  <!-- BARCODE SCANNER OVERLAY (page-level fixed) -->
+  <div id="barcode-overlay" style="display:none;position:fixed;inset:0;background:#000;z-index:1000;flex-direction:column">
+    <div style="display:flex;justify-content:space-between;align-items:center;padding:16px;background:rgba(0,0,0,.7)">
+      <div style="color:#fff;font-weight:700;font-size:1rem">📷 สแกน Barcode</div>
+      <button onclick="closeBarcodeScanner()" style="background:rgba(255,255,255,.15);border:none;color:#fff;padding:8px 14px;border-radius:8px;font-size:.85rem;cursor:pointer">✕ ปิด</button>
+    </div>
+    <div style="flex:1;position:relative;display:flex;align-items:center;justify-content:center">
+      <div id="barcode-reader" style="width:100%;max-width:500px"></div>
+      <div style="position:absolute;pointer-events:none;border:2px solid var(--green);width:260px;height:120px;border-radius:8px;box-shadow:0 0 0 9999px rgba(0,0,0,.5)"></div>
+    </div>
+    <div style="padding:16px;text-align:center">
+      <div id="barcode-status" style="color:#94a3b8;font-size:.85rem;margin-bottom:10px">จ่อกล้องไปที่ barcode บนฉลากสินค้า</div>
+      <div style="display:flex;gap:8px;justify-content:center">
+        <input id="barcode-manual" placeholder="หรือพิมพ์ barcode number..." style="width:220px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);color:#fff;padding:8px 12px;border-radius:8px;font-size:.85rem" onkeydown="if(event.key==='Enter')lookupManualBarcode()">
+        <button onclick="lookupManualBarcode()" style="background:var(--green);border:none;color:#000;padding:8px 14px;border-radius:8px;font-weight:700;cursor:pointer">ค้นหา</button>
+      </div>
     </div>
   </div>
 </div>
@@ -814,25 +851,32 @@ textarea{resize:vertical;min-height:60px}
 <!-- ═══ MEAL PLANNER ═══ -->
 <div id="page-meals" class="page">
   <div class="sh"><div class="st">📅 Meal Planner</div><button class="btn bg" onclick="openPresetModal()">+ My Meal</button></div>
-  <div class="g12">
-    <div>
-      <div class="card" style="margin-bottom:14px"><div class="ch"><span class="ct">แผนมื้ออาหาร 7 วัน</span></div><div id="mp-week"></div></div>
+
+  <!-- Day tabs -->
+  <div class="mp-day-tabs" id="mp-day-tabs"></div>
+
+  <!-- Plan for selected day -->
+  <div id="mp-day-plan" style="margin-bottom:12px"></div>
+
+  <!-- Calorie balance -->
+  <div class="card" style="margin-bottom:12px"><div class="ch"><span class="ct">⚖️ Calorie Balance วันนี้</span></div><div class="cb">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+      <div style="text-align:center"><div style="font-size:.7rem;color:var(--muted)">กินแล้ว</div><div style="font-size:1.4rem;font-weight:800;color:var(--blue)" id="cb-in">0</div></div>
+      <div style="font-size:1.8rem">→</div>
+      <div style="text-align:center"><div style="font-size:.7rem;color:var(--muted)">เผาผลาญ (TDEE)</div><div style="font-size:1.4rem;font-weight:800;color:var(--amber)" id="cb-tdee">—</div></div>
+      <div style="font-size:1.8rem">=</div>
+      <div style="text-align:center"><div style="font-size:.7rem;color:var(--muted)">Balance</div><div style="font-size:1.4rem;font-weight:800" id="cb-bal">—</div></div>
     </div>
-    <div style="display:flex;flex-direction:column;gap:14px">
-      <div class="card"><div class="ch"><span class="ct">⭐ My Meals (Presets)</span></div><div id="preset-list"><div class="emp">ยังไม่มี preset<br><span style="font-size:.75rem">กด "+ My Meal" เพื่อบันทึกมื้อที่กินบ่อย</span></div></div></div>
-      <div class="card"><div class="ch"><span class="ct">⚖️ Calorie Balance วันนี้</span></div><div class="cb">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
-          <div style="text-align:center"><div style="font-size:.7rem;color:var(--muted)">กินแล้ว</div><div style="font-size:1.4rem;font-weight:800;color:var(--blue)" id="cb-in">0</div></div>
-          <div style="font-size:1.8rem">→</div>
-          <div style="text-align:center"><div style="font-size:.7rem;color:var(--muted)">เผาผลาญ (TDEE)</div><div style="font-size:1.4rem;font-weight:800;color:var(--amber)" id="cb-tdee">—</div></div>
-          <div style="font-size:1.8rem">=</div>
-          <div style="text-align:center"><div style="font-size:.7rem;color:var(--muted)">Balance</div><div style="font-size:1.4rem;font-weight:800" id="cb-bal">—</div></div>
-        </div>
-        <div class="pw" style="margin-bottom:6px"><div class="pf" id="cb-bar" style="width:0%;background:var(--green)"></div></div>
-        <div id="cb-label" style="font-size:.75rem;color:var(--muted);text-align:center">ตั้งค่า TDEE ใน Nutrition ก่อนนะครับ</div>
-      </div></div>
-    </div>
+    <div class="pw" style="margin-bottom:6px"><div class="pf" id="cb-bar" style="width:0%;background:var(--green)"></div></div>
+    <div id="cb-label" style="font-size:.75rem;color:var(--muted);text-align:center">ตั้งค่า TDEE ใน Nutrition ก่อนนะครับ</div>
+  </div></div>
+
+  <!-- My Meals library -->
+  <div class="card"><div class="ch"><span class="ct">⭐ My Meals</span></div>
+    <div id="preset-list"><div class="emp">ยังไม่มี My Meal<br><span style="font-size:.75rem">กด "+ My Meal" เพื่อบันทึกมื้อที่กินบ่อย</span></div></div>
   </div>
+  <!-- hidden legacy element for renderMeals compat -->
+  <div id="mp-week" style="display:none"></div>
 </div>
 
 <!-- ═══ REMINDERS ═══ -->
@@ -1422,11 +1466,11 @@ function delSleep(id){sleeps=sleeps.filter(s=>s.id!==id);save();renderSleep();}
 // ══════════ NUTRITION ══════════
 let _editFoodId=null,_editFoodBase=null;
 
-function openFoodModal(){
+function openFoodModal(meal){
   _editFoodId=null;_editFoodBase=null;
   document.getElementById('fm-title').textContent='🍽️ บันทึกอาหาร';
   document.getElementById('fm-name').value='';
-  document.getElementById('fm-meal').value='กลางวัน';
+  document.getElementById('fm-meal').value=meal||autoMeal();
   ['fm-cal','fm-pro','fm-carb','fm-fat','fm-gram'].forEach(id=>document.getElementById(id).value='');
   document.getElementById('fm-nos').value=1;
   if(document.getElementById('fm-nos-unit'))document.getElementById('fm-nos-unit').value='serving';
@@ -1531,36 +1575,79 @@ function saveFood(){
   toast(_editFoodId?'แก้ไขอาหารแล้ว ✅':'บันทึกอาหารแล้ว 🥗');
 }
 
+function toggleSection(id,btn){
+  const el=document.getElementById(id);if(!el)return;
+  const open=el.style.display==='none'||el.style.display==='';
+  el.style.display=open?'flex':'none';
+  if(el.style.display==='flex')el.style.flexDirection='column';
+  if(btn){const t=btn.textContent;btn.textContent=t.replace('▾','▸').replace('▸','▾');}
+}
+
+const MEAL_DEFS=[
+  {key:'เช้า',emoji:'🌅',label:'เช้า (Breakfast)'},
+  {key:'กลางวัน',emoji:'☀️',label:'กลางวัน (Lunch)'},
+  {key:'เย็น',emoji:'🌆',label:'เย็น (Dinner)'},
+  {key:'ของว่าง',emoji:'🍎',label:'ของว่าง / Snacks'},
+  {key:'บ่าย',emoji:'☕',label:'บ่าย'},
+];
+
 function renderNutrition(){
   const tod=today();const tf=foods.filter(f=>f.date===tod);
-  const cal=tf.reduce((s,f)=>s+f.cal,0);const pro=tf.reduce((s,f)=>s+f.pro,0);
-  const carb=tf.reduce((s,f)=>s+f.carb,0);const fat=tf.reduce((s,f)=>s+f.fat,0);
-  document.getElementById('n-cal').textContent=cal;document.getElementById('n-pro').textContent=Math.round(pro);
-  document.getElementById('n-carb').textContent=Math.round(carb);document.getElementById('n-fat').textContent=Math.round(fat);
-  document.getElementById('n-goal').textContent=nutriGoal.cal;
-  const pct=v=>Math.min(100,Math.round(v));
-  document.getElementById('np2').textContent=Math.round(pro)+'/'+nutriGoal.pro+'g';
-  document.getElementById('nc2').textContent=Math.round(carb)+'/'+nutriGoal.carb+'g';
-  document.getElementById('nf2').textContent=Math.round(fat)+'/'+nutriGoal.fat+'g';
-  document.getElementById('n-rem').textContent=Math.max(0,nutriGoal.cal-cal)+' kcal';
-  document.getElementById('pb-p').style.width=pct(pro/nutriGoal.pro*100)+'%';
-  document.getElementById('pb-c').style.width=pct(carb/nutriGoal.carb*100)+'%';
-  document.getElementById('pb-f').style.width=pct(fat/nutriGoal.fat*100)+'%';
-  document.getElementById('pb-cal').style.width=pct(cal/nutriGoal.cal*100)+'%';
-  const cp=Math.min(100,cal/nutriGoal.cal*100);
-  document.getElementById('calRing').style.background=`conic-gradient(var(--${cp>=100?'red':'green'}) ${cp}%,var(--card2) 0%)`;
-  document.getElementById('crNum').textContent=cal;document.getElementById('crGoal').textContent=nutriGoal.cal;
+  const cal=tf.reduce((s,f)=>s+f.cal,0);
+  const pro=tf.reduce((s,f)=>s+f.pro,0);
+  const carb=tf.reduce((s,f)=>s+f.carb,0);
+  const fat=tf.reduce((s,f)=>s+f.fat,0);
+  const pct=v=>Math.min(100,Math.round(v))+'%';
 
-  const nl=document.getElementById('n-list');
-  if(!tf.length){nl.innerHTML='<div class="emp"><div class="emp-i">🍽️</div>ยังไม่มีการบันทึกวันนี้<br><button class="btn bgh" style="margin-top:8px" onclick="openFoodModal()">+ เพิ่มอาหาร</button></div>';
-  }else{
-    const mo=['เช้า','กลางวัน','เย็น','ของว่าง'];
-    nl.innerHTML=[...tf].sort((a,b)=>mo.indexOf(a.meal)-mo.indexOf(b.meal)).map(f=>`
-      <div class="li"><div style="flex:1"><div style="font-weight:700;font-size:.87rem">${esc(f.name)}</div><div style="font-size:.72rem;color:var(--muted)">${esc(f.meal)}${f.grams?` · ${f.grams}g`:''}</div></div>
-      <span style="font-size:.8rem;color:var(--amber)">${f.cal} kcal</span>
-      <span style="font-size:.75rem;color:var(--blue);margin-left:6px">P:${Math.round(f.pro)}g</span>
-      <button class="btn bgh" style="padding:3px 7px;font-size:.72rem;margin-left:4px" onclick="editFood('${f.id}')">✏️</button>
-      <button class="btn brd" style="padding:3px 7px;font-size:.72rem;margin-left:2px" onclick="delFood('${f.id}')">✕</button></div>`).join('');
+  // Summary bar
+  const rem=nutriGoal.cal-cal;
+  const remEl=document.getElementById('nb-rem');
+  if(remEl){remEl.textContent=Math.abs(rem);remEl.style.color=rem<0?'var(--red)':'var(--green)';}
+  const nbGoal=document.getElementById('nb-goal');if(nbGoal)nbGoal.textContent=nutriGoal.cal;
+  const nbAte=document.getElementById('nb-ate');if(nbAte)nbAte.textContent=cal;
+
+  // Macros
+  document.getElementById('np2').textContent=Math.round(pro)+'g';
+  document.getElementById('nc2').textContent=Math.round(carb)+'g';
+  document.getElementById('nf2').textContent=Math.round(fat)+'g';
+  const npLbl=document.getElementById('np-goal-lbl');if(npLbl)npLbl.textContent='เป้า '+nutriGoal.pro+'g';
+  const ncLbl=document.getElementById('nc-goal-lbl');if(ncLbl)ncLbl.textContent='เป้า '+nutriGoal.carb+'g';
+  const nfLbl=document.getElementById('nf-goal-lbl');if(nfLbl)nfLbl.textContent='เป้า '+nutriGoal.fat+'g';
+  document.getElementById('pb-p').style.width=pct(pro/nutriGoal.pro*100);
+  document.getElementById('pb-c').style.width=pct(carb/nutriGoal.carb*100);
+  document.getElementById('pb-f').style.width=pct(fat/nutriGoal.fat*100);
+
+  // Meal sections
+  const ms=document.getElementById('n-meal-sections');
+  if(ms){
+    ms.innerHTML=MEAL_DEFS.map(m=>{
+      const items=tf.filter(f=>f.meal===m.key);
+      const mc=items.reduce((s,f)=>s+f.cal,0);
+      const mp=items.reduce((s,f)=>s+f.pro,0);
+      const mca=items.reduce((s,f)=>s+f.carb,0);
+      const mf=items.reduce((s,f)=>s+f.fat,0);
+      return`<div class="meal-sec">
+        <div class="meal-hdr">
+          <span style="font-size:1.1rem">${m.emoji}</span>
+          <span class="meal-hdr-name">${m.label}</span>
+          <span class="meal-hdr-cal">${mc?mc+' kcal':''}</span>
+          <button class="btn bgh" style="padding:3px 10px;font-size:.73rem;margin-left:6px" onclick="openFoodModal('${m.key}')">+ เพิ่ม</button>
+        </div>
+        ${items.length===0
+          ?`<div style="padding:10px 14px;font-size:.78rem;color:var(--muted)">ยังไม่มีรายการ — <span style="color:var(--blue);cursor:pointer" onclick="openFoodModal('${m.key}')">+ เพิ่มอาหาร</span></div>`
+          :items.map(f=>`<div class="meal-item">
+            <div class="meal-item-info">
+              <div class="meal-item-name">${esc(f.name)}</div>
+              <div class="meal-item-sub">${f.grams?f.grams+'g · ':''}P:${Math.round(f.pro)}g C:${Math.round(f.carb)}g F:${Math.round(f.fat)}g</div>
+            </div>
+            <span class="meal-item-cal">${f.cal} kcal</span>
+            <button class="btn bgh" style="padding:2px 6px;font-size:.7rem" onclick="editFood('${f.id}')">✏️</button>
+            <button class="btn brd" style="padding:2px 6px;font-size:.7rem" onclick="delFood('${f.id}')">✕</button>
+          </div>`).join('')
+        }
+        ${items.length?`<div class="meal-foot"><span>${items.length} รายการ</span><span>P:${Math.round(mp)}g C:${Math.round(mca)}g F:${Math.round(mf)}g</span></div>`:''}
+      </div>`;
+    }).join('');
   }
   renderBarChart('n-chart',7,d=>foods.filter(f=>f.date===d).reduce((s,f)=>s+f.cal,0),'var(--amber)','kcal');
   renderCalorieBalance();
@@ -2573,35 +2660,70 @@ function planMeal(date,meal,presetId){
   DB.set('ml_mp',mealPlan);renderMeals();
 }
 
+let _mpSelectedDay=today();
 function renderMeals(){
-  // Presets list
+  // Day tabs
+  const tabsEl=document.getElementById('mp-day-tabs');
+  if(tabsEl){
+    const days=[];for(let i=-1;i<6;i++){const d=new Date();d.setDate(d.getDate()+i);days.push(d.toISOString().split('T')[0]);}
+    const DN=['อา','จ','อ','พ','พฤ','ศ','ส'];
+    const tod=today();
+    tabsEl.innerHTML=days.map(d=>{
+      const dt=new Date(d+'T00:00:00');
+      const isToday=d===tod;
+      const isSelected=d===_mpSelectedDay;
+      const lbl=isToday?'วันนี้':DN[dt.getDay()]+' '+d.slice(8);
+      return`<button class="mp-day-tab${isSelected?' active':''}" onclick="_mpSelectedDay='${d}';renderMeals()">${lbl}</button>`;
+    }).join('');
+  }
+
+  // Plan for selected day
+  const planEl=document.getElementById('mp-day-plan');
+  if(planEl){
+    planEl.innerHTML=MEAL_DEFS.map(m=>{
+      const pid=mealPlan[_mpSelectedDay]?.[m.key];
+      const preset=pid&&presets.find(x=>x.id===pid);
+      return`<div class="mp-plan-meal">
+        <div class="mp-plan-hdr">
+          <span style="font-size:1rem">${m.emoji}</span>
+          <span style="font-weight:700;flex:1;font-size:.87rem">${m.label}</span>
+          ${preset?`<span style="font-size:.78rem;color:var(--amber)">${preset.cal} kcal</span>`:''}
+        </div>
+        ${preset
+          ?`<div class="mp-plan-item">
+              <div style="flex:1">
+                <div style="font-weight:600;font-size:.83rem">${esc(preset.name)}</div>
+                <div style="font-size:.7rem;color:var(--muted)">${preset.items.length} รายการ | P:${preset.pro}g C:${preset.carb}g F:${preset.fat}g</div>
+              </div>
+              <button class="btn bg" style="padding:3px 8px;font-size:.72rem" onclick="logPreset('${preset.id}')">Log</button>
+              <button class="btn brd" style="padding:3px 6px;font-size:.72rem" onclick="planMeal('${_mpSelectedDay}','${m.key}',null)">✕</button>
+            </div>`
+          :`<div style="padding:8px 14px">
+              <select style="width:100%;background:var(--card2);color:var(--text);border:1px solid var(--border);border-radius:8px;padding:6px;font-size:.82rem" onchange="planMeal('${_mpSelectedDay}','${m.key}',this.value);this.value=''">
+                <option value="">+ เลือก My Meal...</option>
+                ${presets.map(p=>`<option value="${p.id}">${esc(p.name)} (${p.cal} kcal)</option>`).join('')}
+              </select>
+            </div>`
+        }
+      </div>`;
+    }).join('');
+  }
+
+  // My Meals library
   const pl=document.getElementById('preset-list');
-  if(presets.length===0){pl.innerHTML='<div class="emp">ยังไม่มี preset<br><span style="font-size:.75rem">กด "+ My Meal" เพื่อบันทึกมื้อที่กินบ่อย</span></div>';}
-  else{pl.innerHTML=presets.map(p=>`<div class="li">
-    <div style="flex:1"><div style="font-weight:700;font-size:.85rem">${esc(p.name)}</div><div style="font-size:.72rem;color:var(--muted)">🔥${p.cal} kcal | P:${p.pro}g C:${p.carb}g F:${p.fat}g | ${p.items.length} รายการ</div></div>
-    <button class="btn bg" style="padding:4px 10px;font-size:.75rem" onclick="logPreset('${p.id}')">Log</button>
-    <button class="btn brd" style="padding:4px 8px;font-size:.75rem" onclick="delPreset('${p.id}')">✕</button>
-  </div>`).join('');}
-
-  // 7-day plan
-  const meals=['เช้า','กลางวัน','เย็น','ว่าง'];
-  const mpw=document.getElementById('mp-week');if(!mpw)return;
-  const days=[];for(let i=0;i<7;i++){const d=new Date();d.setDate(d.getDate()+i);days.push(d.toISOString().split('T')[0]);}
-  const DN=['อา','จ','อ','พ','พฤ','ศ','ส'];
-  mpw.innerHTML=`<table style="width:100%;border-collapse:collapse;font-size:.78rem">
-    <tr><th style="padding:8px;text-align:left;border-bottom:1px solid var(--border);color:var(--muted)">มื้อ</th>${days.map(d=>{const dt=new Date(d+'T00:00:00');return`<th style="padding:8px;text-align:center;border-bottom:1px solid var(--border);color:${d===today()?'var(--green)':'var(--muted)'}">${DN[dt.getDay()]}<br><span style="font-size:.65rem">${d.slice(5)}</span></th>`}).join('')}</tr>
-    ${meals.map(m=>`<tr><td style="padding:8px;color:var(--muted2);font-weight:600;border-bottom:1px solid var(--border)">${m}</td>${days.map(d=>{
-      const pid=mealPlan[d]&&mealPlan[d][m];
-      const p=pid&&presets.find(x=>x.id===pid);
-      return`<td style="padding:6px;border-bottom:1px solid var(--border);text-align:center">
-        ${p?`<div style="background:rgba(34,197,94,.1);border-radius:6px;padding:4px 6px;font-size:.72rem;color:var(--green)">${esc(p.name)}<button onclick="planMeal('${d}','${m}',null)" style="background:none;border:none;color:var(--muted);cursor:pointer;margin-left:4px">✕</button></div>`
-        :`<select style="width:100%;padding:3px;font-size:.68rem" onchange="planMeal('${d}','${m}',this.value);this.value=''">
-          <option value="">+ เพิ่ม</option>${presets.map(p=>`<option value="${p.id}">${esc(p.name)}</option>`).join('')}
-        </select>`}
-      </td>`;}).join('')}</tr>`).join('')}
-  </table>`;
-
-  // Calorie Balance
+  if(pl){
+    if(!presets.length){pl.innerHTML='<div class="emp">ยังไม่มี My Meal<br><span style="font-size:.75rem">กด "+ My Meal" เพื่อบันทึกมื้อที่กินบ่อย</span></div>';}
+    else{pl.innerHTML=presets.map(p=>`<div class="li" style="flex-wrap:wrap;gap:6px">
+      <div style="flex:1;min-width:0">
+        <div style="font-weight:700;font-size:.85rem">${esc(p.name)}</div>
+        <div style="font-size:.7rem;color:var(--muted)">🔥${p.cal} kcal | P:${p.pro}g C:${p.carb}g F:${p.fat}g | ${p.items.length} รายการ</div>
+      </div>
+      <div style="display:flex;gap:4px">
+        <button class="btn bg" style="padding:4px 10px;font-size:.75rem" onclick="logPreset('${p.id}')">Log วันนี้</button>
+        <button class="btn brd" style="padding:4px 8px;font-size:.75rem" onclick="delPreset('${p.id}')">✕</button>
+      </div>
+    </div>`).join('');}
+  }
   renderCalorieBalance();
 }
 
