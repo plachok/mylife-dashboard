@@ -987,8 +987,14 @@ const DB={
       throw e;
     }
     // debounced Firebase sync — fires 2s after last write
+    // _pendingSync flag blocks subscribeFirestore from overwriting local changes
+    DB._pendingSync=true;
     clearTimeout(DB._st);
-    DB._st=setTimeout(()=>{if(typeof pushToFirestore==='function'&&typeof fbUser!=='undefined'&&fbUser)pushToFirestore();},2000);
+    DB._st=setTimeout(()=>{
+      if(typeof pushToFirestore==='function'&&typeof fbUser!=='undefined'&&fbUser){
+        pushToFirestore().finally(()=>{DB._pendingSync=false;});
+      }else{DB._pendingSync=false;}
+    },2000);
   }
 };
 let workouts=DB.get('ml_wkt');
@@ -2946,7 +2952,7 @@ function subscribeFirestore() {
   if (syncUnsub) syncUnsub();
   syncUnsub = fbDb.collection('users').doc(fbUser.uid).collection('data').doc('all')
     .onSnapshot(snap => {
-      if (!snap.exists || snap.metadata.hasPendingWrites) return;
+      if (!snap.exists || snap.metadata.hasPendingWrites || DB._pendingSync) return;
       try {
         const d = snap.data();
         if (d.workouts)  workouts  = d.workouts;
