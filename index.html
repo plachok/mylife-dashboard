@@ -973,9 +973,9 @@ textarea{resize:vertical;min-height:60px}
     </div>
     <div class="fg"><label>ชื่ออาหาร</label><input id="fm-name" placeholder="เช่น อกไก่, ข้าวผัด..."></div>
     <div class="fg"><label>มื้อ</label><select id="fm-meal"><option value="เช้า">🌅 เช้า</option><option value="กลางวัน" selected>☀️ กลางวัน</option><option value="บ่าย">🌤️ บ่าย</option><option value="เย็น">🌆 เย็น</option><option value="ของว่าง">🍿 ของว่าง</option></select></div>
-    <div id="fm-gram-row" style="display:none">
-      <div class="fg"><label>⚖️ ปริมาณ (กรัม) — เปลี่ยนเพื่อคำนวณใหม่</label>
-        <input type="number" id="fm-gram" min="1" step="1" placeholder="กรัม" oninput="recalcFoodModal()">
+    <div id="fm-gram-row">
+      <div class="fg"><label>⚖️ ปริมาณที่กิน (กรัม)</label>
+        <input type="number" id="fm-gram" min="1" step="1" placeholder="เช่น 150" oninput="recalcFoodModal()">
       </div>
     </div>
     <div id="fm-nos-row" style="display:none">
@@ -1522,7 +1522,7 @@ function openFoodModal(meal){
   document.getElementById('fm-nos').value=1;
   if(document.getElementById('fm-nos-unit'))document.getElementById('fm-nos-unit').value='serving';
   document.getElementById('fm-unit-note').style.display='none';
-  document.getElementById('fm-gram-row').style.display='none';
+  document.getElementById('fm-gram-row').style.display='';
   document.getElementById('fm-nos-row').style.display='none';
   document.getElementById('foodModal').classList.add('on');
   setTimeout(()=>document.getElementById('fm-name').focus(),100);
