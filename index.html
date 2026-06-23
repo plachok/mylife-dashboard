@@ -2914,7 +2914,10 @@ function setSyncStatus(state, label) {
 
 // ── Auth ──
 const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+const isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
 const isPWA = window.navigator.standalone === true || window.matchMedia('(display-mode: standalone)').matches;
+// iOS Safari blocks popups in ALL modes — must use redirect
+const useRedirect = isIOS || (isMobile && !isPWA);
 
 function handleAuth() {
   if (fbUser) {
@@ -2922,9 +2925,8 @@ function handleAuth() {
     return;
   }
   const provider = new firebase.auth.GoogleAuthProvider();
-  // PWA standalone หรือ desktop → ใช้ popup
-  // Mobile browser (ไม่ใช่ PWA) → ใช้ redirect
-  if (isMobile && !isPWA) {
+  // iOS Safari บล็อก popup ทุกกรณี → ใช้ redirect เสมอสำหรับ iOS
+  if (useRedirect) {
     fbAuth.signInWithRedirect(provider);
   } else {
     fbAuth.signInWithPopup(provider)
@@ -2933,8 +2935,8 @@ function handleAuth() {
   }
 }
 
-// รับผลลัพธ์หลัง redirect กลับมา (mobile browser เท่านั้น)
-if (isMobile && !isPWA) {
+// รับผลลัพธ์หลัง redirect (iOS ทุกกรณี + Android mobile browser)
+if (useRedirect) {
   fbAuth.getRedirectResult().then(result => {
     if (result && result.user) toast('ยินดีต้อนรับ ' + result.user.displayName + ' 👋');
   }).catch(err => {
