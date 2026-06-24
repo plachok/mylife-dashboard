@@ -226,8 +226,7 @@ textarea{resize:vertical;min-height:60px}
   </div>
 
   <div class="sidebar-footer" id="sidebar-login-footer">
-    <button class="login-btn" style="width:100%;justify-content:center;margin-bottom:6px" onclick="handleAuth()" id="sidebar-auth-btn">🔑 Google</button>
-    <button class="login-btn" style="width:100%;justify-content:center;background:rgba(59,130,246,.15);border-color:var(--blue);color:var(--blue)" onclick="openEmailAuth()">📧 Email / Password</button>
+    <button class="login-btn" style="width:100%;justify-content:center" onclick="handleAuth()" id="sidebar-auth-btn">🔑 เข้าสู่ระบบด้วย Google</button>
     <div style="font-size:.68rem;color:var(--muted);text-align:center;margin-top:6px">เพื่อ sync ข้อมูลทุกเครื่อง</div>
   </div>
 </div>
@@ -1006,36 +1005,6 @@ textarea{resize:vertical;min-height:60px}
   </div>
 </div>
 
-<!-- AUTH CHOICE MODAL -->
-<div class="mbg" id="authChoiceModal">
-  <div class="modal">
-    <div class="mt">🔐 เข้าสู่ระบบ</div>
-    <button id="ac-google-btn" class="btn bfu" style="background:#fff;color:#333;font-size:1rem;padding:13px;display:flex;align-items:center;justify-content:center;gap:10px;border:1px solid #ddd" onclick="handleGoogleAuth()">
-      <svg width="20" height="20" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>
-      เข้าสู่ระบบด้วย Google
-    </button>
-    <div style="text-align:center;margin:12px 0;font-size:.75rem;color:var(--muted)">— หรือ —</div>
-    <button class="btn brd bfu" onclick="closeModal('authChoiceModal');openEmailAuth()">📧 Email / Password</button>
-    <div style="margin-top:12px"><button class="btn bgh bfu" onclick="closeModal('authChoiceModal')">ยกเลิก</button></div>
-  </div>
-</div>
-
-<!-- EMAIL AUTH MODAL -->
-<div class="mbg" id="emailAuthModal">
-  <div class="modal">
-    <div class="mt">📧 เข้าสู่ระบบด้วย Email</div>
-    <div id="email-auth-note" style="font-size:.75rem;color:var(--muted);margin-bottom:10px;background:var(--card2);border-radius:8px;padding:10px">
-      ใช้ Email เดียวกับ Google ได้เลย — ตั้ง Password ใหม่สำหรับ app นี้
-    </div>
-    <div class="fg"><label>Email</label><input type="email" id="ea-email" placeholder="your@email.com" autocomplete="email"></div>
-    <div class="fg"><label>Password</label><input type="password" id="ea-pass" placeholder="อย่างน้อย 6 ตัวอักษร" autocomplete="current-password" onkeydown="if(event.key==='Enter')emailSignIn()"></div>
-    <div id="ea-error" style="display:none;color:var(--red);font-size:.78rem;margin-bottom:8px;padding:8px;background:rgba(239,68,68,.1);border-radius:8px"></div>
-    <button class="btn bg bfu" onclick="emailSignIn()" id="ea-signin-btn">เข้าสู่ระบบ</button>
-    <div style="text-align:center;margin:10px 0;font-size:.75rem;color:var(--muted)">— หรือ —</div>
-    <button class="btn brd bfu" onclick="emailSignUp()" id="ea-signup-btn">สมัครสมาชิกใหม่ด้วย Email นี้</button>
-    <div style="margin-top:12px"><button class="btn bgh bfu" onclick="closeModal('emailAuthModal')">ยกเลิก</button></div>
-  </div>
-</div>
 
 <!-- MY FOODS MODAL -->
 <div class="mbg" id="myFoodModal">
@@ -3237,70 +3206,17 @@ const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
 const isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
 const isPWA = window.navigator.standalone === true || window.matchMedia('(display-mode: standalone)').matches;
 
-// Check for redirect result on load — suppress non-actionable iOS errors
+// Check for redirect result on load
 fbAuth.getRedirectResult().then(result => {
   if (result && result.user) toast('ยินดีต้อนรับ ' + result.user.displayName + ' 👋');
 }).catch(err => {
-  const SILENT = ['auth/no-auth-event','auth/internal-error','auth/null-user'];
+  // Suppress non-actionable errors silently
+  const SILENT = ['auth/no-auth-event','auth/internal-error','auth/null-user','auth/redirect-uri-mismatch'];
   if (err.code && !SILENT.includes(err.code)) {
     console.warn('Auth redirect error:', err.code, err.message);
-    toast('⚠️ Login error: ' + err.code);
   }
 });
 
-function openEmailAuth() {
-  document.getElementById('ea-email').value = '';
-  document.getElementById('ea-pass').value = '';
-  document.getElementById('ea-error').style.display = 'none';
-  document.getElementById('emailAuthModal').style.display = 'flex';
-  setTimeout(() => document.getElementById('ea-email').focus(), 100);
-}
-function _eaErr(msg) {
-  const el = document.getElementById('ea-error');
-  el.textContent = msg; el.style.display = '';
-}
-function _eaLoading(on) {
-  document.getElementById('ea-signin-btn').disabled = on;
-  document.getElementById('ea-signup-btn').disabled = on;
-}
-function emailSignIn() {
-  const email = document.getElementById('ea-email').value.trim();
-  const pass = document.getElementById('ea-pass').value;
-  if (!email || !pass) return _eaErr('กรุณากรอก Email และ Password');
-  _eaLoading(true);
-  fbAuth.signInWithEmailAndPassword(email, pass)
-    .then(() => { closeModal('emailAuthModal'); toast('เข้าสู่ระบบสำเร็จ 🎉'); })
-    .catch(err => {
-      _eaLoading(false);
-      const msgs = {
-        'auth/user-not-found': 'ไม่พบบัญชีนี้ — ลอง "สมัครสมาชิก" ด้านล่าง',
-        'auth/wrong-password': 'Password ไม่ถูกต้อง',
-        'auth/invalid-email': 'รูปแบบ Email ไม่ถูกต้อง',
-        'auth/too-many-requests': 'ลองหลายครั้งเกินไป — รอสักครู่แล้วลองใหม่',
-        'auth/invalid-credential': 'Email หรือ Password ไม่ถูกต้อง',
-      };
-      _eaErr(msgs[err.code] || err.message);
-    });
-}
-function emailSignUp() {
-  const email = document.getElementById('ea-email').value.trim();
-  const pass = document.getElementById('ea-pass').value;
-  if (!email || !pass) return _eaErr('กรุณากรอก Email และ Password');
-  if (pass.length < 6) return _eaErr('Password ต้องมีอย่างน้อย 6 ตัวอักษร');
-  _eaLoading(true);
-  fbAuth.createUserWithEmailAndPassword(email, pass)
-    .then(() => { closeModal('emailAuthModal'); toast('สมัครสมาชิกสำเร็จ 🎉'); })
-    .catch(err => {
-      _eaLoading(false);
-      const msgs = {
-        'auth/email-already-in-use': 'Email นี้มีบัญชีอยู่แล้ว — ลอง "เข้าสู่ระบบ" แทน',
-        'auth/weak-password': 'Password ต้องมีอย่างน้อย 6 ตัวอักษร',
-        'auth/invalid-email': 'รูปแบบ Email ไม่ถูกต้อง',
-        'auth/operation-not-allowed': '⚠️ กรุณาเปิด Email/Password ใน Firebase Console ก่อน',
-      };
-      _eaErr(msgs[err.code] || err.message);
-    });
-}
 
 function handleAuth() {
   if (fbUser) {
