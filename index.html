@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://www.gstatic.com https://unpkg.com https://apis.google.com; style-src 'self' 'unsafe-inline'; connect-src 'self' https://*.googleapis.com https://openrouter.ai https://world.openfoodfacts.org https://generativelanguage.googleapis.com https://securetoken.googleapis.com https://identitytoolkit.googleapis.com https://www.gstatic.com; img-src 'self' data: blob: https:; frame-src https://plachok.firebaseapp.com https://accounts.google.com; worker-src 'self'; manifest-src 'self';">`
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://www.gstatic.com https://unpkg.com https://apis.google.com; style-src 'self' 'unsafe-inline'; connect-src 'self' https://*.googleapis.com https://openrouter.ai https://world.openfoodfacts.org https://generativelanguage.googleapis.com https://securetoken.googleapis.com https://identitytoolkit.googleapis.com https://www.gstatic.com; img-src 'self' data: blob: https:; frame-src 'self' https://plachok.firebaseapp.com https://accounts.google.com https://plachok.web.app; worker-src 'self'; manifest-src 'self';">`
 <title>MyLife Dashboard</title>
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -3251,45 +3251,29 @@ function handleAuth() {
   }
   const provider = new firebase.auth.GoogleAuthProvider();
   provider.setCustomParameters({'prompt': 'select_account'});
-  // iOS PWA: popup/redirect both fail — open Safari tab to login, session shared via localStorage
-  if (isPWA && isIOS) {
-    dbgLog('handleAuth: iOS PWA — opening Safari for login');
-    const loginUrl = location.origin + '/?pwa_login=1';
-    window.open(loginUrl, '_blank');
-    toast('กรุณา login ใน Safari แล้วกลับมาที่ app');
-    return;
-  }
-  // Desktop & iOS Safari browser: popup
-  dbgLog('handleAuth: trying signInWithPopup');
-  fbAuth.signInWithPopup(provider)
-    .then(r => {
-      dbgLog('popup success: ' + r.user.email);
-      toast('ยินดีต้อนรับ ' + r.user.displayName + ' 👋');
-    })
-    .catch(err => {
-      const code = err.code || '';
-      dbgLog('popup result: ' + code);
-      if (code !== 'auth/popup-closed-by-user') {
-        toast('Login ไม่สำเร็จ: ' + code);
-      }
+  // iOS (Safari & PWA): use redirect — popup loses user gesture context on iOS
+  // Desktop: use popup
+  if (isIOS) {
+    dbgLog('handleAuth: iOS — signInWithRedirect');
+    fbAuth.signInWithRedirect(provider).catch(err => {
+      dbgLog('redirect ERROR: ' + (err.code||'?') + ' — ' + err.message);
+      toast('Login ไม่สำเร็จ: ' + err.code);
     });
-}
-
-// iOS PWA login helper — auto-trigger Google sign-in when opened from PWA
-if (new URLSearchParams(location.search).get('pwa_login') === '1') {
-  window.addEventListener('load', () => {
-    const provider = new firebase.auth.GoogleAuthProvider();
-    provider.setCustomParameters({'prompt': 'select_account'});
+  } else {
+    dbgLog('handleAuth: desktop — signInWithPopup');
     fbAuth.signInWithPopup(provider)
       .then(r => {
-        dbgLog('pwa_login popup success: ' + r.user.email);
-        document.body.innerHTML = '<div style="font-family:sans-serif;padding:40px;text-align:center;background:#111;color:#fff;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center"><h2 style="color:#4caf50">✓ Login สำเร็จ</h2><p>กลับไปที่ MyLife app บน home screen ได้เลยครับ</p><p style="color:#aaa;font-size:14px">(' + r.user.displayName + ')</p></div>';
+        dbgLog('popup success: ' + r.user.email);
+        toast('ยินดีต้อนรับ ' + r.user.displayName + ' 👋');
       })
       .catch(err => {
-        dbgLog('pwa_login ERROR: ' + err.code);
-        document.body.innerHTML = '<div style="font-family:sans-serif;padding:40px;text-align:center;background:#111;color:#fff;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center"><h2 style="color:#f44">✗ Login ไม่สำเร็จ</h2><p>' + err.code + '</p></div>';
+        const code = err.code || '';
+        dbgLog('popup result: ' + code);
+        if (code !== 'auth/popup-closed-by-user') {
+          toast('Login ไม่สำเร็จ: ' + code);
+        }
       });
-  });
+  }
 }
 
 fbAuth.onAuthStateChanged(async user => {
