@@ -3251,8 +3251,16 @@ function handleAuth() {
   }
   const provider = new firebase.auth.GoogleAuthProvider();
   provider.setCustomParameters({'prompt': 'select_account'});
-  // Try popup first everywhere; fall back to redirect only if popup is blocked
-  dbgLog('handleAuth: trying signInWithPopup (isPWA=' + isPWA + ')');
+  // iOS PWA: popup/redirect both fail — open Safari tab to login, session shared via localStorage
+  if (isPWA && isIOS) {
+    dbgLog('handleAuth: iOS PWA — opening Safari for login');
+    const loginUrl = location.origin + '/?pwa_login=1';
+    window.open(loginUrl, '_blank');
+    toast('กรุณา login ใน Safari แล้วกลับมาที่ app');
+    return;
+  }
+  // Desktop & iOS Safari browser: popup
+  dbgLog('handleAuth: trying signInWithPopup');
   fbAuth.signInWithPopup(provider)
     .then(r => {
       dbgLog('popup success: ' + r.user.email);
@@ -3261,13 +3269,27 @@ function handleAuth() {
     .catch(err => {
       const code = err.code || '';
       dbgLog('popup result: ' + code);
-      if (code === 'auth/popup-blocked') {
-        dbgLog('popup blocked — falling back to redirect');
-        fbAuth.signInWithRedirect(provider).catch(e => dbgLog('redirect ERROR: ' + e.code));
-      } else if (code !== 'auth/popup-closed-by-user') {
+      if (code !== 'auth/popup-closed-by-user') {
         toast('Login ไม่สำเร็จ: ' + code);
       }
     });
+}
+
+// iOS PWA login helper — auto-trigger Google sign-in when opened from PWA
+if (new URLSearchParams(location.search).get('pwa_login') === '1') {
+  window.addEventListener('load', () => {
+    const provider = new firebase.auth.GoogleAuthProvider();
+    provider.setCustomParameters({'prompt': 'select_account'});
+    fbAuth.signInWithPopup(provider)
+      .then(r => {
+        dbgLog('pwa_login popup success: ' + r.user.email);
+        document.body.innerHTML = '<div style="font-family:sans-serif;padding:40px;text-align:center;background:#111;color:#fff;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center"><h2 style="color:#4caf50">✓ Login สำเร็จ</h2><p>กลับไปที่ MyLife app บน home screen ได้เลยครับ</p><p style="color:#aaa;font-size:14px">(' + r.user.displayName + ')</p></div>';
+      })
+      .catch(err => {
+        dbgLog('pwa_login ERROR: ' + err.code);
+        document.body.innerHTML = '<div style="font-family:sans-serif;padding:40px;text-align:center;background:#111;color:#fff;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center"><h2 style="color:#f44">✗ Login ไม่สำเร็จ</h2><p>' + err.code + '</p></div>';
+      });
+  });
 }
 
 fbAuth.onAuthStateChanged(async user => {
