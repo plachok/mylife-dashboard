@@ -3253,8 +3253,11 @@ function handleAuth() {
   provider.setCustomParameters({'prompt': 'select_account'});
   // Mobile/PWA: redirect — Desktop: popup
   if (isMobile || isPWA) {
-    dbgLog('handleAuth: using signInWithRedirect');
-    fbAuth.signInWithRedirect(provider);
+    dbgLog('handleAuth: calling signInWithRedirect...');
+    fbAuth.signInWithRedirect(provider).catch(err => {
+      dbgLog('signInWithRedirect ERROR: ' + (err.code||'?') + ' — ' + err.message);
+    });
+    dbgLog('handleAuth: signInWithRedirect called (navigating...)');
   } else {
     fbAuth.signInWithPopup(provider)
       .then(r => toast('ยินดีต้อนรับ ' + r.user.displayName + ' 👋'))
