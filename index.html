@@ -173,8 +173,8 @@ textarea{resize:vertical;min-height:60px}
   </button>
   <div class="topbar-brand">⚡ MyLife</div>
   <div class="topbar-right">
-    <div class="sync-dot" id="sync-dot"></div>
-    <span id="sync-label" style="font-size:.7rem;color:var(--muted)">ออฟไลน์</span>
+    <div class="sync-dot" id="sync-dot" title="สถานะ sync ข้อมูล"></div>
+    <span id="sync-label" style="font-size:.7rem;color:var(--muted);cursor:default" title="ยังไม่ได้เข้าสู่ระบบ — กด 'เข้าสู่ระบบ' เพื่อ sync ข้อมูลข้ามอุปกรณ์">ออฟไลน์</span>
     <img id="user-avatar" class="user-avatar" style="display:none" onclick="toggleSidebar()">
     <button class="login-btn" id="auth-btn" onclick="handleAuth()">เข้าสู่ระบบ</button>
   </div>
@@ -3312,7 +3312,8 @@ function handleAuth() {
         } else if (code === 'auth/popup-closed-by-user') {
           // user closed popup — do nothing
         } else {
-          toast('Login ไม่สำเร็จ: ' + code);
+          // internal-error / network errors → open email auth as reliable fallback
+          openEmailAuth();
         }
       });
   }
