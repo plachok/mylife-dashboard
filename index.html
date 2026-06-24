@@ -3251,20 +3251,23 @@ function handleAuth() {
   }
   const provider = new firebase.auth.GoogleAuthProvider();
   provider.setCustomParameters({'prompt': 'select_account'});
-  // Mobile/PWA: redirect — Desktop: popup
-  if (isMobile || isPWA) {
-    dbgLog('handleAuth: calling signInWithRedirect...');
+  // PWA (home screen) only: redirect — all browsers (including iOS Safari): popup
+  if (isPWA) {
+    dbgLog('handleAuth: PWA mode — signInWithRedirect');
     fbAuth.signInWithRedirect(provider).catch(err => {
       dbgLog('signInWithRedirect ERROR: ' + (err.code||'?') + ' — ' + err.message);
     });
-    dbgLog('handleAuth: signInWithRedirect called (navigating...)');
   } else {
+    dbgLog('handleAuth: browser mode — signInWithPopup');
     fbAuth.signInWithPopup(provider)
-      .then(r => toast('ยินดีต้อนรับ ' + r.user.displayName + ' 👋'))
+      .then(r => {
+        dbgLog('popup success: ' + r.user.email);
+        toast('ยินดีต้อนรับ ' + r.user.displayName + ' 👋');
+      })
       .catch(err => {
         const code = err.code || '';
+        dbgLog('popup ERROR: ' + code + ' — ' + err.message);
         if (code !== 'auth/popup-closed-by-user') {
-          console.warn('Popup auth failed:', code, err.message);
           toast('Login ไม่สำเร็จ: ' + code);
         }
       });
