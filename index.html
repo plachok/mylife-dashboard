@@ -3206,11 +3206,37 @@ const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
 const isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
 const isPWA = window.navigator.standalone === true || window.matchMedia('(display-mode: standalone)').matches;
 
+// ── Debug panel (only when ?debug=1) ──
+const _dbg = new URLSearchParams(location.search).get('debug') === '1';
+function dbgLog(msg) {
+  console.log('[auth-debug]', msg);
+  if (!_dbg) return;
+  let panel = document.getElementById('_dbg_panel');
+  if (!panel) {
+    panel = document.createElement('div');
+    panel.id = '_dbg_panel';
+    panel.style.cssText = 'position:fixed;bottom:0;left:0;right:0;max-height:40vh;overflow-y:auto;background:#000c;color:#0f0;font:12px monospace;padding:8px;z-index:99999;';
+    document.body.appendChild(panel);
+  }
+  const line = document.createElement('div');
+  line.textContent = new Date().toISOString().slice(11,19) + ' ' + msg;
+  panel.appendChild(line);
+  panel.scrollTop = panel.scrollHeight;
+}
+
+dbgLog('page loaded — authDomain=' + firebaseConfig.authDomain);
+dbgLog('isMobile=' + isMobile + ' isPWA=' + isPWA + ' isIOS=' + isIOS);
+
 // Check for redirect result on load
 fbAuth.getRedirectResult().then(result => {
-  if (result && result.user) toast('ยินดีต้อนรับ ' + result.user.displayName + ' 👋');
+  if (result && result.user) {
+    dbgLog('getRedirectResult: user=' + result.user.email);
+    toast('ยินดีต้อนรับ ' + result.user.displayName + ' 👋');
+  } else {
+    dbgLog('getRedirectResult: no user (result=' + JSON.stringify(result) + ')');
+  }
 }).catch(err => {
-  // Suppress non-actionable errors silently
+  dbgLog('getRedirectResult ERROR: ' + err.code + ' — ' + err.message);
   const SILENT = ['auth/no-auth-event','auth/internal-error','auth/null-user','auth/redirect-uri-mismatch'];
   if (err.code && !SILENT.includes(err.code)) {
     console.warn('Auth redirect error:', err.code, err.message);
@@ -3227,6 +3253,7 @@ function handleAuth() {
   provider.setCustomParameters({'prompt': 'select_account'});
   // Mobile/PWA: redirect — Desktop: popup
   if (isMobile || isPWA) {
+    dbgLog('handleAuth: using signInWithRedirect');
     fbAuth.signInWithRedirect(provider);
   } else {
     fbAuth.signInWithPopup(provider)
@@ -3242,6 +3269,7 @@ function handleAuth() {
 }
 
 fbAuth.onAuthStateChanged(async user => {
+  dbgLog('onAuthStateChanged: ' + (user ? 'user=' + user.email : 'null'));
   fbUser = user;
   const btn = document.getElementById('auth-btn');
   const sbBtn = document.getElementById('sidebar-auth-btn');
