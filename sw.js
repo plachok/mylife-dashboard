@@ -1,4 +1,4 @@
-const CACHE='mylife-v26';
+const CACHE='mylife-v27';
 const SHELL=[
   './',
   './index.html',
@@ -22,6 +22,8 @@ self.addEventListener('activate',e=>{
 
 self.addEventListener('fetch',e=>{
   const url=new URL(e.request.url);
+  // Firebase auth handler — must never be cached or intercepted
+  if(url.pathname.startsWith('/__/')){return;}
   // API calls — network only, no cache
   if(url.hostname.includes('generativelanguage.googleapis.com')||
      url.hostname.includes('openfoodfacts.org')||
