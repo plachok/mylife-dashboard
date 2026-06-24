@@ -3251,27 +3251,23 @@ function handleAuth() {
   }
   const provider = new firebase.auth.GoogleAuthProvider();
   provider.setCustomParameters({'prompt': 'select_account'});
-  // PWA (home screen) only: redirect — all browsers (including iOS Safari): popup
-  if (isPWA) {
-    dbgLog('handleAuth: PWA mode — signInWithRedirect');
-    fbAuth.signInWithRedirect(provider).catch(err => {
-      dbgLog('signInWithRedirect ERROR: ' + (err.code||'?') + ' — ' + err.message);
+  // Try popup first everywhere; fall back to redirect only if popup is blocked
+  dbgLog('handleAuth: trying signInWithPopup (isPWA=' + isPWA + ')');
+  fbAuth.signInWithPopup(provider)
+    .then(r => {
+      dbgLog('popup success: ' + r.user.email);
+      toast('ยินดีต้อนรับ ' + r.user.displayName + ' 👋');
+    })
+    .catch(err => {
+      const code = err.code || '';
+      dbgLog('popup result: ' + code);
+      if (code === 'auth/popup-blocked') {
+        dbgLog('popup blocked — falling back to redirect');
+        fbAuth.signInWithRedirect(provider).catch(e => dbgLog('redirect ERROR: ' + e.code));
+      } else if (code !== 'auth/popup-closed-by-user') {
+        toast('Login ไม่สำเร็จ: ' + code);
+      }
     });
-  } else {
-    dbgLog('handleAuth: browser mode — signInWithPopup');
-    fbAuth.signInWithPopup(provider)
-      .then(r => {
-        dbgLog('popup success: ' + r.user.email);
-        toast('ยินดีต้อนรับ ' + r.user.displayName + ' 👋');
-      })
-      .catch(err => {
-        const code = err.code || '';
-        dbgLog('popup ERROR: ' + code + ' — ' + err.message);
-        if (code !== 'auth/popup-closed-by-user') {
-          toast('Login ไม่สำเร็จ: ' + code);
-        }
-      });
-  }
 }
 
 fbAuth.onAuthStateChanged(async user => {
