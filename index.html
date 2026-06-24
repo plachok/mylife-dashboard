@@ -3296,10 +3296,15 @@ function handleAuth() {
   const provider = new firebase.auth.GoogleAuthProvider();
   provider.setCustomParameters({'prompt': 'select_account'});
 
-  // iOS PWA (standalone): redirect เท่านั้น (popup window context broken)
-  // iOS Safari browser + Desktop: popup (direct user click = allowed, ไม่ผ่าน Firebase redirect domain)
-  // Android: redirect
-  if (isPWA || (!isIOS && isMobile)) {
+  // iOS (PWA + Safari): Google auth ไม่ทำงานบน iOS เพราะ Safari ITP บล็อก
+  // plachok.firebaseapp.com (cross-origin) ทั้ง popup และ redirect → ใช้ Email auth แทน
+  if (isIOS) {
+    openEmailAuth();
+    return;
+  }
+  // Android PWA: redirect
+  // Desktop + Android browser: popup
+  if (isPWA || isMobile) {
     fbAuth.signInWithRedirect(provider);
   } else {
     fbAuth.signInWithPopup(provider)
@@ -3312,7 +3317,6 @@ function handleAuth() {
         } else if (code === 'auth/popup-closed-by-user') {
           // user closed popup — do nothing
         } else {
-          // internal-error / network errors → open email auth as reliable fallback
           openEmailAuth();
         }
       });

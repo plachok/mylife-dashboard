@@ -1,4 +1,4 @@
-const CACHE='mylife-v19';
+const CACHE='mylife-v20';
 const SHELL=[
   './',
   './index.html',
