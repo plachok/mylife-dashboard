@@ -3179,7 +3179,7 @@ document.addEventListener('DOMContentLoaded',()=>{
 // ══════════ FIREBASE CONFIG ══════════
 const firebaseConfig = {
   apiKey: "AIzaSyBi9a8fLC9710Zhbo-2KchYlE34P-UPK5Q",
-  authDomain: "plachok.web.app",
+  authDomain: "plachok.firebaseapp.com",
   projectId: "plachok",
   storageBucket: "plachok.firebasestorage.app",
   messagingSenderId: "543308981926",
@@ -3225,7 +3225,20 @@ function handleAuth() {
   }
   const provider = new firebase.auth.GoogleAuthProvider();
   provider.setCustomParameters({'prompt': 'select_account'});
-  fbAuth.signInWithRedirect(provider);
+  // Mobile/PWA: redirect — Desktop: popup
+  if (isMobile || isPWA) {
+    fbAuth.signInWithRedirect(provider);
+  } else {
+    fbAuth.signInWithPopup(provider)
+      .then(r => toast('ยินดีต้อนรับ ' + r.user.displayName + ' 👋'))
+      .catch(err => {
+        const code = err.code || '';
+        if (code !== 'auth/popup-closed-by-user') {
+          console.warn('Popup auth failed:', code, err.message);
+          toast('Login ไม่สำเร็จ: ' + code);
+        }
+      });
+  }
 }
 
 fbAuth.onAuthStateChanged(async user => {
