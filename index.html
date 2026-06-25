@@ -3216,6 +3216,11 @@ function dbgLog(msg) {
     panel = document.createElement('div');
     panel.id = '_dbg_panel';
     panel.style.cssText = 'position:fixed;bottom:0;left:0;right:0;max-height:40vh;overflow-y:auto;background:#000c;color:#0f0;font:12px monospace;padding:8px;z-index:99999;';
+    const closeBtn = document.createElement('button');
+    closeBtn.textContent = '✕ ปิด';
+    closeBtn.style.cssText = 'position:sticky;top:4px;float:right;background:#f00;color:#fff;border:none;border-radius:4px;padding:2px 8px;cursor:pointer;font-size:11px;';
+    closeBtn.onclick = () => panel.remove();
+    panel.appendChild(closeBtn);
     document.body.appendChild(panel);
   }
   const line = document.createElement('div');
