@@ -3165,6 +3165,12 @@ document.addEventListener('DOMContentLoaded',()=>{
   renderAll();
   if('serviceWorker' in navigator){
     navigator.serviceWorker.register('./sw.js').catch(e=>console.warn('SW register failed:',e));
+    navigator.serviceWorker.addEventListener('message',e=>{
+      if(e.data?.type==='NEW_VERSION'){
+        // New version installed — reload to apply update (works on iOS PWA too)
+        setTimeout(()=>location.reload(),800);
+      }
+    });
   }
 });
 </script>

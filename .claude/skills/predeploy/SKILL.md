@@ -85,6 +85,8 @@ After deploy, verify:
 - [ ] The changed feature works on desktop
 - [ ] If auth was touched: test login on desktop
 
+**iOS PWA auto-update:** When the SW cache version is bumped, the app on iOS home screen will detect the new version and reload automatically within ~1 second of opening. No manual steps needed — this is handled by the SW `NEW_VERSION` postMessage → `location.reload()` in index.html.
+
 If the change affects iOS specifically, ask the user to test on iOS Safari with `?debug=1`.
 
 ## Failure protocol
