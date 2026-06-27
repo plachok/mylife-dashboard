@@ -1183,6 +1183,8 @@ const PAGE_RENDER={
   water:()=>{renderWater();},
   journal:()=>{renderJournal();},
   pr:()=>{renderPRs();},
+  meals:()=>{renderMeals();},
+  remind:()=>{renderReminders();},
   sync:()=>{renderSyncInfo();renderReminders();},
 };
 function renderPage(id){const fn=PAGE_RENDER[id];if(fn)fn();}
@@ -3331,6 +3333,7 @@ async function pushToFirestore() {
       habits, habitLog, nutriGoal,
       waterLog, waterGoal, journals, presets, mealPlan,
       routines, photos: photosSync,
+      myFoods, remindList,
       updatedAt: firebase.firestore.FieldValue.serverTimestamp()
     };
     await fbDb.collection('users').doc(fbUser.uid).collection('data').doc('all').set(payload);
@@ -3362,8 +3365,10 @@ async function pullFromFirestore() {
       if (d.journals)  { journals  = d.journals;  DB.set('ml_jn', journals); }
       if (d.presets)   { presets   = d.presets;   DB.set('ml_presets', presets); }
       if (d.mealPlan)  { mealPlan  = d.mealPlan;  DB.set('ml_mp', mealPlan); }
-      if (d.routines) { routines = d.routines; DB.set('ml_rt', routines); }
-      if (d.photos)   { photos   = d.photos;   DB.set('ml_ph', photos); }
+      if (d.routines)   { routines   = d.routines;   DB.set('ml_rt', routines); }
+      if (d.photos)     { photos     = d.photos;     DB.set('ml_ph', photos); }
+      if (d.myFoods)    { myFoods    = d.myFoods;    DB.set('ml_myfd', myFoods); }
+      if (d.remindList) { remindList = d.remindList; DB.set('ml_reminders', remindList); }
       renderAll();
     }
   } catch (err) {
@@ -3392,8 +3397,10 @@ function subscribeFirestore() {
         if (d.waterLog)  waterLog  = d.waterLog;
         if (d.waterGoal) waterGoal = d.waterGoal;
         if (d.journals)  journals  = d.journals;
-        if (d.presets)   presets   = d.presets;
-        if (d.mealPlan)  mealPlan  = d.mealPlan;
+        if (d.presets)    presets    = d.presets;
+        if (d.mealPlan)   mealPlan   = d.mealPlan;
+        if (d.myFoods)    { myFoods    = d.myFoods;    DB.set('ml_myfd', myFoods); }
+        if (d.remindList) { remindList = d.remindList; DB.set('ml_reminders', remindList); }
         if (d.photos)    {
           // Merge: keep local-only photos (src exists, no url) that haven't been pushed to cloud yet
           const remoteIds = new Set(d.photos.map(p=>p.id));
