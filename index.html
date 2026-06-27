@@ -1635,7 +1635,7 @@ function openMyFoodModal(prefill){
   document.getElementById('mf-fat').value=prefill?.fat||'';
   document.getElementById('mf-serving').value=prefill?.serving||'';
   document.getElementById('mf-serving-unit-lbl').textContent=prefill?.baseUnit||'g';
-  modal.style.display='flex';
+  modal.classList.add('on');
 }
 function saveMyFood(){
   const name=document.getElementById('mf-name').value.trim();
