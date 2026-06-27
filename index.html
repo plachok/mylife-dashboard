@@ -3394,7 +3394,13 @@ function subscribeFirestore() {
         if (d.journals)  journals  = d.journals;
         if (d.presets)   presets   = d.presets;
         if (d.mealPlan)  mealPlan  = d.mealPlan;
-        if (d.photos)    { photos = d.photos.map(p=>({...p,src:null})); DB.set('ml_ph',photos); }
+        if (d.photos)    {
+          // Merge: keep local-only photos (src exists, no url) that haven't been pushed to cloud yet
+          const remoteIds = new Set(d.photos.map(p=>p.id));
+          const localOnly = photos.filter(p => p.src && !remoteIds.has(p.id));
+          photos = [...d.photos.map(p=>({...p,src:null})), ...localOnly];
+          DB.set('ml_ph',photos);
+        }
         // only re-render the active page + dash stats (not all 16 pages)
         try { renderPage(_activePage); } catch(e) { console.warn('renderPage error:', e); }
         if (_activePage !== 'dash') { try { renderDash(); } catch(e) {} }
